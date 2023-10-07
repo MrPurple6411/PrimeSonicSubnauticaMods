@@ -1,39 +1,59 @@
-namespace UpgradedVehicles
+namespace UpgradedVehicles;
+
+using System.IO;
+using System.Reflection;
+using Nautilus.Assets;
+using Nautilus.Assets.Gadgets;
+using Nautilus.Assets.PrefabTemplates;
+using Nautilus.Crafting;
+using Nautilus.Handlers;
+using Nautilus.Utility;
+
+public abstract class VehicleUpgradeModule
 {
-    using System.IO;
-    using System.Reflection;
-    using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Handlers;
-    using UnityEngine;
+    public virtual PrefabInfo Info { get; init; }
+    public virtual CustomPrefab CustomPrefab { get; init; }
+    public virtual PrefabTemplate PrefabTemplate { get; init; }
 
-    public abstract class VehicleUpgradeModule : Craftable
+    protected VehicleUpgradeModule(string classId, string friendlyName, string description)
     {
-        protected VehicleUpgradeModule(string classId, string friendlyName, string description)
-            : base(classId, friendlyName, description)
+        if (Info == null)
         {
-            base.OnFinishedPatching += PostPatch;
+            Info = PrefabInfo.WithTechType(classId, friendlyName, description, "English", RequiredForUnlock == TechType.None).WithSizeInInventory(SizeInInventory);
+
+            var iconPath = Path.Combine(AssetsFolder, $"{classId}.png");
+            if (File.Exists(iconPath))
+                Info.WithIcon(ImageUtils.LoadSpriteFromFile(iconPath));
         }
 
-        public sealed override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
-        public sealed override TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
-        protected virtual TechType PrefabTemplate { get; } = TechType.SeamothSonarModule;
-        public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
-        public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
-        public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
-        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+        if (CustomPrefab == null)
+            CustomPrefab = new CustomPrefab(Info);
 
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
-            var obj = GameObject.Instantiate(prefab);
+        if (RequiredForUnlock != TechType.None)
+            CustomPrefab.SetUnlock(RequiredForUnlock).WithAnalysisTech(null);
+        
+        CustomPrefab.SetPdaGroupCategory(GroupForPDA, CategoryForPDA);
+        CustomPrefab.SetRecipe(GetBlueprintRecipe()).WithFabricatorType(FabricatorType).WithStepsToFabricatorTab(StepsToFabricatorTab);
+        CustomPrefab.SetEquipment(EquipmentType.VehicleModule).WithQuickSlotType(QuickSlotType);
 
-            return obj;
-        }
+        if (PrefabTemplate == null)
+            PrefabTemplate = new CloneTemplate(Info, PrefabTemplateType);
 
-        private void PostPatch()
-        {
-            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
-            CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Passive);
-        }
+        CustomPrefab.SetGameObject(PrefabTemplate);
+    }
+
+    protected virtual Vector2int SizeInInventory { get; } = new(1, 1);
+    protected TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
+    protected TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
+    protected virtual TechType PrefabTemplateType => TechType.SeamothSonarModule;
+    protected virtual TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
+    protected virtual CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
+    protected virtual QuickSlotType QuickSlotType => QuickSlotType.Passive;
+    protected virtual string[] StepsToFabricatorTab { get; } = new[] { "CommonModules" };
+    protected virtual string AssetsFolder { get; } = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+
+    protected virtual RecipeData GetBlueprintRecipe()
+    {
+        return CraftDataHandler.GetRecipeData(PrefabTemplateType);
     }
 }

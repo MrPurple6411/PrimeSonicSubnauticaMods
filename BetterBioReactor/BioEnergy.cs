@@ -1,67 +1,66 @@
-﻿namespace BetterBioReactor
+﻿namespace BetterBioReactor;
+
+using UnityEngine;
+using UnityEngine.UI;
+
+internal class BioEnergy
 {
-    using UnityEngine;
-    using UnityEngine.UI;
+    public bool FullyConsumed => RemainingEnergy <= 0f;
+    public string EnergyString => $"{Mathf.RoundToInt(RemainingEnergy)}/{MaxEnergy}";
 
-    internal class BioEnergy
+    public Pickupable Pickupable;
+    public float RemainingEnergy;
+    public readonly float MaxEnergy;
+    public int Size = 1;
+    public Text DisplayText { get; set; }
+
+    public BioEnergy(Pickupable pickupable, float currentEnergy, float originalEnergy)
     {
-        public bool FullyConsumed => RemainingEnergy <= 0f;
-        public string EnergyString => $"{Mathf.RoundToInt(RemainingEnergy)}/{MaxEnergy}";
+        Pickupable = pickupable;
+        RemainingEnergy = currentEnergy;
+        MaxEnergy = originalEnergy;
+    }
 
-        public Pickupable Pickupable;
-        public float RemainingEnergy;
-        public readonly float MaxEnergy;
-        public int Size = 1;
-        public Text DisplayText { get; set; }
+    internal BioEnergy(Pickupable pickupable, float energy)
+    {
+        Pickupable = pickupable;
+        RemainingEnergy = energy;
+        MaxEnergy = BaseBioReactor.GetCharge(pickupable.GetTechType());
+    }
 
-        public BioEnergy(Pickupable pickupable, float currentEnergy, float originalEnergy)
-        {
-            Pickupable = pickupable;
-            RemainingEnergy = currentEnergy;
-            MaxEnergy = originalEnergy;
-        }
+    public void UpdateInventoryText()
+    {
+        if (this.DisplayText is null)
+            return;
 
-        internal BioEnergy(Pickupable pickupable, float energy)
-        {
-            Pickupable = pickupable;
-            RemainingEnergy = energy;
-            MaxEnergy = BaseBioReactor.GetCharge(pickupable.GetTechType());
-        }
+        this.DisplayText.text = this.EnergyString;
+    }
 
-        public void UpdateInventoryText()
-        {
-            if (this.DisplayText is null)
-                return;
+    public void AddDisplayText(uGUI_ItemIcon icon)
+    {
+        // This code was made possible with the help of Waisie Milliams Hah
+        var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
-            this.DisplayText.text = this.EnergyString;
-        }
+        var textGO = new GameObject("EnergyLabel");
 
-        public void AddDisplayText(uGUI_ItemIcon icon)
-        {
-            // This code was made possible with the help of Waisie Milliams Hah
-            var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+        textGO.transform.parent = icon.transform;
+        textGO.AddComponent<Text>();
 
-            var textGO = new GameObject("EnergyLabel");
+        Text text = textGO.GetComponent<Text>();
+        text.font = arial;
+        text.material = arial.material;
+        text.text = string.Empty;
+        text.fontSize = 14 + Size;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.color = Color.yellow;
 
-            textGO.transform.parent = icon.transform;
-            textGO.AddComponent<Text>();
+        Outline outline = textGO.AddComponent<Outline>();
+        outline.effectColor = Color.black;
 
-            Text text = textGO.GetComponent<Text>();
-            text.font = arial;
-            text.material = arial.material;
-            text.text = string.Empty;
-            text.fontSize = 14 + Size;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.yellow;
+        RectTransform rectTransform = text.GetComponent<RectTransform>();
+        rectTransform.localScale = Vector3.one;
+        rectTransform.anchoredPosition3D = Vector3.zero;
 
-            Outline outline = textGO.AddComponent<Outline>();
-            outline.effectColor = Color.black;
-
-            RectTransform rectTransform = text.GetComponent<RectTransform>();
-            rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition3D = Vector3.zero;
-
-            this.DisplayText = text;
-        }
+        this.DisplayText = text;
     }
 }

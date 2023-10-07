@@ -1,52 +1,51 @@
-﻿namespace BetterBioReactor.SaveData
+﻿namespace BetterBioReactor.SaveData;
+
+using System.Collections.Generic;
+using EasyMarkup;
+
+internal class EmModuleSaveData : EmPropertyCollection
 {
-    using System.Collections.Generic;
-    using EasyMarkup;
+    private const string ItemIDKey = "ID";
+    private const string RemainingChargeKey = "B";
+    private const string KeyName = "MDS";
 
-    internal class EmModuleSaveData : EmPropertyCollection
+    private EmProperty<int> _itemID;
+    private EmProperty<float> _remainingCharge;
+
+    public int ItemID
     {
-        private const string ItemIDKey = "ID";
-        private const string RemainingChargeKey = "B";
-        private const string KeyName = "MDS";
+        get => _itemID.Value;
+        set => _itemID.Value = value;
+    }
 
-        private EmProperty<int> _itemID;
-        private EmProperty<float> _remainingCharge;
+    public float RemainingCharge
+    {
+        get => _remainingCharge.Value;
+        set => _remainingCharge.Value = value;
+    }
 
-        public int ItemID
-        {
-            get => _itemID.Value;
-            set => _itemID.Value = value;
-        }
+    private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
+    {
+        new EmProperty<int>(ItemIDKey, 0),
+        new EmProperty<float>(RemainingChargeKey, -1f)
+    };
 
-        public float RemainingCharge
-        {
-            get => _remainingCharge.Value;
-            set => _remainingCharge.Value = value;
-        }
+    public EmModuleSaveData(string keyName) : this(keyName, GetDefinitions)
+    {
+    }
 
-        private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
-        {
-            new EmProperty<int>(ItemIDKey, 0),
-            new EmProperty<float>(RemainingChargeKey, -1f)
-        };
+    public EmModuleSaveData() : this(KeyName, GetDefinitions)
+    {
+    }
 
-        public EmModuleSaveData(string keyName) : this(keyName, GetDefinitions)
-        {
-        }
+    public EmModuleSaveData(string keyName, ICollection<EmProperty> definitions) : base(keyName, definitions)
+    {
+        _itemID = (EmProperty<int>)Properties[ItemIDKey];
+        _remainingCharge = (EmProperty<float>)Properties[RemainingChargeKey];
+    }
 
-        public EmModuleSaveData() : this(KeyName, GetDefinitions)
-        {
-        }
-
-        public EmModuleSaveData(string keyName, ICollection<EmProperty> definitions) : base(keyName, definitions)
-        {
-            _itemID = (EmProperty<int>)Properties[ItemIDKey];
-            _remainingCharge = (EmProperty<float>)Properties[RemainingChargeKey];
-        }
-
-        internal override EmProperty Copy()
-        {
-            return new EmModuleSaveData(this.Key, this.CopyDefinitions);
-        }
+    internal override EmProperty Copy()
+    {
+        return new EmModuleSaveData(this.Key, this.CopyDefinitions);
     }
 }

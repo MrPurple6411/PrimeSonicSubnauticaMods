@@ -1,9 +1,8 @@
-﻿namespace CustomBatteries.PackReading
-{
-    using CustomBatteries.API;
+﻿namespace CustomBatteries.PackReading;
 
-    internal interface IParsedPluginPack : ITextPluginPack
-    {
-        string PluginPackFolder { get; set; }
-    }
+using CustomBatteries.API;
+
+internal interface IParsedPluginPack : ITextPluginPack
+{
+    string PluginPackFolder { get; set; }
 }

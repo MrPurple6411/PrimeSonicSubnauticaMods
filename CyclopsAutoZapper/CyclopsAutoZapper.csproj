@@ -1,104 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(SolutionDir)\GameDir.targets" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CyclopsAutoZapper</RootNamespace>
-    <AssemblyName>CyclopsAutoZapper</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <OutputPath>$(SolutionDir)..\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BelowZero|AnyCPU'">
-    <DefineConstants>TRACE;BELOWZERO</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <GameDir>$(BelowZeroDir)</GameDir>
-    <DataFolder>SubnauticaZero_Data</DataFolder>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>8.0</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
-    <DefineConstants>TRACE;SUBNAUTICA</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <GameDir>$(SubnauticaDir)</GameDir>
-    <DataFolder>Subnautica_Data</DataFolder>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>8.0</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>$(GameDir)\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath Condition="'$(Configuration)' == 'Subnautica'">$(GameDir)\QMods\Modding Helper\SMLHelper.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'BelowZero'">$(GameDir)\QMods\SMLHelper_BZ\SMLHelper.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="UnityEngine">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DisplayTexts.cs" />
-    <Compile Include="Items\CyclopsAutoDefenseMk2.cs" />
-    <Compile Include="Items\CyclopsParasiteRemover.cs" />
-    <Compile Include="Items\CyclopsAutoDefense.cs" />
-    <Compile Include="Managers\AntiParasiteIconOverlay.cs" />
-    <Compile Include="Managers\AutoDefenseMk2IconOverlay.cs" />
-    <Compile Include="Managers\AutoDefenser.cs" />
-    <Compile Include="Managers\AutoDefenserMk2.cs" />
-    <Compile Include="Managers\CooldownManager.cs" />
-    <Compile Include="Managers\AutoDefenseIconOverlay.cs" />
-    <Compile Include="Managers\Zapper.cs" />
-    <Compile Include="Patchers.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QPatch.cs" />
-    <Compile Include="Managers\ShieldPulser.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
-      <Project>{fc87af94-413d-482e-ab0d-501e120e6e2d}</Project>
-      <Name>MoreCyclopsUpgrades</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mod.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>CyclopsAutoZapper</AssemblyName>
+		<Product>Cyclops Auto Zapper (Bepinex/Nautilus)</Product>
+		<Version>1.0.0.0</Version>
+        <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
+	</PropertyGroup>
   <ItemGroup>
     <Content Include="Assets\CyclopsAntiParasite.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -111,5 +17,4 @@
     </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,8 +1,7 @@
-﻿namespace CustomBatteries.API
+﻿namespace CustomBatteries.API;
+
+internal enum ItemTypes
 {
-    internal enum ItemTypes
-    {
-        Battery,
-        PowerCell
-    }
+    Battery,
+    PowerCell
 }

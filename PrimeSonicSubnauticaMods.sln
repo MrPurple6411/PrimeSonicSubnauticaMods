@@ -1,106 +1,59 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleUpgradesInCyclops", "VehicleUpgradesInCyclops\VehicleUpgradesInCyclops.csproj", "{4186CF53-C9F3-4635-A108-84CF60A2ED0E}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Utilities\Common.shproj", "{91D8D243-2590-4911-A827-C4C929E0AB69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreCyclopsUpgrades", "MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj", "{FC87AF94-413D-482E-AB0D-501E120E6E2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoreCyclopsUpgrades", "MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj", "{FC87AF94-413D-482E-AB0D-501E120E6E2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpgradedVehicles", "UpgradedVehicles\UpgradedVehicles.csproj", "{0845CEEA-976E-4D0B-AE5D-7DBBA6FE1476}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpgradedVehicles", "UpgradedVehicles\UpgradedVehicles.csproj", "{0845CEEA-976E-4D0B-AE5D-7DBBA6FE1476}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraft2SML", "CustomCraftSML\CustomCraft2SML.csproj", "{656A031A-0BAE-4633-89F7-0F3464D247E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomCraft3", "CustomCraft3\CustomCraft3.csproj", "{656A031A-0BAE-4633-89F7-0F3464D247E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraftSMLTests", "CustomCraftSMLTests\CustomCraftSMLTests.csproj", "{76A15559-2893-493A-9EBF-BB7523D2DC04}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBoxScannerFix", "DataBoxScannerFix\DataBoxScannerFix.csproj", "{0FDBC24D-27CF-435F-B49C-D0A8A580971A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomCraft3Tests", "CustomCraft3Tests\CustomCraft3Tests.csproj", "{76A15559-2893-493A-9EBF-BB7523D2DC04}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EE047CA7-3B3B-434D-B1CD-E241F8008F23}"
 	ProjectSection(SolutionItems) = preProject
-		GameDir.targets = GameDir.targets
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterBioReactor", "BetterBioReactor\BetterBioReactor.csproj", "{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterBioReactor", "BetterBioReactor\BetterBioReactor.csproj", "{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearReactor", "CyclopsNuclearReactor\CyclopsNuclearReactor.csproj", "{D390E5A9-2FFF-48B8-ACFC-9B49F0C1C4CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsEngineUpgrades", "CyclopsEngineUpgrades\CyclopsEngineUpgrades.csproj", "{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IonCubeGenerator", "IonCubeGenerator\IonCubeGenerator.csproj", "{55314209-DE35-4A05-A188-EA01FC1DCA95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsSolarUpgrades", "CyclopsSolarUpgrades\CyclopsSolarUpgrades.csproj", "{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEngineUpgrades", "CyclopsEngineUpgrades\CyclopsEngineUpgrades.csproj", "{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsNuclearUpgrades", "CyclopsNuclearUpgrades\CyclopsNuclearUpgrades.csproj", "{58C9178B-E77D-4F01-B911-131A7043C188}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarUpgrades", "CyclopsSolarUpgrades\CyclopsSolarUpgrades.csproj", "{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsSpeedUpgrades", "CyclopsSpeedUpgrades\CyclopsSpeedUpgrades.csproj", "{8D209F6F-74BC-4C5F-BD7D-32F786B1E1D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsBioReactor", "CyclopsBioReactor\CyclopsBioReactor.csproj", "{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearUpgrades", "CyclopsNuclearUpgrades\CyclopsNuclearUpgrades.csproj", "{58C9178B-E77D-4F01-B911-131A7043C188}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSpeedUpgrades", "CyclopsSpeedUpgrades\CyclopsSpeedUpgrades.csproj", "{8D209F6F-74BC-4C5F-BD7D-32F786B1E1D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsThermalUpgrades", "CyclopsThermalUpgrades\CyclopsThermalUpgrades.csproj", "{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsThermalUpgrades", "CyclopsThermalUpgrades\CyclopsThermalUpgrades.csproj", "{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CyclopsMods", "CyclopsMods", "{8CE53864-B6EA-4EEA-A251-F8940719FA18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsAutoZapper", "CyclopsAutoZapper\CyclopsAutoZapper.csproj", "{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsAutoZapper", "CyclopsAutoZapper\CyclopsAutoZapper.csproj", "{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FCStudioHelpers", "FCStudioHelpers\FCStudioHelpers.shproj", "{5C00A82E-51C7-4721-8052-5DD9A14C78AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEnhancedSonar", "CyclopsEnhancedSonar\CyclopsEnhancedSonar.csproj", "{E347C779-52A3-428A-AC51-D02E5C606562}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsEnhancedSonar", "CyclopsEnhancedSonar\CyclopsEnhancedSonar.csproj", "{E347C779-52A3-428A-AC51-D02E5C606562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomBatteries", "CustomBatteries\CustomBatteries.csproj", "{A01C6565-0AD6-42A7-978E-463A91CA8CD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomBatteries", "CustomBatteries\CustomBatteries.csproj", "{A01C6565-0AD6-42A7-978E-463A91CA8CD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIOFabricator", "AIOFabricator\AIOFabricator.csproj", "{3050EBA0-18CD-4EF7-B556-36A489221B0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIOFabricator", "AIOFabricator\AIOFabricator.csproj", "{3050EBA0-18CD-4EF7-B556-36A489221B0D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EasyMarkup", "EasyMarkup\EasyMarkup.shproj", "{7B713BFD-3D84-44CF-BF86-35B1812646CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSimpleSolar", "CyclopsSimpleSolar\CyclopsSimpleSolar.csproj", "{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CyclopsSimpleSolar", "CyclopsSimpleSolar\CyclopsSimpleSolar.csproj", "{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnSlowSeaTruck", "UnSlowSeaTruck\UnSlowSeaTruck.csproj", "{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnSlowSeaTruck", "UnSlowSeaTruck\UnSlowSeaTruck.csproj", "{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		EasyMarkup\EasyMarkup.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{0ba0c9f3-9288-4d34-bff8-3f402ef5e3a7}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{3a198d4a-d4c0-4e4b-836d-a1e3a3530782}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{405a8ab5-3671-4bc7-9fcb-b8a2f6a456f1}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{4186cf53-c9f3-4635-a108-84cf60a2ed0e}*SharedItemsImports = 4
-		EasyMarkup\EasyMarkup.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
-		FCStudioHelpers\FCStudioHelpers.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{58c9178b-e77d-4f01-b911-131a7043c188}*SharedItemsImports = 4
-		FCStudioHelpers\FCStudioHelpers.projitems*{5c00a82e-51c7-4721-8052-5dd9a14c78ab}*SharedItemsImports = 13
-		EasyMarkup\EasyMarkup.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
-		FCStudioHelpers\FCStudioHelpers.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
-		EasyMarkup\EasyMarkup.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
-		EasyMarkup\EasyMarkup.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{7505fe7e-0ed8-48d6-adcb-710dcd727cf2}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{7a11a1db-09f4-44a5-bcd7-2ceac6b1febd}*SharedItemsImports = 4
-		EasyMarkup\EasyMarkup.projitems*{7b713bfd-3d84-44cf-bf86-35b1812646cb}*SharedItemsImports = 13
-		Utilities\Utilities.projitems*{8d209f6f-74bc-4c5f-bd7d-32f786b1e1d0}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
-		EasyMarkup\EasyMarkup.projitems*{a01c6565-0ad6-42a7-978e-463a91ca8cd6}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{a01c6565-0ad6-42a7-978e-463a91ca8cd6}*SharedItemsImports = 4
-		EasyMarkup\EasyMarkup.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
-		FCStudioHelpers\FCStudioHelpers.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{e347c779-52a3-428a-ac51-d02e5c606562}*SharedItemsImports = 4
-		EasyMarkup\EasyMarkup.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BelowZero|Any CPU = BelowZero|Any CPU
 		Subnautica|Any CPU = Subnautica|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
-		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
-		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
@@ -116,30 +69,16 @@ Global
 		{76A15559-2893-493A-9EBF-BB7523D2DC04}.BelowZero|Any CPU.Build.0 = BelowZero|Any CPU
 		{76A15559-2893-493A-9EBF-BB7523D2DC04}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{76A15559-2893-493A-9EBF-BB7523D2DC04}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
-		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
-		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.BelowZero|Any CPU.Build.0 = BelowZero|Any CPU
-		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
-		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
 		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.BelowZero|Any CPU.Build.0 = BelowZero|Any CPU
 		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
-		{D390E5A9-2FFF-48B8-ACFC-9B49F0C1C4CE}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
-		{D390E5A9-2FFF-48B8-ACFC-9B49F0C1C4CE}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
-		{D390E5A9-2FFF-48B8-ACFC-9B49F0C1C4CE}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
-		{55314209-DE35-4A05-A188-EA01FC1DCA95}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
-		{55314209-DE35-4A05-A188-EA01FC1DCA95}.BelowZero|Any CPU.Build.0 = BelowZero|Any CPU
-		{55314209-DE35-4A05-A188-EA01FC1DCA95}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
-		{55314209-DE35-4A05-A188-EA01FC1DCA95}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
 		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
-		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
-		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
-		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
 		{58C9178B-E77D-4F01-B911-131A7043C188}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{58C9178B-E77D-4F01-B911-131A7043C188}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{58C9178B-E77D-4F01-B911-131A7043C188}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
@@ -174,12 +113,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4186CF53-C9F3-4635-A108-84CF60A2ED0E} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
-		{D390E5A9-2FFF-48B8-ACFC-9B49F0C1C4CE} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
-		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{58C9178B-E77D-4F01-B911-131A7043C188} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{8D209F6F-74BC-4C5F-BD7D-32F786B1E1D0} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
@@ -189,5 +125,28 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE0C8D9E-28B2-4836-8250-A175A58A5566}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		EasyMarkup\EasyMarkup.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{0ba0c9f3-9288-4d34-bff8-3f402ef5e3a7}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{3a198d4a-d4c0-4e4b-836d-a1e3a3530782}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{405a8ab5-3671-4bc7-9fcb-b8a2f6a456f1}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{58c9178b-e77d-4f01-b911-131a7043c188}*SharedItemsImports = 5
+		FCStudioHelpers\FCStudioHelpers.projitems*{5c00a82e-51c7-4721-8052-5dd9a14c78ab}*SharedItemsImports = 13
+		EasyMarkup\EasyMarkup.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 5
+		EasyMarkup\EasyMarkup.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{7505fe7e-0ed8-48d6-adcb-710dcd727cf2}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{7a11a1db-09f4-44a5-bcd7-2ceac6b1febd}*SharedItemsImports = 5
+		EasyMarkup\EasyMarkup.projitems*{7b713bfd-3d84-44cf-bf86-35b1812646cb}*SharedItemsImports = 13
+		Utilities\Utilities.projitems*{8d209f6f-74bc-4c5f-bd7d-32f786b1e1d0}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
+		EasyMarkup\EasyMarkup.projitems*{a01c6565-0ad6-42a7-978e-463a91ca8cd6}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{a01c6565-0ad6-42a7-978e-463a91ca8cd6}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{e347c779-52a3-428a-ac51-d02e5c606562}*SharedItemsImports = 5
+		EasyMarkup\EasyMarkup.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 5
+		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

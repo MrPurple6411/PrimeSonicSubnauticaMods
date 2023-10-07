@@ -1,47 +1,43 @@
-﻿namespace CustomBatteries.Items
+﻿namespace CustomBatteries.Items;
+
+using System.Collections.Generic;
+using Nautilus.Crafting;
+
+internal class CustomPowerCell : CbCore
 {
-    using System.Collections.Generic;
-    using SMLHelper.V2.Crafting;
-#if SUBNAUTICA
-    using RecipeData = SMLHelper.V2.Crafting.TechData;
-#endif
+    private readonly CustomBattery baseBattery;
 
-    internal class CustomPowerCell : CbCore
+    public CustomPowerCell(string classId, bool ionCellSkins, CustomBattery customBattery) : base(classId, ionCellSkins)
     {
-        private readonly CustomBattery baseBattery;
+        baseBattery = customBattery;
+    }
 
-        public CustomPowerCell(string classId, bool ionCellSkins, CustomBattery customBattery) : base(classId, ionCellSkins)
+    protected override TechType PrefabType => this.UsingIonCellSkins ? TechType.PrecursorIonPowerCell : TechType.PowerCell;
+    protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
+    protected override string[] StepsToFabricatorTab => CbDatabase.PowCellCraftPath;
+
+    public override RecipeData GetBlueprintRecipe()
+    {
+        var partsList = new List<Ingredient>()
         {
-            baseBattery = customBattery;
-        }
+            new Ingredient(baseBattery.TechType, 2),
+            new Ingredient(TechType.Silicone, 1),
+        };
 
-        protected override TechType PrefabType => this.UsingIonCellSkins ? TechType.PrecursorIonPowerCell : TechType.PowerCell;
-        protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
-        protected override string[] StepsToFabricatorTab => CbDatabase.PowCellCraftPath;
+        CreateIngredients(this.Parts, partsList);
 
-        public override RecipeData GetBlueprintRecipe()
+        var batteryBlueprint = new RecipeData
         {
-            var partsList = new List<Ingredient>()
-            {
-                new Ingredient(baseBattery.TechType, 2),
-                new Ingredient(TechType.Silicone, 1),
-            };
+            craftAmount = 1,
+            Ingredients = partsList
+        };
 
-            CreateIngredients(this.Parts, partsList);
+        return batteryBlueprint;
+    }
 
-            var batteryBlueprint = new RecipeData
-            {
-                craftAmount = 1,
-                Ingredients = partsList
-            };
-
-            return batteryBlueprint;
-        }
-
-        protected override void AddToList()
-        {
-            CbDatabase.PowerCellItems.Add(this);
-            CbDatabase.TrackItems.Add(this.TechType);
-        }
+    protected override void AddToList()
+    {
+        CbDatabase.PowerCellItems.Add(this);
+        CbDatabase.TrackItems.Add(this.TechType);
     }
 }

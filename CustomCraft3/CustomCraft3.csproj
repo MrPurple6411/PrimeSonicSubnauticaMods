@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>CustomCraft3</AssemblyName>
+		<Product>Custom Craft 3 (Bepinex/Nautilus)</Product>
+		<Version>1.0.0.0</Version>
+        <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
+	</PropertyGroup>
+  <ItemGroup>
+    <Content Include="SampleFiles\AddedRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomSizes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\ModifiedRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\AddedRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\AliasRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\AliasRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFabricator_Sample.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFab_Sample2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFoods_Samplefile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFragments_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomSizes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomTab_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Moves.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Recipes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\MovedRecipes_Sample.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\MovedRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="Assets\MoonPool.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
+</Project>

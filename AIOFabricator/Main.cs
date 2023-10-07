@@ -1,23 +1,22 @@
-﻿namespace AIOFabricator
+﻿namespace AIOFabricator;
+
+using System;
+using System.Reflection;
+using QModManager.API.ModLoading;
+
+[QModCore]
+public static class Main
 {
-    using System;
-    using System.Reflection;
-    using QModManager.API.ModLoading;
+    private static AiOFab aioFab;
 
-    [QModCore]
-    public static class Main
+    [QModPatch]
+    public static void Start()
     {
-        private static AiOFab aioFab;
+        Console.WriteLine("[AIOFabricator] Started patching v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(3));         
 
-        [QModPatch]
-        public static void Start()
-        {
-            Console.WriteLine("[AIOFabricator] Started patching v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(3));         
+        aioFab = new AiOFab();
+        aioFab.Patch();
 
-            aioFab = new AiOFab();
-            aioFab.Patch();
-
-            Console.WriteLine("[AIOFabricator] Finished patching");
-        }        
-    }
+        Console.WriteLine("[AIOFabricator] Finished patching");
+    }        
 }

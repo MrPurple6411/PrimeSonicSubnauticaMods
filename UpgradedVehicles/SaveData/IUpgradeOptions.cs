@@ -1,9 +1,8 @@
-﻿namespace UpgradedVehicles.SaveData
+﻿namespace UpgradedVehicles.SaveData;
+
+internal interface IUpgradeOptions
 {
-    internal interface IUpgradeOptions
-    {
-        bool DebugLogsEnabled { get; }
-        float ExosuitBonusSpeedMultiplier { get; }
-        float SeamothBonusSpeedMultiplier { get; }
-    }
+    bool DebugLogsEnabled { get; }
+    float ExosuitBonusSpeedMultiplier { get; }
+    float SeamothBonusSpeedMultiplier { get; }
 }

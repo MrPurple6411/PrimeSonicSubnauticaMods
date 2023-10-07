@@ -1,96 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="$(SolutionDir)\GameDir.targets" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BetterBioReactor</RootNamespace>
-    <AssemblyName>BetterBioReactor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <OutputPath>$(SolutionDir)..\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BelowZero|AnyCPU'">
-    <DefineConstants>TRACE;BELOWZERO</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <GameDir>$(BelowZeroDir)</GameDir>
-    <DataFolder>SubnauticaZero_Data</DataFolder>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
-    <DefineConstants>TRACE;SUBNAUTICA</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <GameDir>$(SubnauticaDir)</GameDir>
-    <DataFolder>Subnautica_Data</DataFolder>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>$(GameDir)\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="Unity.TextMeshPro" Condition="'$(Configuration)' == 'BelowZero'">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\Unity.TextMeshPro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Patchers\BaseBioReactor_Patchers.cs" />
-    <Compile Include="BioEnergy.cs" />
-    <Compile Include="CyBioReactorMini.cs" />
-    <Compile Include="QPatch.cs" />
-    <Compile Include="SaveData\CyBioReactorSaveData.cs" />
-    <Compile Include="SaveData\EmModuleSaveData.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Patchers\uGUI_Patches.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mod_BelowZero.json" />
-    <None Include="mod_Subnautica.json" />
-  </ItemGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>BetterBioReactor</AssemblyName>
+		<Product>Better Bio-Reactor (Bepinex/Nautilus)</Product>
+		<Version>1.0.0.0</Version>
+        <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
+	</PropertyGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)mod_$(ConfigurationName).json" "$(OutDir)mod.json" /y</PostBuildEvent>
-  </PropertyGroup>
 </Project>

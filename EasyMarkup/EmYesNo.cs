@@ -1,48 +1,47 @@
-﻿namespace EasyMarkup
+﻿namespace EasyMarkup;
+
+internal class EmYesNo : EmProperty<bool>
 {
-    internal class EmYesNo : EmProperty<bool>
+    public EmYesNo(string key, bool defaultValue = false) : base(key, defaultValue)
     {
-        public EmYesNo(string key, bool defaultValue = false) : base(key, defaultValue)
+    }
+
+    public override bool ConvertFromSerial(string value)
+    {
+        bool retValue;
+
+        switch (value.ToUpperInvariant())
         {
+            case "YES":
+            case "TRUE":
+                retValue = true;
+                break;
+            case "NO":
+            case "FALSE":
+                retValue = false;
+                break;
+            default:
+                retValue = this.DefaultValue;
+                break;
         }
 
-        public override bool ConvertFromSerial(string value)
-        {
-            bool retValue;
+        SerializedValue = retValue ? "YES" : "NO";
 
-            switch (value.ToUpperInvariant())
-            {
-                case "YES":
-                case "TRUE":
-                    retValue = true;
-                    break;
-                case "NO":
-                case "FALSE":
-                    retValue = false;
-                    break;
-                default:
-                    retValue = this.DefaultValue;
-                    break;
-            }
+        return retValue;
+    }
 
-            SerializedValue = retValue ? "YES" : "NO";
+    public override string ToString()
+    {
+        SerializedValue = this.Value ? "YES" : "NO";
 
-            return retValue;
-        }
+        return base.ToString();
+    }
 
-        public override string ToString()
-        {
-            SerializedValue = this.Value ? "YES" : "NO";
+    internal override EmProperty Copy()
+    {
+        if (this.HasValue)
+            return new EmYesNo(this.Key, this.Value) { Optional = this.Optional };
 
-            return base.ToString();
-        }
-
-        internal override EmProperty Copy()
-        {
-            if (this.HasValue)
-                return new EmYesNo(this.Key, this.Value) { Optional = this.Optional };
-
-            return new EmYesNo(this.Key, this.DefaultValue) { Optional = this.Optional };
-        }
+        return new EmYesNo(this.Key, this.DefaultValue) { Optional = this.Optional };
     }
 }
