@@ -1,6 +1,6 @@
 ﻿namespace CyclopsAutoZapper
 {
-    using SMLHelper.V2.Handlers;
+    using Nautilus.Handlers;
 
     internal class DisplayTexts
     {

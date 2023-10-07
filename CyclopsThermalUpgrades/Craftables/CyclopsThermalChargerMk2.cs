@@ -3,8 +3,8 @@
     using System.IO;
     using System.Reflection;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
+    using Nautilus.Crafting;
+    using Nautilus.Handlers;
     using UnityEngine;
 
     internal class CyclopsThermalChargerMk2 : CyclopsUpgrade

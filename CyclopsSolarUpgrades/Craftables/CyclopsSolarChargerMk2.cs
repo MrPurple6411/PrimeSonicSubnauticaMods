@@ -3,7 +3,7 @@
     using System.IO;
     using System.Reflection;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using SMLHelper.V2.Crafting;
+    using Nautilus.Crafting;
     using UnityEngine;
 
     internal class CyclopsSolarChargerMk2 : CyclopsUpgrade

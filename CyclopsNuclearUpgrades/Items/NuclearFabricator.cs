@@ -2,9 +2,9 @@
 {
     using System.IO;
     using System.Reflection;
-    using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Utility;
+    using Nautilus.Assets;
+    using Nautilus.Crafting;
+    using Nautilus.Utility;
     using UnityEngine;
 
     internal class NuclearFabricator : CustomFabricator

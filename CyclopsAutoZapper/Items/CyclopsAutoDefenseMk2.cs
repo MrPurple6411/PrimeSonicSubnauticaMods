@@ -5,7 +5,7 @@
     using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using SMLHelper.V2.Crafting;
+    using Nautilus.Crafting;
 
     internal class CyclopsAutoDefenseMk2 : CyclopsUpgrade
     {

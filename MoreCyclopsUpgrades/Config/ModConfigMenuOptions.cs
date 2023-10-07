@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.Config.Options;
-    using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Options;
+    using Nautilus.Handlers;
+    using Nautilus.Options;
 
     internal class ModConfigMenuOptions : ModOptions
     {

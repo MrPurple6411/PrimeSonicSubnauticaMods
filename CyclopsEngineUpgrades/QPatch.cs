@@ -5,7 +5,7 @@
     using CyclopsEngineUpgrades.Handlers;
     using MoreCyclopsUpgrades.API;
     using QModManager.API.ModLoading;
-    using SMLHelper.V2.Handlers;
+    using Nautilus.Handlers;
 
     [QModCore]
     public static class QPatch

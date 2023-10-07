@@ -7,7 +7,7 @@
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
     using QModManager.API.ModLoading;
-    using SMLHelper.V2.Utility;
+    using Nautilus.Utility;
     using HarmonyLib;
 
     /// <summary>
@@ -43,7 +43,7 @@
             }
             else
             {
-                // SMLHelper now handles previously used but now disabled TechTypes
+                // Nautilus now handles previously used but now disabled TechTypes
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
             }
 

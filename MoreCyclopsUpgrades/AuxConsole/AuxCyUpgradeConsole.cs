@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
-    using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
+    using Nautilus.Assets;
+    using Nautilus.Crafting;
+    using Nautilus.Handlers;
     using UnityEngine;
 
     internal class AuxCyUpgradeConsole : Buildable

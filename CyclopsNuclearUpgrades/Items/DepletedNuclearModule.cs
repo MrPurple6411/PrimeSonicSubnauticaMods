@@ -2,7 +2,7 @@
 {
     using System.IO;
     using System.Reflection;
-    using SMLHelper.V2.Assets;
+    using Nautilus.Assets;
     using UnityEngine;
 
     internal class DepletedNuclearModule : Spawnable

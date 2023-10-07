@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
-    using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Handlers;
+    using Nautilus.Assets;
+    using Nautilus.Handlers;
     using UnityEngine;
 
     /// <summary>

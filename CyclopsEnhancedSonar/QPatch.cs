@@ -4,7 +4,7 @@
     using Common;
     using HarmonyLib;
     using MoreCyclopsUpgrades.API;
-    using SMLHelper.V2.Handlers;
+    using Nautilus.Handlers;
 
     public static class QPatch
     {
