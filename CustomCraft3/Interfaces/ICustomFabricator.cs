@@ -1,6 +1,6 @@
-﻿namespace CustomCraft2SML.Interfaces;
+﻿namespace CustomCraft3.Interfaces;
 
-using CustomCraft2SML.Serialization.Entries;
+using CustomCraft3.Serialization.Entries;
 using EasyMarkup;
 using UnityEngine;
 

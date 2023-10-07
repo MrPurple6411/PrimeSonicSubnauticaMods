@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using System.Reflection;
-using CustomCraft2SML.Serialization;
+using CustomCraft3.Serialization;
 
-namespace CustomCraft2SML;
+namespace CustomCraft3;
 
 internal static class FileLocations
 {
-    internal const string RootModName = "CustomCraft2SML";
-    internal const string ModFriendlyName = "Custom Craft 2";
+    internal const string RootModName = "CustomCraft3";
+    internal const string ModFriendlyName = "Custom Craft 3";
     internal static string FolderRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     internal static string SamplesFolder = Path.Combine(FolderRoot, "SampleFiles");
     internal static string OriginalsFolder = Path.Combine(FolderRoot, "OriginalRecipes");

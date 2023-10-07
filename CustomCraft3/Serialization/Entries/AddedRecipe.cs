@@ -1,15 +1,16 @@
-﻿namespace CustomCraft2SML.Serialization.Entries;
+﻿namespace CustomCraft3.Serialization.Entries;
 
 using System;
 using System.Collections.Generic;
 using Common;
-using CustomCraft2SML.Interfaces;
-using CustomCraft2SML.Serialization;
-using CustomCraft2SML.Serialization.Components;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Interfaces;
+using CustomCraft3.Serialization;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
 using Nautilus.Crafting;
 using Nautilus.Handlers;
+using static CraftData;
 
 internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
 {
@@ -107,13 +108,13 @@ internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
         RecipeData replacement = CreateRecipeTechData(defaultCraftAmount);
 
-        CraftDataHandler.SetTechData(this.TechType, replacement);
+        CraftDataHandler.SetRecipeData(this.TechType, replacement);
         QuickLogger.Debug($"Adding new recipe for '{this.ItemID}'");
 
         if (this.PdaGroup != TechGroup.Uncategorized)
         {
             CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, this.TechType);
-            // SMLHelper logs enough here
+            // Nautilus logs enough here
         }
     }
 
@@ -124,7 +125,7 @@ internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
             craftAmount = this.AmountCrafted ?? defaultCraftAmount
         };
 
-        foreach (EmIngredient ingredient in this.Ingredients)
+        foreach (EmIngredient ingredient in this.EmIngredients)
             replacement.Ingredients.Add(new Ingredient(ingredient.TechType, ingredient.Required));
 
         foreach (TechType linkedItem in this.LinkedItems)

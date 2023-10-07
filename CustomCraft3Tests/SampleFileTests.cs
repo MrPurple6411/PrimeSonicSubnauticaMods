@@ -1,9 +1,9 @@
 ﻿namespace CustomCraftSMLTests;
 
 using System.IO;
-using CustomCraft2SML.Serialization.Components;
-using CustomCraft2SML.Serialization.Entries;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Entries;
+using CustomCraft3.Serialization.Lists;
 using NUnit.Framework;
 
 [TestFixture]
@@ -14,7 +14,7 @@ internal class SampleFileTests
         get
         {
             string path = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            return Directory.GetParent(path).FullName + "/CustomCraft2SML/SampleFiles/";
+            return Directory.GetParent(path).FullName + "/CustomCraft3/SampleFiles/";
         }
     }
 

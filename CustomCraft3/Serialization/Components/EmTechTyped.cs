@@ -1,9 +1,9 @@
-﻿namespace CustomCraft2SML.Serialization.Components;
+﻿namespace CustomCraft3.Serialization.Components;
 
 using System.Collections.Generic;
 using Common;
-using CustomCraft2SML.Interfaces;
-using CustomCraft2SML.Serialization;
+using CustomCraft3.Interfaces;
+using CustomCraft3.Serialization;
 using EasyMarkup;
 using Nautilus.Handlers;
 
@@ -66,7 +66,7 @@ internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
             return tType;
         }
 
-        //  Not one of the known TechTypes - is it registered with SMLHelper?
+        //  Not one of the known TechTypes - is it registered with Nautilus?
         if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
         {
             return custom;

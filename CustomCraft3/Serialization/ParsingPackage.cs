@@ -1,8 +1,8 @@
-﻿namespace CustomCraft2SML.Serialization;
+﻿namespace CustomCraft3.Serialization;
 
 using System.Collections.Generic;
 using Common;
-using CustomCraft2SML.Interfaces.InternalUse;
+using CustomCraft3.Interfaces.InternalUse;
 using EasyMarkup;
 
 internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage

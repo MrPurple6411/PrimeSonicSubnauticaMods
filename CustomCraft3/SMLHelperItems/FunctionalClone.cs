@@ -1,6 +1,6 @@
-﻿namespace CustomCraft2SML;
+﻿namespace CustomCraft3;
 
-using CustomCraft2SML.Interfaces;
+using CustomCraft3.Interfaces;
 using Nautilus.Assets;
 using UnityEngine;
 

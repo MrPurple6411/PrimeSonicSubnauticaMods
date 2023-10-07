@@ -1,15 +1,16 @@
-﻿namespace CustomCraft2SML.Serialization.Entries;
+﻿namespace CustomCraft3.Serialization.Entries;
 
 using System;
 using System.Collections.Generic;
 using Common;
-using CustomCraft2SML.Interfaces;
-using CustomCraft2SML.Interfaces.InternalUse;
-using CustomCraft2SML.Serialization.Components;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Interfaces;
+using CustomCraft3.Interfaces.InternalUse;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
 using Nautilus.Crafting;
 using Nautilus.Handlers;
+using static CraftData;
 
 internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 {
@@ -81,8 +82,8 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     public IList<string> UnlockedBy => unlockedBy.Values;
     protected List<TechType> UnlockedByItems { get; } = new List<TechType>();
 
-    public IList<EmIngredient> Ingredients => ingredients.Values;
-    protected List<Ingredient> SMLHelperIngredients { get; } = new List<Ingredient>();
+    public IList<EmIngredient> EmIngredients => ingredients.Values;
+    protected List<Ingredient> Ingredients { get; } = new List<Ingredient>();
 
     public IList<string> LinkedItemIDs => linkedItems.Values;
     protected List<TechType> LinkedItems { get; } = new List<TechType>();
@@ -103,18 +104,14 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
     internal ModifiedRecipe(TechType origTechType) : this()
     {
-#if SUBNAUTICA
-        TechData origRecipe = CraftDataHandler.GetTechData(origTechType);
-#elif BELOWZERO
         RecipeData origRecipe = CraftDataHandler.GetRecipeData(origTechType);
-#endif
         this.ItemID = origTechType.ToString();
         this.AmountCrafted = (short)origRecipe.craftAmount;
 
         for (int i = 0; i < origRecipe.ingredientCount; i++)
         {
             Ingredient origIngredient = (Ingredient)origRecipe.GetIngredient(i);
-            this.Ingredients.Add(new EmIngredient(origIngredient.techType, (short)origIngredient.amount));
+            this.EmIngredients.Add(new EmIngredient(origIngredient.techType, (short)origIngredient.amount));
         }
 
         for (int i = 0; i < origRecipe.linkedItemCount; i++)
@@ -237,10 +234,10 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
         bool ingredientsValid = true;
 
-        foreach (EmIngredient ingredient in this.Ingredients)
+        foreach (EmIngredient ingredient in this.EmIngredients)
         {
             if (ingredient.PassesPreValidation(this.Origin))
-                this.SMLHelperIngredients.Add(ingredient.ToSMLHelperIngredient());
+                this.Ingredients.Add(ingredient.ToIngredient());
             else
                 ingredientsValid = false;
         }
@@ -265,11 +262,7 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
     protected bool HandleModifiedRecipe()
     {
-#if SUBNAUTICA
-        RecipeData original = CraftDataHandler.GetTechData(this.TechType);
-#elif BELOWZERO
         RecipeData original = CraftDataHandler.GetRecipeData(this.TechType);
-#endif
 
         if (original == null)
         {
@@ -294,11 +287,11 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
         }
 
         // Ingredients
-        if (this.Ingredients.Count > 0)
+        if (this.EmIngredients.Count > 0)
         {
             overrideRecipe |= true;
             changes += $" {IngredientsKey} ";
-            replacement.Ingredients = this.SMLHelperIngredients;
+            replacement.Ingredients = this.Ingredients;
         }
         else
         {
@@ -328,7 +321,7 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
         if (overrideRecipe)
         {
-            CraftDataHandler.SetTechData(this.TechType, replacement);
+            CraftDataHandler.SetRecipeData(this.TechType, replacement);
             QuickLogger.Debug($"Modifying recipe for '{this.ItemID}' from {this.Origin} with new values in: {changes}");
         }
 

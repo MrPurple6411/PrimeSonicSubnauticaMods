@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Interfaces;
+﻿namespace CustomCraft3.Interfaces;
 
 public interface ICustomSize : ITechTyped
 {

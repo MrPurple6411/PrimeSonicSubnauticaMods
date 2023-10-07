@@ -1,6 +1,6 @@
-﻿namespace CustomCraft2SML.Interfaces.InternalUse;
+﻿namespace CustomCraft3.Interfaces.InternalUse;
 
-using CustomCraft2SML.Serialization;
+using CustomCraft3.Serialization;
 
 internal interface IParsingPackage
 {

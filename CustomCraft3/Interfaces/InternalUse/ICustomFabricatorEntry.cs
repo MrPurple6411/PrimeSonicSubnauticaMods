@@ -1,7 +1,7 @@
-﻿namespace CustomCraft2SML.Interfaces.InternalUse;
+﻿namespace CustomCraft3.Interfaces.InternalUse;
 
-using CustomCraft2SML.Serialization;
-using CustomCraft2SML.Serialization.Entries;
+using CustomCraft3.Serialization;
+using CustomCraft3.Serialization.Entries;
 
 internal interface ICustomFabricatorEntry : ICustomCraft
 {

@@ -1,12 +1,12 @@
-﻿namespace CustomCraft2SML.Serialization.Entries;
+﻿namespace CustomCraft3.Serialization.Entries;
 
 using System.Collections.Generic;
 using Common;
-using CustomCraft2SML.Interfaces;
-using CustomCraft2SML.Interfaces.InternalUse;
-using CustomCraft2SML.Serialization;
-using CustomCraft2SML.Serialization.Components;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Interfaces;
+using CustomCraft3.Interfaces.InternalUse;
+using CustomCraft3.Serialization;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
 using Nautilus.Handlers;
 

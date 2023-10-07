@@ -1,6 +1,6 @@
-﻿namespace CustomCraft2SML.Fabricators;
+﻿namespace CustomCraft3.Fabricators;
 
-using CustomCraft2SML.Serialization.Entries;
+using CustomCraft3.Serialization.Entries;
 using Nautilus.Assets;
 using System;
 using UnityEngine;

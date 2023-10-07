@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Interfaces.InternalUse;
+﻿namespace CustomCraft3.Interfaces.InternalUse;
 
 using System.Collections.Generic;
 

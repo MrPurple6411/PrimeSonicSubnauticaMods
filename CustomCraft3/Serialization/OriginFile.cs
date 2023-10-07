@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Serialization;
+﻿namespace CustomCraft3.Serialization;
 
 using System.Collections.Generic;
 

@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML;
+﻿namespace CustomCraft3;
 
 using System.Collections.Generic;
 
@@ -6,7 +6,7 @@ internal class ValidTechTypes
 {
 
 #if SUBNAUTICA
-    // Because other mods (not using SMLHelper) are adding to CraftData, the only safe way to get all items is by keeping a local copy here
+    // Because other mods (not using Nautilus) are adding to CraftData, the only safe way to get all items is by keeping a local copy here
     // A few known problematic TechTypes have also been excluded
     internal static readonly Dictionary<TechGroup,
                                 Dictionary<TechCategory,
@@ -477,7 +477,7 @@ internal class ValidTechTypes
 };
 
 #elif BELOWZERO
-    // Because other mods (not using SMLHelper) are adding to CraftData, the only safe way to get all items is by keeping a local copy here
+    // Because other mods (not using Nautilus) are adding to CraftData, the only safe way to get all items is by keeping a local copy here
     // A few known problematic TechTypes have also been excluded
     internal static readonly Dictionary<TechGroup,
                                 Dictionary<TechCategory,

@@ -1,6 +1,6 @@
-﻿namespace CustomCraft2SML.SMLHelperItems;
+﻿namespace CustomCraft3.SMLHelperItems;
 
-using CustomCraft2SML.Serialization.Entries;
+using CustomCraft3.Serialization.Entries;
 using Nautilus.Assets;
 using UnityEngine;
 

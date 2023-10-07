@@ -1,14 +1,14 @@
-﻿namespace CustomCraft2SML;
+﻿namespace CustomCraft3;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Common;
-using CustomCraft2SML.Interfaces.InternalUse;
-using CustomCraft2SML.Serialization;
-using CustomCraft2SML.Serialization.Entries;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Interfaces.InternalUse;
+using CustomCraft3.Serialization;
+using CustomCraft3.Serialization.Entries;
+using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
 
 internal static class WorkingFileParser
@@ -70,7 +70,7 @@ internal static class WorkingFileParser
         QuickLogger.Debug($"Validating entries - Second Pass");
         MasterUniquenessValidation();
 
-        QuickLogger.Debug($"Sending requests to SMLHelper");
+        QuickLogger.Debug($"Sending requests to Nautilus");
         foreach (IParsingPackage package in OrderedPackages)
             package.SendToSMLHelper();
     }

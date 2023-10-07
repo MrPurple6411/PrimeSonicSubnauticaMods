@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Serialization.Components;
+﻿namespace CustomCraft3.Serialization.Components;
 
 using System.Collections.Generic;
 using EasyMarkup;

@@ -1,10 +1,10 @@
 ﻿namespace CustomCraftSMLTests;
 
 using System;
-using CustomCraft2SML.Serialization;
-using CustomCraft2SML.Serialization.Components;
-using CustomCraft2SML.Serialization.Entries;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Serialization;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Entries;
+using CustomCraft3.Serialization.Lists;
 using NUnit.Framework;
 
 [TestFixture]

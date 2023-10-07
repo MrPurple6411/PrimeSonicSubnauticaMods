@@ -1,9 +1,10 @@
-﻿namespace CustomCraft2SML.Serialization.Components;
+﻿namespace CustomCraft3.Serialization.Components;
 
 using System.Collections.Generic;
 using Common;
 using EasyMarkup;
 using Nautilus.Crafting;
+using static CraftData;
 
 internal class EmIngredient : EmTechTyped
 {
@@ -70,7 +71,7 @@ internal class EmIngredient : EmTechTyped
         return true;
     }
 
-    public Ingredient ToSMLHelperIngredient()
+    public Ingredient ToIngredient()
     {
         return new Ingredient(this.TechType, this.Required);
     }

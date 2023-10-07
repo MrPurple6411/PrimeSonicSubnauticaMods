@@ -9,7 +9,7 @@ namespace CustomBatteries.Packs
     // It can be as simple as this example right here.
     internal class MyPlugin : IModPluginPack
     {
-        // ProTip: You can load your own sprites directly from PNG files using SMLHelper's ImageUtils class.
+        // ProTip: You can load your own sprites directly from PNG files using Nautilus's ImageUtils class.
         public Atlas.Sprite BatteryIcon => SpriteManager.Get(TechType.Battery);
         public Atlas.Sprite PowerCellIcon => SpriteManager.Get(TechType.PowerCell);
         public string PluginPackName => "Example Plugin";

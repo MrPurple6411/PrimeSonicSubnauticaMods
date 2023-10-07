@@ -3,9 +3,9 @@
 using System;
 using System.Reflection;
 using Common;
-using CustomCraft2SML.Serialization.Components;
-using CustomCraft2SML.Serialization.Entries;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Entries;
+using CustomCraft3.Serialization.Lists;
 using NUnit.Framework;
 
 [TestFixture]
@@ -26,7 +26,7 @@ internal class VModFabricatorFiles
     private const string torpedoesTabID = "TorpedoesModulesCC2";
 
     private static readonly string Today = DateTime.Today.ToString("dd/MMMM/yyyy");
-    private static readonly string CC2Version = QuickLogger.GetAssemblyVersion(Assembly.GetAssembly(typeof(CustomCraft2SML.QPatch)));
+    private static readonly string CC2Version = QuickLogger.GetAssemblyVersion(Assembly.GetAssembly(typeof(CustomCraft3.Plugin)));
 
     [Test]
     public void Generate()

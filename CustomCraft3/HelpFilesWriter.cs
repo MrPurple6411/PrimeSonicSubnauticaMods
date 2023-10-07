@@ -1,13 +1,13 @@
-﻿namespace CustomCraft2SML;
+﻿namespace CustomCraft3;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Common;
-using CustomCraft2SML.Interfaces.InternalUse;
-using CustomCraft2SML.Serialization.Entries;
-using CustomCraft2SML.Serialization.Lists;
+using CustomCraft3.Interfaces.InternalUse;
+using CustomCraft3.Serialization.Entries;
+using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
 
 internal static partial class HelpFilesWriter
@@ -191,9 +191,9 @@ internal static partial class HelpFilesWriter
             ReadMeVersionLine,
             HorizontalLine,
             Environment.NewLine,
-            $"{FileLocations.ModFriendlyName} uses simple text files to send requests to SMLHelper, no coding required",
+            $"{FileLocations.ModFriendlyName} uses simple text files to send requests to Nautilus, no coding required",
             "This can be great for those who have a specific ideas in mind for custom crafts but don't have the means to code",
-            $"{FileLocations.ModFriendlyName} is dedicated to Nexus modder Iw23J, creator of the original Custom Craft mod, ",
+            $"{FileLocations.ModFriendlyName} is dedicated to PrimeSonic who created Custom Craft 2 and to Nexus modder Iw23J, creator of the original Custom Craft mod, ",
             $"who showed us how much we can empower players to take modding into their own hands",
             HorizontalLine,
             Environment.NewLine
@@ -294,7 +294,7 @@ internal static partial class HelpFilesWriter
 
         tutorialLines.Add(HorizontalLine);
         tutorialLines.Add("As of version 1.5, you can include modded items in your custom crafts.");
-        tutorialLines.Add("Most modded items should work, but we can only guarantee compatibility with items created using SMLHelper.");
+        tutorialLines.Add("Most modded items should work, but we can only guarantee compatibility with items created using Nautilus.");
         tutorialLines.Add("To get the ItemID for modded items, consult with the original mod author.");
         tutorialLines.Add(Environment.NewLine);
 

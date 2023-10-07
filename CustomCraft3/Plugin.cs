@@ -1,34 +1,34 @@
-﻿namespace CustomCraft2SML;
+﻿namespace CustomCraft3;
 
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BepInEx;
 using Common;
-using CustomCraft2SML.Serialization;
-using QModManager.API.ModLoading;
+using CustomCraft3.Serialization;
 
-[QModCore]
-public static class QPatch
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInDependency("com.snmodding.nautilus", BepInDependency.DependencyFlags.HardDependency)]
+public class Plugin: BaseUnityPlugin
 {
     private static readonly string version = QuickLogger.GetAssemblyVersion();
 
-    [QModPrePatch]
-    public static void SetUpLogging()
+    static Plugin()
     {
         QuickLogger.Info($"Setting up logging. Version {version}");
 
         if (!Directory.Exists(FileLocations.AssetsFolder))
-            Directory.CreateDirectory(FileLocations.AssetsFolder);
+            _ = Directory.CreateDirectory(FileLocations.AssetsFolder);
 
         if (!Directory.Exists(FileLocations.WorkingFolder))
-            Directory.CreateDirectory(FileLocations.WorkingFolder);
+            _ = Directory.CreateDirectory(FileLocations.WorkingFolder);
 
         CustomCraft2Config.CheckLogLevel();
     }
 
-    [QModPatch]
-    public static void RestoreFiles()
+    public void Awake()
     {
         QuickLogger.Info($"Restoring files. Version {version}");
 
@@ -44,9 +44,7 @@ public static class QPatch
         }
     }
 
-    // Using secret key to ensure that CC2 patches all these requests after all other SMLHelper mods
-    [QModPostPatch("594BAD715C15AC3ABFDA0B394DFF273F")]
-    public static void PatchRequestsFromFiles()
+    public IEnumerator Start()
     {
         QuickLogger.Info($"Started patching. Version {version}");
 
@@ -61,21 +59,23 @@ public static class QPatch
             QuickLogger.Error($"Critical error during file patching");
             throw;
         }
+
+        yield break;
     }
 
     internal static void RestoreAssets()
     {
-        string prefix = "CustomCraft2SML.Assets.";
+        string prefix = "CustomCraft3.Assets.";
 
         var ass = Assembly.GetExecutingAssembly();
         IEnumerable<string> resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
 
         foreach (string resource in resources)
         {
-            string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);
+            string file = resource[(resource[..resource.LastIndexOf(".")].LastIndexOf(".") + 1)..];
 
             if (!Directory.Exists(FileLocations.AssetsFolder))
-                Directory.CreateDirectory(FileLocations.AssetsFolder);
+                _ = Directory.CreateDirectory(FileLocations.AssetsFolder);
 
             string outFile = Path.Combine(FileLocations.AssetsFolder, file);
             if (!File.Exists(outFile))

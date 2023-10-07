@@ -1,14 +1,14 @@
-﻿namespace CustomCraft2SML.Interfaces;
+﻿namespace CustomCraft3.Interfaces;
 
 using System.Collections.Generic;
-using CustomCraft2SML.Serialization.Components;
+using CustomCraft3.Serialization.Components;
 
 internal interface IModifiedRecipe : ITechTyped
 {
     short? AmountCrafted { get; }
     bool ForceUnlockAtStart { get; }
 
-    IList<EmIngredient> Ingredients { get; }
+    IList<EmIngredient> EmIngredients { get; }
     IList<string> LinkedItemIDs { get; }
     IList<string> Unlocks { get; }
     IList<string> UnlockedBy { get; }

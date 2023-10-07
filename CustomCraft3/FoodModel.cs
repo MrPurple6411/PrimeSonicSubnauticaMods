@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML;
+﻿namespace CustomCraft3;
 
 public enum FoodModel
 {
@@ -6,7 +6,7 @@ public enum FoodModel
     BigFilteredWater = TechType.BigFilteredWater,
     DisinfectedWater = TechType.DisinfectedWater,
     FilteredWater = TechType.FilteredWater,
-    StillsuitWater = TechType.StillsuitWater,
+    WaterFiltrationSuitWater = TechType.WaterFiltrationSuitWater,
     BulboTreePiece = TechType.BulboTreePiece,
     PurpleVegetable = TechType.PurpleVegetable,
     CreepvinePiece = TechType.CreepvinePiece,

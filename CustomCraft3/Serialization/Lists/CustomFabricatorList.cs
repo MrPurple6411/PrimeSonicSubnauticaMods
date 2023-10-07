@@ -1,6 +1,6 @@
-﻿namespace CustomCraft2SML.Serialization.Lists;
+﻿namespace CustomCraft3.Serialization.Lists;
 
-using CustomCraft2SML.Serialization.Entries;
+using CustomCraft3.Serialization.Entries;
 using EasyMarkup;
 
 internal class CustomFabricatorList : EmPropertyCollectionList<CustomFabricator>
