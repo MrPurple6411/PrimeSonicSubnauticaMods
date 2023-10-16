@@ -245,7 +245,7 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
         return ingredientsValid;
     }
 
-    public virtual bool SendToSMLHelper()
+    public virtual bool SendToNautilus()
     {
         try
         {

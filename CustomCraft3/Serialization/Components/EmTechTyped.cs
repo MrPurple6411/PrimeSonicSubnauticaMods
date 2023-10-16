@@ -67,7 +67,7 @@ internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
         }
 
         //  Not one of the known TechTypes - is it registered with Nautilus?
-        if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
+        if (EnumHandler.TryGetValue(value, out TechType custom))
         {
             return custom;
         }

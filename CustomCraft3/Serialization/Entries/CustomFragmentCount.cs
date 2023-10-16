@@ -63,7 +63,7 @@ internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount, ICustomC
         return new CustomFragmentCount(this.Key, this.CopyDefinitions);
     }
 
-    public bool SendToSMLHelper()
+    public bool SendToNautilus()
     {
         try
         {

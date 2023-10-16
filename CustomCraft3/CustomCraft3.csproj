@@ -65,7 +65,6 @@
     </Content>
     <EmbeddedResource Include="Assets\MoonPool.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
 </Project>

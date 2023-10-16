@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using System;
 using CustomCraft3.Serialization;
@@ -31,11 +31,11 @@ internal class CustomFabricatorTests
         Assert.AreEqual(originalFabricator.DisplayName, parsedFabricator.DisplayName);
         Assert.AreEqual(originalFabricator.Tooltip, parsedFabricator.Tooltip);
 
-        Assert.AreEqual(originalFabricator.Ingredients.Count, parsedFabricator.Ingredients.Count);
-        Assert.AreEqual(originalFabricator.Ingredients[0].ItemID, parsedFabricator.Ingredients[0].ItemID);
-        Assert.AreEqual(originalFabricator.Ingredients[0].Required, parsedFabricator.Ingredients[0].Required);
-        Assert.AreEqual(originalFabricator.Ingredients[1].ItemID, parsedFabricator.Ingredients[1].ItemID);
-        Assert.AreEqual(originalFabricator.Ingredients[1].Required, parsedFabricator.Ingredients[1].Required);
+        Assert.AreEqual(originalFabricator.EmIngredients.Count, parsedFabricator.EmIngredients.Count);
+        Assert.AreEqual(originalFabricator.EmIngredients[0].ItemID, parsedFabricator.EmIngredients[0].ItemID);
+        Assert.AreEqual(originalFabricator.EmIngredients[0].Required, parsedFabricator.EmIngredients[0].Required);
+        Assert.AreEqual(originalFabricator.EmIngredients[1].ItemID, parsedFabricator.EmIngredients[1].ItemID);
+        Assert.AreEqual(originalFabricator.EmIngredients[1].Required, parsedFabricator.EmIngredients[1].Required);
 
         Assert.AreEqual(originalFabricator.ForceUnlockAtStart, parsedFabricator.ForceUnlockAtStart);
         Assert.AreEqual(originalFabricator.PdaCategory, parsedFabricator.PdaCategory);
@@ -51,10 +51,10 @@ internal class CustomFabricatorTests
         Assert.AreEqual(originalFabricator.AddedRecipes[0].AmountCrafted, parsedFabricator.AddedRecipes[0].AmountCrafted);
         Assert.AreEqual(originalFabricator.AddedRecipes[0].ForceUnlockAtStart, parsedFabricator.AddedRecipes[0].ForceUnlockAtStart);
         Assert.AreEqual(originalFabricator.AddedRecipes[0].Path, parsedFabricator.AddedRecipes[0].Path);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[0].ItemID, parsedFabricator.AddedRecipes[0].Ingredients[0].ItemID);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[0].Required, parsedFabricator.AddedRecipes[0].Ingredients[0].Required);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[1].ItemID, parsedFabricator.AddedRecipes[0].Ingredients[1].ItemID);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[1].Required, parsedFabricator.AddedRecipes[0].Ingredients[1].Required);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[0].ItemID, parsedFabricator.AddedRecipes[0].EmIngredients[0].ItemID);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[0].Required, parsedFabricator.AddedRecipes[0].EmIngredients[0].Required);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[1].ItemID, parsedFabricator.AddedRecipes[0].EmIngredients[1].ItemID);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[1].Required, parsedFabricator.AddedRecipes[0].EmIngredients[1].Required);
 
         string parsedSerialized = parsedFabricator.PrettyPrint();
         Console.WriteLine(parsedSerialized);
@@ -87,11 +87,11 @@ internal class CustomFabricatorTests
         Assert.AreEqual(originalFabricator.DisplayName, parsedFabricator.DisplayName);
         Assert.AreEqual(originalFabricator.Tooltip, parsedFabricator.Tooltip);
 
-        Assert.AreEqual(originalFabricator.Ingredients.Count, parsedFabricator.Ingredients.Count);
-        Assert.AreEqual(originalFabricator.Ingredients[0].ItemID, parsedFabricator.Ingredients[0].ItemID);
-        Assert.AreEqual(originalFabricator.Ingredients[0].Required, parsedFabricator.Ingredients[0].Required);
-        Assert.AreEqual(originalFabricator.Ingredients[1].ItemID, parsedFabricator.Ingredients[1].ItemID);
-        Assert.AreEqual(originalFabricator.Ingredients[1].Required, parsedFabricator.Ingredients[1].Required);
+        Assert.AreEqual(originalFabricator.EmIngredients.Count, parsedFabricator.EmIngredients.Count);
+        Assert.AreEqual(originalFabricator.EmIngredients[0].ItemID, parsedFabricator.EmIngredients[0].ItemID);
+        Assert.AreEqual(originalFabricator.EmIngredients[0].Required, parsedFabricator.EmIngredients[0].Required);
+        Assert.AreEqual(originalFabricator.EmIngredients[1].ItemID, parsedFabricator.EmIngredients[1].ItemID);
+        Assert.AreEqual(originalFabricator.EmIngredients[1].Required, parsedFabricator.EmIngredients[1].Required);
 
         Assert.AreEqual(originalFabricator.ForceUnlockAtStart, parsedFabricator.ForceUnlockAtStart);
         Assert.AreEqual(originalFabricator.PdaCategory, parsedFabricator.PdaCategory);
@@ -107,10 +107,10 @@ internal class CustomFabricatorTests
         Assert.AreEqual(originalFabricator.AddedRecipes[0].AmountCrafted, parsedFabricator.AddedRecipes[0].AmountCrafted);
         Assert.AreEqual(originalFabricator.AddedRecipes[0].ForceUnlockAtStart, parsedFabricator.AddedRecipes[0].ForceUnlockAtStart);
         Assert.AreEqual(originalFabricator.AddedRecipes[0].Path, parsedFabricator.AddedRecipes[0].Path);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[0].ItemID, parsedFabricator.AddedRecipes[0].Ingredients[0].ItemID);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[0].Required, parsedFabricator.AddedRecipes[0].Ingredients[0].Required);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[1].ItemID, parsedFabricator.AddedRecipes[0].Ingredients[1].ItemID);
-        Assert.AreEqual(originalFabricator.AddedRecipes[0].Ingredients[1].Required, parsedFabricator.AddedRecipes[0].Ingredients[1].Required);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[0].ItemID, parsedFabricator.AddedRecipes[0].EmIngredients[0].ItemID);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[0].Required, parsedFabricator.AddedRecipes[0].EmIngredients[0].Required);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[1].ItemID, parsedFabricator.AddedRecipes[0].EmIngredients[1].ItemID);
+        Assert.AreEqual(originalFabricator.AddedRecipes[0].EmIngredients[1].Required, parsedFabricator.AddedRecipes[0].EmIngredients[1].Required);
 
         string parsedSerialized = parsingList.PrettyPrint();
         Console.WriteLine(parsedSerialized);
@@ -127,7 +127,7 @@ internal class CustomFabricatorTests
             ItemID = fabricatorID,
             DisplayName = "Simple Decorations Fabricator",
             Tooltip = "A sample fabricator for creating the game's original decorations",
-            Ingredients =
+            EmIngredients =
             {
                 new EmIngredient(TechType.ComputerChip),
                 new EmIngredient(TechType.Titanium, 2),
@@ -153,7 +153,7 @@ internal class CustomFabricatorTests
                     ItemID = TechType.LabEquipment1.ToString(),
                     AmountCrafted = 1,
                     ForceUnlockAtStart = true,
-                    Ingredients =
+                    EmIngredients =
                     {
                         new EmIngredient(TechType.Glass),
                         new EmIngredient(TechType.Titanium),

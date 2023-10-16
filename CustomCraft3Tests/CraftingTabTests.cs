@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using System;
 using CustomCraft3.Serialization.Entries;

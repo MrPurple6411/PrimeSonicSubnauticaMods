@@ -56,11 +56,11 @@ internal class CustomBioFuel : EmTechTyped, ICustomBioFuel, ICustomCraft
         return new CustomBioFuel(this.Key, this.CopyDefinitions);
     }
 
-    public bool SendToSMLHelper()
+    public bool SendToNautilus()
     {
         try
         {
-            BioReactorHandler.SetBioReactorCharge(this.TechType, this.Energy);
+            BaseBioReactor.charge[this.TechType] = this.Energy;
             QuickLogger.Debug($"'{this.ItemID}' now provides {this.Energy} energy in the BioReactor - Entry from {this.Origin}");
             return true;
         }

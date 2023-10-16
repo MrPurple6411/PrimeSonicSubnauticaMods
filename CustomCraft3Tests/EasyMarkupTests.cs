@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using System.Collections.Generic;
 using EasyMarkup;
@@ -70,7 +70,7 @@ public class EasyMarkupTests
         {
         }
 
-        internal override EmProperty Copy()
+        public override EmProperty Copy()
         {
             return new TestSimpleCollection(this.Key, this.CopyDefinitions);
         }

@@ -85,7 +85,7 @@ internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
         return new AddedRecipe(this.Key, this.CopyDefinitions);
     }
 
-    public override bool SendToSMLHelper()
+    public override bool SendToNautilus()
     {
         try
         {

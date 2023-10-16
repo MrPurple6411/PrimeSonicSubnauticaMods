@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using System;
 using System.Collections;

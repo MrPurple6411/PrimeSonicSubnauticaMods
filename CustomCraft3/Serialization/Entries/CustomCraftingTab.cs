@@ -144,7 +144,7 @@ internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCr
         return true;
     }
 
-    public virtual bool SendToSMLHelper()
+    public virtual bool SendToNautilus()
     {
         try
         {

@@ -97,7 +97,7 @@ internal class CustomSize : EmTechTyped, ICustomSize, ICustomCraft
         return true;
     }
 
-    public bool SendToSMLHelper()
+    public bool SendToNautilus()
     {
         try
         {

@@ -7,7 +7,7 @@ internal interface ICustomCraft
     string ID { get; }
     bool PassesPreValidation(OriginFile originFile);
     bool PassedSecondValidation { get; }
-    bool SendToSMLHelper();
+    bool SendToNautilus();
 
     OriginFile Origin { get; set; }
     string[] TutorialText { get; }

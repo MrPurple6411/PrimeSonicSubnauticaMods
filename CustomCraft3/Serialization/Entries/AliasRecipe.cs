@@ -7,6 +7,8 @@ using Common;
 using CustomCraft3.Interfaces;
 using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
+using Nautilus.Assets;
+using Nautilus.Assets.PrefabTemplates;
 using Nautilus.Handlers;
 using Nautilus.Utility;
 using UnityEngine;
@@ -74,6 +76,9 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
 
     public TechType FunctionalCloneID { get; private set; }
 
+    public PrefabInfo Info { get; protected set; }
+    public CustomPrefab CustomPrefab { get; protected set; }
+
     protected static List<EmProperty> AliasRecipeProperties => new List<EmProperty>(AddedRecipeProperties)
     {
         new EmProperty<string>(DisplayNameKey),
@@ -111,15 +116,15 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
     protected bool ItemIDisUnique()
     {
         // Alias Recipes must request their techtype be added during the validation step
-        TechType techtype = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+        Info = PrefabInfo.WithTechType(this.ItemID, this.DisplayName, this.Tooltip, "English", this.ForceUnlockAtStart);
 
-        if (techtype == TechType.None)
+        if (Info.TechType == TechType.None)
         {
             QuickLogger.Warning($"Unable to create new TechType with {ItemIdKey} value '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey}. Entry will be discarded.");
             return false;
         }
 
-        this.TechType = techtype;
+        this.TechType = Info.TechType;
         return true;
     }
 
@@ -140,7 +145,7 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
         return true;
     }
 
-    public override bool SendToSMLHelper()
+    public override bool SendToNautilus()
     {
         try
         {
@@ -200,8 +205,11 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
     {
         if (this.FunctionalCloneID != TechType.None)
         {
-            var clone = new FunctionalClone(this, this.FunctionalCloneID);
-            PrefabHandler.RegisterPrefab(clone);
+            CustomPrefab = new CustomPrefab(Info);
+            var foodPrefab = new CloneTemplate(Info, FunctionalCloneID);
+            CustomPrefab.SetGameObject(foodPrefab);
+            CustomPrefab.Register();
+
             QuickLogger.Debug($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using System.IO;
 using CustomCraft3.Serialization.Components;
@@ -14,7 +14,16 @@ internal class SampleFileTests
         get
         {
             string path = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            return Directory.GetParent(path).FullName + "/CustomCraft3/SampleFiles/";
+            return Directory.GetParent(path).FullName + "/CustomCraftTests/SampleFiles/";
+        }
+    }
+
+    [SetUp]
+    public void Setup()
+    {
+        if(!Directory.Exists(SampleFileDirectory))
+        {
+            Directory.CreateDirectory(SampleFileDirectory);
         }
     }
 
@@ -22,6 +31,12 @@ internal class SampleFileTests
     public void Sample_CustomSizes_Ok()
     {
         var cSizes = new CustomSizeList();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
+
+        string path = SampleFileDirectory + "CustomSizes_Samples.txt";
+
+        Assert.IsTrue(File.Exists(path));
 
         string sample = File.ReadAllText(SampleFileDirectory + "CustomSizes_Samples.txt");
 
@@ -34,6 +49,12 @@ internal class SampleFileTests
     {
         var mRecipes = new ModifiedRecipeList();
 
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
+
+        string path = SampleFileDirectory + "ModifiedRecipes_Samples.txt";
+
+        Assert.IsTrue(File.Exists(path));
+
         string sample = File.ReadAllText(SampleFileDirectory + "ModifiedRecipes_Samples.txt");
 
         bool result = mRecipes.FromString(sample);
@@ -41,7 +62,7 @@ internal class SampleFileTests
 
         ModifiedRecipe reactorRodChange = mRecipes[2];
         Assert.AreEqual(TechType.ReactorRod.ToString(), reactorRodChange.ItemID);
-        Assert.AreEqual(false, reactorRodChange.Ingredients.Count > 0);
+        Assert.AreEqual(false, reactorRodChange.EmIngredients.Count > 0);
         Assert.AreEqual(false, reactorRodChange.LinkedItemIDs.Count > 0);
 
         Assert.AreEqual(1, reactorRodChange.Unlocks.Count);
@@ -53,7 +74,13 @@ internal class SampleFileTests
     {
         var aRecipes = new AddedRecipeList();
 
-        string sample = File.ReadAllText(SampleFileDirectory + "AddedRecipes_Samples.txt");
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
+
+        string path = SampleFileDirectory + "AddedRecipes_Samples.txt";
+
+        Assert.IsTrue(File.Exists(path));
+
+        string sample = File.ReadAllText(path);
 
         bool result = aRecipes.FromString(sample);
         Assert.IsTrue(result);
@@ -63,6 +90,12 @@ internal class SampleFileTests
     public void Sample_BioFuels_Ok()
     {
         var cFuels = new CustomBioFuelList();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
+
+        string path = SampleFileDirectory + "CustomBioFuels_Samples.txt";
+
+        Assert.IsTrue(File.Exists(path));
 
         string sample = File.ReadAllText(SampleFileDirectory + "CustomBioFuels_Samples.txt");
 
@@ -74,6 +107,12 @@ internal class SampleFileTests
     public void Sample_CustomTabs_Ok()
     {
         var cTabs = new CustomCraftingTabList();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
+
+        string path = SampleFileDirectory + "CustomTab_Samples.txt";
+
+        Assert.IsTrue(File.Exists(path));
 
         string sample = File.ReadAllText(SampleFileDirectory + "CustomTab_Samples.txt");
 
@@ -90,7 +129,7 @@ internal class SampleFileTests
             AmountCrafted = 1,
             ForceUnlockAtStart = false,
             Path = "Fabricator/Survival/CuredFood",
-            Ingredients =
+            EmIngredients =
             {
                 new EmIngredient(TechType.CuredReginald, 1),
                 new EmIngredient(TechType.PurpleVegetable, 1),
@@ -104,7 +143,7 @@ internal class SampleFileTests
             AmountCrafted = 1,
             Path = "Fabricator/Survival/Water",
             ForceUnlockAtStart = false,
-            Ingredients =
+            EmIngredients =
             {
                 new EmIngredient(TechType.FilteredWater, 2)
             }
@@ -117,6 +156,8 @@ internal class SampleFileTests
         };
 
         string serialized = origRecipeList.PrettyPrint();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
 
         string samples2File = SampleFileDirectory + "AddedRecipes_Samples2.txt";
 
@@ -137,13 +178,13 @@ internal class SampleFileTests
         Assert.AreEqual(nutrientBlock.ItemID, nutrientBlockRecipe.ItemID);
         Assert.AreEqual(nutrientBlock.AmountCrafted, nutrientBlockRecipe.AmountCrafted);
         Assert.AreEqual(nutrientBlock.Path, nutrientBlockRecipe.Path);
-        Assert.AreEqual(nutrientBlock.Ingredients.Count, nutrientBlockRecipe.Ingredients.Count);
-        Assert.AreEqual(nutrientBlock.Ingredients[0].ItemID, nutrientBlockRecipe.Ingredients[0].ItemID);
-        Assert.AreEqual(nutrientBlock.Ingredients[1].ItemID, nutrientBlockRecipe.Ingredients[1].ItemID);
-        Assert.AreEqual(nutrientBlock.Ingredients[2].ItemID, nutrientBlockRecipe.Ingredients[2].ItemID);
-        Assert.AreEqual(nutrientBlock.Ingredients[0].Required, nutrientBlockRecipe.Ingredients[0].Required);
-        Assert.AreEqual(nutrientBlock.Ingredients[1].Required, nutrientBlockRecipe.Ingredients[1].Required);
-        Assert.AreEqual(nutrientBlock.Ingredients[2].Required, nutrientBlockRecipe.Ingredients[2].Required);
+        Assert.AreEqual(nutrientBlock.EmIngredients.Count, nutrientBlockRecipe.EmIngredients.Count);
+        Assert.AreEqual(nutrientBlock.EmIngredients[0].ItemID, nutrientBlockRecipe.EmIngredients[0].ItemID);
+        Assert.AreEqual(nutrientBlock.EmIngredients[1].ItemID, nutrientBlockRecipe.EmIngredients[1].ItemID);
+        Assert.AreEqual(nutrientBlock.EmIngredients[2].ItemID, nutrientBlockRecipe.EmIngredients[2].ItemID);
+        Assert.AreEqual(nutrientBlock.EmIngredients[0].Required, nutrientBlockRecipe.EmIngredients[0].Required);
+        Assert.AreEqual(nutrientBlock.EmIngredients[1].Required, nutrientBlockRecipe.EmIngredients[1].Required);
+        Assert.AreEqual(nutrientBlock.EmIngredients[2].Required, nutrientBlockRecipe.EmIngredients[2].Required);
         Assert.AreEqual(nutrientBlock.Unlocks.Count, nutrientBlockRecipe.Unlocks.Count);
         Assert.AreEqual(nutrientBlock.ForceUnlockAtStart, nutrientBlockRecipe.ForceUnlockAtStart);
         Assert.AreEqual("Fabricator/Survival/CuredFood", nutrientBlockRecipe.Path);
@@ -153,9 +194,9 @@ internal class SampleFileTests
         Assert.AreEqual(bigFilteredWater.ItemID, bigFilterWaterRecipe.ItemID);
         Assert.AreEqual(bigFilteredWater.AmountCrafted, bigFilterWaterRecipe.AmountCrafted);
         Assert.AreEqual(bigFilteredWater.Path, bigFilterWaterRecipe.Path);
-        Assert.AreEqual(bigFilteredWater.Ingredients.Count, bigFilterWaterRecipe.Ingredients.Count);
-        Assert.AreEqual(bigFilteredWater.Ingredients[0].ItemID, bigFilterWaterRecipe.Ingredients[0].ItemID);
-        Assert.AreEqual(bigFilteredWater.Ingredients[0].Required, bigFilterWaterRecipe.Ingredients[0].Required);
+        Assert.AreEqual(bigFilteredWater.EmIngredients.Count, bigFilterWaterRecipe.EmIngredients.Count);
+        Assert.AreEqual(bigFilteredWater.EmIngredients[0].ItemID, bigFilterWaterRecipe.EmIngredients[0].ItemID);
+        Assert.AreEqual(bigFilteredWater.EmIngredients[0].Required, bigFilterWaterRecipe.EmIngredients[0].Required);
         Assert.AreEqual(bigFilteredWater.Unlocks.Count, bigFilterWaterRecipe.Unlocks.Count);
         Assert.AreEqual(bigFilteredWater.ForceUnlockAtStart, bigFilterWaterRecipe.ForceUnlockAtStart);
     }
@@ -167,7 +208,7 @@ internal class SampleFileTests
         {
             ItemID = TechType.CuredReginald.ToString(),
             AmountCrafted = 1,
-            Ingredients =
+            EmIngredients =
             {
                 new EmIngredient(TechType.Reginald.ToString(), 1),
                 new EmIngredient(TechType.Salt.ToString(), 1)
@@ -184,6 +225,8 @@ internal class SampleFileTests
         };
 
         string serialized = origRecipeList.PrettyPrint();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
 
         string samples2File = SampleFileDirectory + "ModifiedRecipes_Samples2.txt";
 
@@ -203,15 +246,14 @@ internal class SampleFileTests
         ModifiedRecipe curedReginald = origRecipeList[0];
         Assert.AreEqual(curedReginald.ItemID, curedReginaldRecipe.ItemID);
         Assert.AreEqual(curedReginald.AmountCrafted, curedReginaldRecipe.AmountCrafted);
-        Assert.AreEqual(curedReginald.Ingredients.Count, curedReginaldRecipe.Ingredients.Count);
-        Assert.AreEqual(curedReginald.Ingredients[0].ItemID, curedReginaldRecipe.Ingredients[0].ItemID);
-        Assert.AreEqual(curedReginald.Ingredients[1].ItemID, curedReginaldRecipe.Ingredients[1].ItemID);
-        Assert.AreEqual(curedReginald.Ingredients[0].Required, curedReginaldRecipe.Ingredients[0].Required);
-        Assert.AreEqual(curedReginald.Ingredients[1].Required, curedReginaldRecipe.Ingredients[1].Required);
+        Assert.AreEqual(curedReginald.EmIngredients.Count, curedReginaldRecipe.EmIngredients.Count);
+        Assert.AreEqual(curedReginald.EmIngredients[0].ItemID, curedReginaldRecipe.EmIngredients[0].ItemID);
+        Assert.AreEqual(curedReginald.EmIngredients[1].ItemID, curedReginaldRecipe.EmIngredients[1].ItemID);
+        Assert.AreEqual(curedReginald.EmIngredients[0].Required, curedReginaldRecipe.EmIngredients[0].Required);
+        Assert.AreEqual(curedReginald.EmIngredients[1].Required, curedReginaldRecipe.EmIngredients[1].Required);
         Assert.AreEqual(curedReginald.ForceUnlockAtStart, curedReginaldRecipe.ForceUnlockAtStart);
         Assert.AreEqual(curedReginald.Unlocks.Count, curedReginaldRecipe.Unlocks.Count);
         Assert.AreEqual(curedReginald.Unlocks[0], curedReginaldRecipe.Unlocks[0]);
-
 
     }
 
@@ -247,6 +289,8 @@ internal class SampleFileTests
         };
 
         string serialized = origCustSizes.PrettyPrint();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
 
         string samples2File = SampleFileDirectory + "CustomSizes_Samples2.txt";
 
@@ -301,6 +345,8 @@ internal class SampleFileTests
         };
 
         string serialized = origCustomFragList.PrettyPrint();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
 
         string samples2File = SampleFileDirectory + "CustomFragments_Samples2.txt";
 
@@ -362,6 +408,8 @@ internal class SampleFileTests
         };
 
         string serialized = origMovedRepList.PrettyPrint();
+
+        Assert.IsTrue(Directory.Exists(SampleFileDirectory));
 
         string samples2File = SampleFileDirectory + "MovedRecipes_Samples2.txt";
 

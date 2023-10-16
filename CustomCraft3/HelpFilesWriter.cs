@@ -267,7 +267,6 @@ internal static partial class HelpFilesWriter
         tutorialLines.Add(HorizontalLine);
         tutorialLines.Add(Environment.NewLine);
         tutorialLines.Add("Version 1.9 makes changes to CustomFoods");
-        tutorialLines.Add("AllowOverfill has been removed from CustomFoods as it is no longer enabled by the game");
         tutorialLines.Add("Added UseDrinkSound as a YES/NO entry so that the drinking sound effect is used over the eat sound effect");
         tutorialLines.Add("Corrections made to the documentation of Custom tabs and BioFuel");
 

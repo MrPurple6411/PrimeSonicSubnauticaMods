@@ -69,7 +69,7 @@ internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPac
             QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
     }
 
-    public void SendToSMLHelper()
+    public void SendToNautilus()
     {
         int successCount = 0;
         foreach (CustomCraftEntry item in this.UniqueEntries.Values)
@@ -78,7 +78,7 @@ internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPac
             {
                 QuickLogger.Warning($"Entry for '{item.ID}' from file '{item.Origin}' failed secondary checks for duplicate IDs. It will not be patched.");
             }
-            else if (item.SendToSMLHelper())
+            else if (item.SendToNautilus())
             {
                 successCount++;
             }

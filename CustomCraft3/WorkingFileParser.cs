@@ -72,7 +72,7 @@ internal static class WorkingFileParser
 
         QuickLogger.Debug($"Sending requests to Nautilus");
         foreach (IParsingPackage package in OrderedPackages)
-            package.SendToSMLHelper();
+            package.SendToNautilus();
     }
 
     private static int DeserializeFile(string workingFilePath)

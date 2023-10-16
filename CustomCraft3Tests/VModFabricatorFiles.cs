@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using System;
 using System.Reflection;
@@ -26,7 +26,7 @@ internal class VModFabricatorFiles
     private const string torpedoesTabID = "TorpedoesModulesCC2";
 
     private static readonly string Today = DateTime.Today.ToString("dd/MMMM/yyyy");
-    private static readonly string CC2Version = QuickLogger.GetAssemblyVersion(Assembly.GetAssembly(typeof(CustomCraft3.Plugin)));
+    private static readonly string CC2Version = QuickLogger.GetAssemblyVersion();
 
     [Test]
     public void Generate()
@@ -43,7 +43,7 @@ internal class VModFabricatorFiles
             AllowedInBase = true,
             AllowedInCyclops = true,
             Model = ModelTypes.MoonPool,
-            Ingredients =
+            EmIngredients =
             {
                 new EmIngredient(TechType.Titanium, 2),
                 new EmIngredient(TechType.ComputerChip),

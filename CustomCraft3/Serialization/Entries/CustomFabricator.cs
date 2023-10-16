@@ -4,12 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Common;
-using CustomCraft3.Fabricators;
 using CustomCraft3.Interfaces;
 using CustomCraft3.Interfaces.InternalUse;
 using CustomCraft3.Serialization.Components;
 using CustomCraft3.Serialization.Lists;
 using EasyMarkup;
+using Nautilus.Assets.PrefabTemplates;
+using Nautilus.Assets;
 using Nautilus.Crafting;
 using Nautilus.Handlers;
 using Nautilus.Utility;
@@ -17,14 +18,10 @@ using UnityEngine;
 using IOPath = System.IO.Path;
 #if SUBNAUTICA
 using Sprite = Atlas.Sprite;
+using UnityEngine.AddressableAssets;
+using Nautilus.Extensions;
 #endif
-
-public enum ModelTypes
-{
-    Fabricator,
-    Workbench,
-    MoonPool,
-}
+using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
 
 internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
 {
@@ -45,8 +42,8 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
         $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
         $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
-        $"        Valid options are: {ModelTypes.Fabricator}|{ModelTypes.MoonPool}|{ModelTypes.Workbench}",
-        $"        This property is optional. Defaults to {ModelTypes.Fabricator}.",
+        $"        Valid options are: {Model.Fabricator}|{Model.MoonPool}|{Model.Workbench}",
+        $"        This property is optional. Defaults to {Model.Fabricator}.",
         $"    {ColorTintKey}: This optional property lets you apply a color tint over your fabricator.",
         $"        This value is a list of floating point numbers.",
         $"        Use three numbers to set the value as RGB. Example: 1.0, 0.64, 0.0 makes an orange color.",
@@ -65,14 +62,14 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         $"        {CfCustomFoodListKey}: List of custom foods for the custom fabricator.",
     };
 
-    protected readonly EmProperty<ModelTypes> model;
+    protected readonly EmProperty<Model> model;
     protected readonly EmColorRGB colortint;
     protected readonly EmYesNo allowedInBase;
     protected readonly EmYesNo allowedInCyclops;
 
     protected static List<EmProperty> CustomFabricatorProperties => new List<EmProperty>(AliasRecipeProperties)
     {
-        new EmProperty<ModelTypes>(ModelKey, ModelTypes.Fabricator),
+        new EmProperty<Model>(ModelKey, Model.Fabricator),
         new EmColorRGB(ColorTintKey) { Optional = true },
         new EmYesNo(AllowedInBaseKey, true) { Optional = true },
         new EmYesNo(AllowedInCyclopsKey, true) { Optional = true },
@@ -89,7 +86,7 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
     protected CustomFabricator(string key, ICollection<EmProperty> definitions) : base(key, definitions)
     {
-        model = (EmProperty<ModelTypes>)Properties[ModelKey];
+        model = (EmProperty<Model>)Properties[ModelKey];
         colortint = (EmColorRGB)Properties[ColorTintKey];
         allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
         allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
@@ -102,7 +99,7 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         path.Optional = true;
     }
 
-    public ModelTypes Model
+    public Model Model
     {
         get => model.Value;
         set => model.Value = value;
@@ -158,12 +155,12 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
     {
         switch (this.Model)
         {
-            case ModelTypes.Fabricator:
-            case ModelTypes.Workbench:
-            case ModelTypes.MoonPool:
+            case Model.Fabricator:
+            case Model.Workbench:
+            case Model.MoonPool:
                 break;
             default:
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}|{Model.MoonPool}");
                 return false;
         }
 
@@ -201,18 +198,18 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
     internal void StartCustomCraftingTree()
     {
-        this.RootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ItemID, out CraftTree.Type craftType);
-        this.TreeTypeID = craftType;
+        this.TreeTypeID = EnumHandler.AddEntry<CraftTree.Type>(ItemID).CreateCraftTreeRoot(out var root);
+        this.RootNode = root;
         CraftTreePath.CraftTreeLookup[this.ItemID] = this.TreeTypeID;
     }
 
     internal void FinishCustomCraftingTree()
     {
-        SendToSMLHelper(this.UniqueCustomTabs);
-        SendToSMLHelper(this.UniqueAddedRecipes);
-        SendToSMLHelper(this.UniqueAliasRecipes);
-        SendToSMLHelper(this.UniqueMovedRecipes);
-        SendToSMLHelper(this.UniqueCustomFoods);
+        SendToNautilus(this.UniqueCustomTabs);
+        SendToNautilus(this.UniqueAddedRecipes);
+        SendToNautilus(this.UniqueAliasRecipes);
+        SendToNautilus(this.UniqueMovedRecipes);
+        SendToNautilus(this.UniqueCustomFoods);
     }
 
     internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
@@ -270,13 +267,13 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
             QuickLogger.Info($"{uniqueEntries.Count} of {collectionList.Count} {this.Key}:{typeof(CustomCraftEntry).Name} entries for {this.Key} staged for patching");
     }
 
-    internal void SendToSMLHelper<CustomCraftEntry>(IDictionary<string, CustomCraftEntry> uniqueEntries)
+    internal void SendToNautilus<CustomCraftEntry>(IDictionary<string, CustomCraftEntry> uniqueEntries)
         where CustomCraftEntry : ICustomCraft
     {
         int successCount = 0;
         foreach (CustomCraftEntry item in uniqueEntries.Values)
         {
-            if (item.SendToSMLHelper())
+            if (item.SendToNautilus())
                 successCount++;
         }
 
@@ -291,7 +288,30 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
         StartCustomCraftingTree();
 
-        PrefabHandler.RegisterPrefab(new CustomFabricatorBuildable(this));
+        CustomPrefab = new CustomPrefab(Info);
+
+        FabricatorTemplate prefab = new FabricatorTemplate(Info, TreeTypeID) 
+        {
+            FabricatorModel = Model,
+            ColorTint = ColorTint,
+        };
+
+        prefab.ModifyPrefab += (obj) => {
+
+            Constructable constructible = obj.GetComponent<Constructable>();
+            constructible.allowedInBase = AllowedInBase;
+            constructible.allowedInSub = AllowedInCyclops;
+            constructible.allowedOutside = false;
+            constructible.allowedOnCeiling = false;
+            constructible.allowedOnGround = Model == Model.Workbench;
+            constructible.allowedOnWall = Model != Model.Workbench;
+            constructible.allowedOnConstructables = false;
+            constructible.controlModelState = true;
+            constructible.rotationEnabled = false;
+        };
+
+        CustomPrefab.SetGameObject(prefab);
+        CustomPrefab.Register();
 
         FinishCustomCraftingTree();
     }
@@ -311,13 +331,13 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
             QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");
             switch (this.Model)
             {
-                case ModelTypes.Fabricator:
+                case Model.Fabricator:
                     sprite = SpriteManager.Get(TechType.Fabricator);
                     break;
-                case ModelTypes.Workbench:
+                case Model.Workbench:
                     sprite = SpriteManager.Get(TechType.Workbench);
                     break;
-                case ModelTypes.MoonPool:
+                case Model.MoonPool:
                     imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
                     sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                     break;

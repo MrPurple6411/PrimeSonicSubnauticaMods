@@ -7,11 +7,12 @@ using Common;
 using CustomCraft3.Interfaces;
 using CustomCraft3.Interfaces.InternalUse;
 using CustomCraft3.Serialization.Lists;
-using CustomCraft3.SMLHelperItems;
 using EasyMarkup;
 using Nautilus.Handlers;
 using Nautilus.Utility;
 using IOPath = System.IO.Path;
+using Nautilus.Assets.PrefabTemplates;
+using Nautilus.Assets;
 
 internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
 {
@@ -107,7 +108,6 @@ internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
     protected readonly EmProperty<short> foodValue;
     protected readonly EmProperty<short> waterValue;
     protected readonly EmProperty<float> decayrate;
-    protected readonly EmYesNo allowOverfill;
     protected readonly EmYesNo useDrinkSound;
 
     public FoodModel FoodType
@@ -305,7 +305,22 @@ internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
         if (this.TechType == TechType.None)
             throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
 
-        PrefabHandler.RegisterPrefab(new CustomFoodPrefab(this));
+        Info = new PrefabInfo(ItemID, $"{ItemID}Prefab", TechType);
+        CustomPrefab = new CustomPrefab(Info);
+
+        var foodPrefab = new CloneTemplate(Info, FoodPrefab);
+        foodPrefab.ModifyPrefab += (obj) => {
+            Eatable eatable = obj.EnsureComponent<Eatable>();
+
+            eatable.foodValue = FoodValue;
+            eatable.waterValue = WaterValue;
+            eatable.decomposes = Decomposes;
+            eatable.kDecayRate = DecayRateMod * 0.015f;
+        };
+
+        CustomPrefab.SetGameObject(foodPrefab);
+        CustomPrefab.Register();
+
 #if SUBNAUTICA
         if (this.UseDrinkSound)
         {

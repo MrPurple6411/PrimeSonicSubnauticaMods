@@ -133,7 +133,7 @@ internal class MovedRecipe : EmTechTyped, IMovedRecipe, ICustomCraft
         return true;
     }
 
-    public bool SendToSMLHelper()
+    public bool SendToNautilus()
     {
         if (this.Hidden || !this.Copied)
         {

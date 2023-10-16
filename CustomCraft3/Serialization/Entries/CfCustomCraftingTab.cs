@@ -42,7 +42,7 @@ internal class CfCustomCraftingTab : CustomCraftingTab, ICustomFabricatorEntry
         return true;
     }
 
-    public override bool SendToSMLHelper()
+    public override bool SendToNautilus()
     {
         QuickLogger.Debug($"CraftingNodePath for {this.Key} '{this.TabID}' set to {this.ParentTabPath}");
         try

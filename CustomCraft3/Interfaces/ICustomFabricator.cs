@@ -3,6 +3,7 @@
 using CustomCraft3.Serialization.Entries;
 using EasyMarkup;
 using UnityEngine;
+using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
 
 internal interface ICustomFabricator<Tab, Moved, Added, Alias, Food> : IAliasRecipe
     where Tab : EmPropertyCollection, ICraftingTab, new()
@@ -11,7 +12,7 @@ internal interface ICustomFabricator<Tab, Moved, Added, Alias, Food> : IAliasRec
     where Alias : EmPropertyCollection, IAliasRecipe, new()
     where Food : EmPropertyCollection, ICustomFood, new()
 {
-    ModelTypes Model { get; }
+    Model Model { get; }
     Color ColorTint { get; }
     bool AllowedInBase { get; }
     bool AllowedInCyclops { get; }

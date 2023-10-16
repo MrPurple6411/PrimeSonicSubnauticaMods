@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSMLTests;
+﻿namespace CustomCraft3Tests;
 
 using CustomCraft3.Serialization;
 using NUnit.Framework;
