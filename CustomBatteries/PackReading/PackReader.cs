@@ -27,7 +27,14 @@ internal static class PackReader
 
         foreach (IParsedPluginPack pluginPack in GetAllPacks(pluginPacksFolder))
         {
-            customPacks.Add(new TextPluginPack(pluginPack));
+            try
+            {
+                customPacks.Add(new TextPluginPack(pluginPack));
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Error loading plugin pack '{pluginPack.PluginPackName}'", ex);
+            }
         }
 
         if (customPacks.Count == 0)
@@ -42,35 +49,46 @@ internal static class PackReader
         }
     }
 
-    private static IEnumerable<IParsedPluginPack> GetAllPacks(string folderLocation)
+    private static List<IParsedPluginPack> GetAllPacks(string folderLocation)
     {
+        var packs = new List<IParsedPluginPack>();
         // Check all folders
         foreach (string pluginFolder in Directory.GetDirectories(folderLocation))
         {
-            // Find the CustomBatteriesPack.txt file
-            string pluginDataFilePath = Path.Combine(pluginFolder, PluginFileName);
-            string plugingFolderName = new DirectoryInfo(Path.GetDirectoryName(pluginDataFilePath)).Name;
-
-            if (!File.Exists(pluginDataFilePath))
+            try
             {
-                QuickLogger.Warning($"Plugin packs folder '{plugingFolderName}' did not contain a file named '{PluginFileName}'");
+                // Find the CustomBatteriesPack.txt file
+                string pluginDataFilePath = Path.Combine(pluginFolder, PluginFileName);
+                string plugingFolderName = new DirectoryInfo(Path.GetDirectoryName(pluginDataFilePath)).Name;
+
+                if (!File.Exists(pluginDataFilePath))
+                {
+                    QuickLogger.Warning($"Plugin packs folder '{plugingFolderName}' did not contain a file named '{PluginFileName}'");
+                    continue;
+                }
+
+                QuickLogger.Info($"Reading plugin pack '{plugingFolderName}'");
+
+                EmTextPluginPack plugin = LoadFromFile(pluginDataFilePath);
+
+                if (plugin == null)
+                {
+                    QuickLogger.Warning($"Pack file in '{pluginFolder}' contained errors and could not be read");
+                    continue;
+                }
+
+                plugin.PluginPackFolder = pluginFolder;
+
+                packs.Add(plugin);
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Error reading plugin pack in '{pluginFolder}'", ex);
+                
                 continue;
             }
-
-            QuickLogger.Info($"Reading plugin pack '{plugingFolderName}'");
-
-            EmTextPluginPack plugin = LoadFromFile(pluginDataFilePath);
-
-            if (plugin == null)
-            {
-                QuickLogger.Warning($"Pack file in '{pluginFolder}' contained errors and could not be read");
-                continue;
-            }
-
-            plugin.PluginPackFolder = pluginFolder;
-
-            yield return plugin;
         }
+        return packs;
     }
 
     private static EmTextPluginPack LoadFromFile(string file)

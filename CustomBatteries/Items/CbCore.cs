@@ -1,6 +1,7 @@
 ﻿namespace CustomBatteries.Items;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Common;
@@ -15,7 +16,7 @@ using static CraftData;
 using Sprite = Atlas.Sprite;
 #endif
 
-internal abstract class CbCore : ModPrefab
+internal abstract class CbCore
 {
     protected abstract TechType PrefabType { get; } // Should only ever be Battery, IonBattery, PowerCell or IonPowerCell
     protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
@@ -67,33 +68,29 @@ internal abstract class CbCore : ModPrefab
 
     public bool AddToFabricator { get; set; } = true;
 
+    public required PrefabInfo Info { get; set; }
+
+    private CustomPrefab CustomPrefab { get; set; }
+
     protected CbCore(string classId, bool ionCellSkins)
-        : base(classId, $"{classId}PreFab", TechType.None)
     {
+        this.ClassID = classId;
         this.UsingIonCellSkins = ionCellSkins;
     }
 
-    protected CbCore(CbItem packItem)
-        : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
+    protected CbCore(CbItem packItem): this(packItem.ID, packItem.CBModelData?.UseIonModelsAsBase ?? false)
     {
-        if (packItem.CBModelData != null)
-        {
-            this.CustomModelData = packItem.CBModelData;
-        }
-
-        this.UsingIonCellSkins = packItem.CBModelData?.UseIonModelsAsBase ?? false;
-
+        this.CustomModelData = packItem.CBModelData;
         this.Sprite = packItem.CustomIcon;
-
         this.EnhanceGameObject = packItem.EnhanceGameObject;
-
         this.AddToFabricator = packItem.AddToFabricator;
     }
 
-    public override GameObject GetGameObject()
+    public IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
     {
-        GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabType);
-        var obj = GameObject.Instantiate(prefab);
+        var taskResult = new TaskResult<GameObject>();
+        yield return CraftData.InstantiateFromPrefabAsync(this.PrefabType, taskResult);
+        var obj = taskResult.Get();
 
         Battery battery = obj.GetComponent<Battery>();
         battery._capacity = this.PowerCapacity;
@@ -101,13 +98,13 @@ internal abstract class CbCore : ModPrefab
 
         // If "Enable batteries/powercells placement" feature from Decorations mod is ON.
 #if SUBNAUTICA
-        if (CbDatabase.PlaceBatteriesFeatureEnabled && CraftData.GetEquipmentType(this.TechType) != EquipmentType.Hand)
+        if (CbDatabase.PlaceBatteriesFeatureEnabled && CraftData.GetEquipmentType(this.Info.TechType) != EquipmentType.Hand)
 #elif BELOWZERO
         if (CbDatabase.PlaceBatteriesFeatureEnabled && TechData.GetEquipmentType(this.TechType) != EquipmentType.Hand)
 #endif
         {
-            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand); // Set equipment type to Hand.
-            CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
+            CraftDataHandler.SetEquipmentType(this.Info.TechType, EquipmentType.Hand); // Set equipment type to Hand.
+            CraftDataHandler.SetQuickSlotType(this.Info.TechType, QuickSlotType.Selectable); // We can select the item.
         }
 
         SkyApplier skyApplier = obj.EnsureComponent<SkyApplier>();
@@ -138,7 +135,7 @@ internal abstract class CbCore : ModPrefab
 
         this.EnhanceGameObject?.Invoke(obj);
 
-        return obj;
+        gameObject.Set(obj);
     }
 
     protected void CreateIngredients(IEnumerable<TechType> parts, List<Ingredient> partsList)
@@ -157,11 +154,7 @@ internal abstract class CbCore : ModPrefab
             Ingredient priorIngredient = partsList.Find(i => i.techType == part);
 
             if (priorIngredient != null)
-#if SUBNAUTICA
-                priorIngredient.amount++;
-#elif BELOWZERO
                 priorIngredient._amount++;
-#endif
             else
                 partsList.Add(new Ingredient(part, 1));
         }
@@ -171,17 +164,30 @@ internal abstract class CbCore : ModPrefab
 
     protected abstract string[] StepsToFabricatorTab { get; }
 
+    public string ClassID { get; init; }
+
     public void Patch()
     {
         if (this.IsPatched)
             return;
 
-        this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
+        CustomPrefab = new CustomPrefab(Info);
+        CustomPrefab.SetGameObject(GetGameObjectAsync);
 
-        ProcessBatterySkins();
+        if (this.CustomModelData != null)
+        {
+            if (this.ChargerType == EquipmentType.BatteryCharger && !CbDatabase.BatteryModels.ContainsKey(Info.TechType))
+            {
+                CbDatabase.BatteryModels.Add(Info.TechType, this.CustomModelData);
+            }
+            else if (this.ChargerType == EquipmentType.PowerCellCharger && !CbDatabase.PowerCellModels.ContainsKey(Info.TechType))
+            {
+                CbDatabase.PowerCellModels.Add(Info.TechType, this.CustomModelData);
+            }
+        }
 
         if (!this.UnlocksAtStart)
-            KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
+            KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { Info.TechType });
 
         if (this.Sprite == null)
         {
@@ -199,65 +205,21 @@ internal abstract class CbCore : ModPrefab
             }
         }
 
-        SpriteHandler.RegisterSprite(this.TechType, this.Sprite);
+        SpriteHandler.RegisterSprite(Info.TechType, this.Sprite);
 
-        CraftDataHandler.SetTechData(this.TechType, GetBlueprintRecipe());
+        CraftDataHandler.SetRecipeData(Info.TechType, GetBlueprintRecipe());
 
-        CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
+        CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, Info.TechType);
 
-        CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
+        CraftDataHandler.SetEquipmentType(Info.TechType, this.ChargerType);
 
         if (this.AddToFabricator)
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, Info.TechType, this.StepsToFabricatorTab);
 
-        PrefabHandler.RegisterPrefab(this);
+        CustomPrefab.Register();
 
         AddToList();
 
         this.IsPatched = true;
-    }
-
-    private void ProcessBatterySkins()
-    {
-        if (this.CustomModelData != null)
-        {
-            if (this.ChargerType == EquipmentType.BatteryCharger && !CbDatabase.BatteryModels.ContainsKey(this.TechType))
-            {
-                CbDatabase.BatteryModels.Add(this.TechType, this.CustomModelData);
-            }
-            else if (this.ChargerType == EquipmentType.PowerCellCharger && !CbDatabase.PowerCellModels.ContainsKey(this.TechType))
-            {
-                CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
-            }
-        }
-        else
-        {
-            if (this.ChargerType == EquipmentType.BatteryCharger)
-            {
-                GameObject battery = CbDatabase.Battery();
-                Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
-
-                Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
-                Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
-                Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
-
-                CbDatabase.BatteryModels.Add(this.TechType, this.CustomModelData);
-            }
-            else if (this.ChargerType == EquipmentType.PowerCellCharger)
-            {
-                GameObject battery = CbDatabase.PowerCell();
-                Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
-
-                Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
-                Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
-                Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
-
-                CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
-            }
-        }
     }
 }

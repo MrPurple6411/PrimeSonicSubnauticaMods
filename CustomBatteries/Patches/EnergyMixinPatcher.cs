@@ -43,7 +43,7 @@ internal static class EnergyMixinPatcher
             return; // Nothing here
 
         TechType powerCellTechType = itemInSlot.Value;
-        bool isKnownModdedPowerCell = CbDatabase.PowerCellItems.Find(pc => pc.TechType == powerCellTechType) != null;
+        bool isKnownModdedPowerCell = CbDatabase.PowerCellItems.Find(pc => pc.Info.TechType == powerCellTechType) != null;
 
         if (isKnownModdedPowerCell)
         {
@@ -316,7 +316,7 @@ internal static class EnergyMixinPatcher
     {
         for (int i = toBeAdded.Count - 1; i >= 0; i--)
         {
-            TechType entry = toBeAdded[i].TechType;
+            TechType entry = toBeAdded[i].Info.TechType;
 
             if (compatibleTechTypes.Contains(entry))
                 return;

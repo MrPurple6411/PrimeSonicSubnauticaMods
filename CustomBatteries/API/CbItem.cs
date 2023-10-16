@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using Common;
 using CustomBatteries.Items;
+using Nautilus.Assets;
 using UnityEngine;
-using Logger = QModManager.Utility.Logger;
 #if SUBNAUTICA
 using Sprite = Atlas.Sprite;
 #endif
@@ -94,7 +94,7 @@ public abstract class CbItem
     internal void Patch(ItemTypes itemType)
     {
         string name = this.GetType().Assembly.GetName().Name;
-        Logger.Log(Logger.Level.Info, $"Received Custom {itemType} pack from '{name}'");
+        QuickLogger.Info($"Received Custom {itemType} pack from '{name}'");
 
         // Check for required data
         string errors = string.Empty;
@@ -114,13 +114,14 @@ public abstract class CbItem
         if (!string.IsNullOrEmpty(errors))
         {
             string msg = "Unable to patch:" + Environment.NewLine + errors;
-            Logger.Log(Logger.Level.Error, msg);
+            QuickLogger.Error(msg);
             throw new InvalidOperationException(msg);
         }
 
         // Prepare
         var item = new CustomItem(this, itemType)
         {
+            Info = PrefabInfo.WithTechType(ID, Name, FlavorText, "English", UnlocksWith == TechType.None),
             PluginPackName = name,
             FriendlyName = this.Name,
             Description = this.FlavorText,
@@ -132,6 +133,6 @@ public abstract class CbItem
         // Patch
         item.Patch();
         
-        _techType = item.TechType;
+        _techType = item.Info.TechType;
     }
 }

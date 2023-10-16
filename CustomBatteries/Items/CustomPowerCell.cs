@@ -1,7 +1,9 @@
 ﻿namespace CustomBatteries.Items;
 
 using System.Collections.Generic;
+using Nautilus.Assets;
 using Nautilus.Crafting;
+using static CraftData;
 
 internal class CustomPowerCell : CbCore
 {
@@ -20,7 +22,7 @@ internal class CustomPowerCell : CbCore
     {
         var partsList = new List<Ingredient>()
         {
-            new Ingredient(baseBattery.TechType, 2),
+            new Ingredient(baseBattery.Info.TechType, 2),
             new Ingredient(TechType.Silicone, 1),
         };
 
@@ -38,6 +40,6 @@ internal class CustomPowerCell : CbCore
     protected override void AddToList()
     {
         CbDatabase.PowerCellItems.Add(this);
-        CbDatabase.TrackItems.Add(this.TechType);
+        CbDatabase.TrackItems.Add(this.Info.TechType);
     }
 }

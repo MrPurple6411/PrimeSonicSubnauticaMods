@@ -35,6 +35,6 @@ internal class CustomBattery : CbCore
     protected override void AddToList()
     {
         CbDatabase.BatteryItems.Add(this);
-        CbDatabase.TrackItems.Add(this.TechType);
+        CbDatabase.TrackItems.Add(this.Info.TechType);
     }
 }

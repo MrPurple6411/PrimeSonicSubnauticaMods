@@ -2,20 +2,21 @@
 
 using System;
 using System.Collections.Generic;
+using BepInEx;
+using BepInEx.Logging;
 using Common;
 using CustomBatteries.Items;
 using CustomBatteries.PackReading;
 using CustomBatteries.Patches;
 using HarmonyLib;
 using MidGameBatteries.Patchers;
-using QModManager.API.ModLoading;
 using Nautilus.Handlers;
 
-[QModCore]
-public static class QPatch
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInDependency("com.snmodding.nautilus", BepInDependency.DependencyFlags.HardDependency)]
+public class Plugin : BaseUnityPlugin
 {
-    [QModPatch]
-    public static void Patch()
+    public void Awake()
     {
         QuickLogger.Info("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
 
@@ -60,8 +61,7 @@ public static class QPatch
         CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, CbDatabase.PowCellCraftPath);
     }
 
-    [QModPostPatch]
-    public static void UpdateStaticCollections()
+    public void Start()
     {
         UpdateCollection(BatteryCharger.compatibleTech, CbDatabase.BatteryItems);
         UpdateCollection(PowerCellCharger.compatibleTech, CbDatabase.PowerCellItems);
@@ -77,7 +77,7 @@ public static class QPatch
         {
             CbCore cbCoreItem = toBeAdded[i];
 
-            TechType entry = cbCoreItem.TechType;
+            TechType entry = cbCoreItem.Info.TechType;
             
             if (compatibleTech.Contains(entry))
                 continue;

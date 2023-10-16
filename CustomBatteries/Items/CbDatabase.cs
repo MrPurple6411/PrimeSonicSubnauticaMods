@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using CustomBatteries.API;
+using Nautilus.Assets;
 using UnityEngine;
 
 namespace CustomBatteries.Items;
@@ -35,10 +36,9 @@ internal static class CbDatabase
         {
             if (_placeBatteriesFeatureEnabled == null || !_placeBatteriesFeatureEnabled.HasValue)
             {
-                QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
-                if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
+                if (BepInEx.Bootstrap.Chainloader.PluginInfos.TryGetValue("com.osubmarin.decorationsmod", out var decorationsMod))
                 {
-                    Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
+                    Type decorationsModConfig = decorationsMod.GetType().Assembly.GetType("DecorationsMod.ConfigSwitcher", false);
                     if (decorationsModConfig != null)
                     {
                         FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);

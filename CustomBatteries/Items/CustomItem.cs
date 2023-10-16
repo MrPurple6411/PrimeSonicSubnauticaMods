@@ -27,6 +27,6 @@ internal class CustomItem : CbCore
         else
             CbDatabase.PowerCellItems.Add(this);
 
-        CbDatabase.TrackItems.Add(this.TechType);
+        CbDatabase.TrackItems.Add(this.Info.TechType);
     }
 }

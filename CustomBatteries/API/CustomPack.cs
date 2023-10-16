@@ -1,5 +1,6 @@
 ﻿namespace CustomBatteries.API;
 
+using System;
 using Common;
 using CustomBatteries.Items;
 using Nautilus.Assets;
@@ -21,20 +22,20 @@ public abstract class CustomPack
     public IPluginPack OriginalPlugInPack { get; }
 
     /// <summary>
-    /// Gets the custom battery.
+    /// Gets the custom battery's Info.
     /// </summary>
     /// <value>
     /// The custom battery.
     /// </value>
-    public ModPrefab CustomBattery => _customBattery;
+    public PrefabInfo CustomBattery => _customBattery.Info;
 
     /// <summary>
-    /// Gets the custom power cell.
+    /// Gets the custom power cell's Info.
     /// </summary>
     /// <value>
     /// The custom power cell.
     /// </value>
-    public ModPrefab CustomPowerCell => _customPowerCell;
+    public PrefabInfo CustomPowerCell => _customPowerCell.Info;
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="CustomBattery"/> and <see cref="CustomPowerCell"/> have been patched.
@@ -64,6 +65,7 @@ public abstract class CustomPack
 
         _customBattery = new CustomBattery(pluginPack.BatteryID, ionCellSkins)
         {
+            Info = PrefabInfo.WithTechType(pluginPack.BatteryID, pluginPack.BatteryName, pluginPack.BatteryFlavorText, "English", pluginPack.UnlocksWith == TechType.None),
             PluginPackName = pluginPack.PluginPackName,
             FriendlyName = pluginPack.BatteryName,
             Description = pluginPack.BatteryFlavorText,
@@ -75,6 +77,7 @@ public abstract class CustomPack
 
         _customPowerCell = new CustomPowerCell(pluginPack.PowerCellID, ionCellSkins, _customBattery)
         {
+            Info = PrefabInfo.WithTechType(pluginPack.PowerCellID, pluginPack.PowerCellName, pluginPack.PowerCellFlavorText, "English", pluginPack.UnlocksWith == TechType.None),
             PluginPackName = pluginPack.PluginPackName,
             FriendlyName = pluginPack.PowerCellName,
             Description = pluginPack.PowerCellFlavorText,
