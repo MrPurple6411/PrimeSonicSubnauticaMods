@@ -1,11 +1,11 @@
 ﻿namespace CustomCraft3Tests;
 
 using System;
-using System.Reflection;
 using Common;
 using CustomCraft3.Serialization.Components;
 using CustomCraft3.Serialization.Entries;
 using CustomCraft3.Serialization.Lists;
+using Nautilus.Assets.PrefabTemplates;
 using NUnit.Framework;
 
 [TestFixture]
@@ -42,7 +42,7 @@ internal class VModFabricatorFiles
             PdaCategory = TechCategory.InteriorModule,
             AllowedInBase = true,
             AllowedInCyclops = true,
-            Model = ModelTypes.MoonPool,
+            Model = FabricatorTemplate.Model.MoonPool,
             EmIngredients =
             {
                 new EmIngredient(TechType.Titanium, 2),

@@ -5,6 +5,7 @@ using CustomCraft3.Serialization;
 using CustomCraft3.Serialization.Components;
 using CustomCraft3.Serialization.Entries;
 using CustomCraft3.Serialization.Lists;
+using Nautilus.Assets.PrefabTemplates;
 using NUnit.Framework;
 
 [TestFixture]
@@ -123,7 +124,7 @@ internal class CustomFabricatorTests
         {
             AllowedInBase = true,
             AllowedInCyclops = true,
-            Model = ModelTypes.Workbench,
+            Model = FabricatorTemplate.Model.Workbench,
             ItemID = fabricatorID,
             DisplayName = "Simple Decorations Fabricator",
             Tooltip = "A sample fabricator for creating the game's original decorations",
