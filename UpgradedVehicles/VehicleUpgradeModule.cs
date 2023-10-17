@@ -11,20 +11,17 @@ using Nautilus.Utility;
 
 public abstract class VehicleUpgradeModule
 {
-    public virtual PrefabInfo Info { get; init; }
-    public virtual CustomPrefab CustomPrefab { get; init; }
-    public virtual PrefabTemplate PrefabTemplate { get; init; }
+    internal PrefabInfo Info { get; init; }
+    internal virtual CustomPrefab CustomPrefab { get; init; }
+    protected virtual PrefabTemplate PrefabTemplate { get; init; }
 
     protected VehicleUpgradeModule(string classId, string friendlyName, string description)
     {
-        if (Info == null)
-        {
-            Info = PrefabInfo.WithTechType(classId, friendlyName, description, "English", RequiredForUnlock == TechType.None).WithSizeInInventory(SizeInInventory);
+        Info = PrefabInfo.WithTechType(classId, friendlyName, description, "English", RequiredForUnlock == TechType.None).WithSizeInInventory(SizeInInventory);
 
-            var iconPath = Path.Combine(AssetsFolder, $"{classId}.png");
-            if (File.Exists(iconPath))
-                Info.WithIcon(ImageUtils.LoadSpriteFromFile(iconPath));
-        }
+        var iconPath = Path.Combine(AssetsFolder, $"{classId}.png");
+        if (File.Exists(iconPath))
+            Info.WithIcon(ImageUtils.LoadSpriteFromFile(iconPath));
 
         if (CustomPrefab == null)
             CustomPrefab = new CustomPrefab(Info);
