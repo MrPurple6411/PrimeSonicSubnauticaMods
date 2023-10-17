@@ -6,7 +6,7 @@ using Common;
 using UnityEngine;
 using UpgradedVehicles.SaveData;
 
-public class VehicleUpgrader : MonoBehaviour
+public class VehicleUpgrader : VehicleAccelerationModifier
 {
     internal static readonly ICollection<TechType> CommonUpgradeModules = new List<TechType>()
     {
@@ -55,11 +55,6 @@ public class VehicleUpgrader : MonoBehaviour
         _exosuitBonusSpeedMultiplier = upgradeOptions.ExosuitBonusSpeedMultiplier;
     }
 
-    // Original values from the Vehicle class
-    private const float BaseSeamothSpeed = 11.5f;
-    private const float BaseExosuitSwimSpeed = 6f;
-    private const float BaseExosuitWalkSpeed = 4f;
-
     private Vehicle ParentVehicle = null;
     private Equipment UpgradeModules => ParentVehicle.modules;
 
@@ -74,7 +69,6 @@ public class VehicleUpgrader : MonoBehaviour
     private static float _exosuitBonusSpeedMultiplier = 0.20f;
 
     public int DepthIndex { get; private set; } = -1;
-    public float SpeedMultiplier { get; private set; } = 1f;
     public float EfficiencyPenalty { get; private set; } = 1f;
     public float EfficientyBonus { get; private set; } = 1f;
     public float GeneralArmorFraction { get; private set; } = 1f;
@@ -197,17 +191,26 @@ public class VehicleUpgrader : MonoBehaviour
 
     internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : Vehicle
     {
-        QuickLogger.Debug("Initialized vehicle");
+        QuickLogger.Debug("Initializing vehicle");
         ParentVehicle = vehicle;
 
         IsSeamoth = vehicle is SeaMoth;
         IsExosuit = vehicle is Exosuit;
+
+        if (!IsSeamoth && !IsExosuit)
+        {
+            DestroyImmediate(this);
+            return;
+        }
 
         if (this.UpgradeModules == null)
         {
             QuickLogger.Warning("Initialize Vehicle - UpgradeModules missing", true);
             return;
         }
+
+        this.UpgradeModules.onEquip += OnEquipmentChange;
+        this.UpgradeModules.onUnequip += OnEquipmentChange;
 
         if (this.DmgOnImpact == null)
         {
@@ -220,6 +223,20 @@ public class VehicleUpgrader : MonoBehaviour
             QuickLogger.Warning("Initialize Vehicle - LiveMixin missing", true);
             return;
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (this.UpgradeModules != null)
+        {
+            this.UpgradeModules.onEquip -= OnEquipmentChange;
+            this.UpgradeModules.onUnequip -= OnEquipmentChange;
+        }
+    }
+
+    private void OnEquipmentChange(string slot, InventoryItem item)
+    {
+        UpgradeVehicle(item._techType);
     }
 
     private int CalculateArmorPlatingAmount()
@@ -271,11 +288,8 @@ public class VehicleUpgrader : MonoBehaviour
         return 0;
     }
 
-    internal void UpgradeVehicle<TVehicle>(TechType upgradeModule, ref TVehicle vehicle)
-        where TVehicle : Vehicle
+    internal void UpgradeVehicle(TechType upgradeModule)
     {
-        if (ParentVehicle != vehicle)
-            Initialize(ref vehicle);
 
         if (!CommonUpgradeModules.Contains(upgradeModule))
         {
@@ -322,21 +336,8 @@ public class VehicleUpgrader : MonoBehaviour
 
     private void UpdateSpeedRating(float speedBoosterCount)
     {
-        this.SpeedMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
-
-        if (this.IsSeamoth)
-        {
-            ParentVehicle.forwardForce = this.SpeedMultiplier * BaseSeamothSpeed;
-            ErrorMessage.AddMessage($"Seamoth Speed: {ParentVehicle.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
-        }
-        else if (this.IsExosuit)
-        {
-            ParentVehicle.forwardForce = this.SpeedMultiplier * BaseExosuitSwimSpeed;
-            ErrorMessage.AddMessage($"Prawn Suit Water Speed: {ParentVehicle.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
-            ParentVehicle.onGroundForceMultiplier = this.SpeedMultiplier * BaseExosuitWalkSpeed;
-            ErrorMessage.AddMessage($"Prawn Suit Land Speed: {ParentVehicle.onGroundForceMultiplier}m/s ({this.SpeedMultiplier * 100f:00}%)");
-
-        }
+        this.accelerationMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
+        ErrorMessage.AddMessage($"{ParentVehicle.GetName()} Speed Boost: ({this.accelerationMultiplier * 100f:00}%)");
     }
 
     private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)

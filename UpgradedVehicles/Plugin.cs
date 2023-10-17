@@ -68,17 +68,19 @@ public class Plugin : BaseUnityPlugin
     {
         QuickLogger.Info("Checking if MoreSeamothDepth mod is present");
 
-        bool moreSeamothDepth = PluginInfos.ContainsKey("MoreSeamothDepth");
-        if (moreSeamothDepth &&
-            EnumHandler.TryGetValue("SeamothHullModule4", out TechType vehicleHullModule4) &&
-            EnumHandler.TryGetValue("SeamothHullModule5", out TechType vehicleHullModule5))
+        if (EnumHandler.TryGetValue("SeamothHullModule4", out TechType vehicleHullModule4))
         {
-            QuickLogger.Info("Detected Seamoth Depth Modules Mk4 & Mk5");
+            QuickLogger.Info("Detected Seamoth Depth Module Mk4");
             VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
-            VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
             VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
-            VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
             VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule4);
+        }
+
+        if (EnumHandler.TryGetValue("SeamothHullModule5", out TechType vehicleHullModule5))
+        {
+            QuickLogger.Info("Detected Seamoth Depth Module Mk5");
+            VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
+            VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
             VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule5);
         }
     }
