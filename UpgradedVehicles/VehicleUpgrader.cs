@@ -337,7 +337,7 @@ public class VehicleUpgrader : VehicleAccelerationModifier
     private void UpdateSpeedRating(float speedBoosterCount)
     {
         this.accelerationMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
-        ErrorMessage.AddMessage($"{ParentVehicle.GetName()} Speed Boost: ({this.accelerationMultiplier * 100f:00}%)");
+        ErrorMessage.AddMessage($"Speed Boost: ({this.accelerationMultiplier * 100f:00}%)");
     }
 
     private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
