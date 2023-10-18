@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<AssemblyName>CyclopsNuclearUpgrades</AssemblyName>
-		<Product>Cyclops Nuclear Upgrades (Bepinex/Nautilus)</Product>
+		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
+		<BepInExPluginName>Cyclops Nuclear Upgrades (Purple Edition)</BepInExPluginName>
 		<Version>1.0.0.0</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>

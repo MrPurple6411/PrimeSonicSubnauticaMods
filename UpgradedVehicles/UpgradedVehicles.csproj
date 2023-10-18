@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<AssemblyName>UpgradedVehicles</AssemblyName>
-		<Product>Upgraded Vehicles (Bepinex/Nautilus)</Product>
+		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
+		<BepInExPluginName>Upgraded Vehicles (Purple Edition)</BepInExPluginName>
 		<Version>1.0.0.0</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
