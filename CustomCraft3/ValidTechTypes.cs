@@ -562,7 +562,7 @@ internal class ValidTechTypes
                 TechType.SuitBoosterTank,
                 TechType.Fins,
                 TechType.ReinforcedDiveSuit,
-                TechType.Stillsuit,
+                TechType.WaterFiltrationSuit,
                 TechType.ColdSuit,
                 TechType.ColdSuitGloves,
                 TechType.ColdSuitHelmet,
