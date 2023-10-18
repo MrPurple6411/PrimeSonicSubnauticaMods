@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<AssemblyName>BetterBioReactor</AssemblyName>
-		<Product>Better Bio-Reactor (Bepinex/Nautilus)</Product>
+		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
+		<BepInExPluginName>Better Bio-Reactor (Purple Edition)</BepInExPluginName>
 		<Version>1.0.0.0</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
-  <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
 </Project>

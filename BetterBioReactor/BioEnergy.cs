@@ -3,30 +3,19 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-internal class BioEnergy
+public class BioEnergy: MonoBehaviour
 {
+    public static Font Arial { get; private set; }
     public bool FullyConsumed => RemainingEnergy <= 0f;
     public string EnergyString => $"{Mathf.RoundToInt(RemainingEnergy)}/{MaxEnergy}";
+    public int Size => Pickupable.inventoryItem.width * Pickupable.inventoryItem.height;
+    public float MaxEnergy => BaseBioReactor.GetCharge(Pickupable.GetTechType());
 
-    public Pickupable Pickupable;
+    public Text DisplayText { get; internal set; }
+
+    public Pickupable Pickupable { get; internal set; }
+
     public float RemainingEnergy;
-    public readonly float MaxEnergy;
-    public int Size = 1;
-    public Text DisplayText { get; set; }
-
-    public BioEnergy(Pickupable pickupable, float currentEnergy, float originalEnergy)
-    {
-        Pickupable = pickupable;
-        RemainingEnergy = currentEnergy;
-        MaxEnergy = originalEnergy;
-    }
-
-    internal BioEnergy(Pickupable pickupable, float energy)
-    {
-        Pickupable = pickupable;
-        RemainingEnergy = energy;
-        MaxEnergy = BaseBioReactor.GetCharge(pickupable.GetTechType());
-    }
 
     public void UpdateInventoryText()
     {
@@ -38,18 +27,17 @@ internal class BioEnergy
 
     public void AddDisplayText(uGUI_ItemIcon icon)
     {
-        // This code was made possible with the help of Waisie Milliams Hah
-        var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+        Arial ??= (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
         var textGO = new GameObject("EnergyLabel");
+        textGO.transform.SetParent(icon.transform);
+        textGO.transform.localEulerAngles = Vector3.zero;
+        textGO.transform.localRotation = Quaternion.identity;
 
-        textGO.transform.parent = icon.transform;
-        textGO.AddComponent<Text>();
-
-        Text text = textGO.GetComponent<Text>();
-        text.font = arial;
-        text.material = arial.material;
-        text.text = string.Empty;
+        Text text = textGO.AddComponent<Text>();
+        text.font = Arial;
+        text.material = Arial.material;
+        text.text = this.EnergyString;
         text.fontSize = 14 + Size;
         text.alignment = TextAnchor.MiddleCenter;
         text.color = Color.yellow;
