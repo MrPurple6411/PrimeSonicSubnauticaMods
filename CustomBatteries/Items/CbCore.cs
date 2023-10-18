@@ -100,7 +100,7 @@ internal abstract class CbCore
 #if SUBNAUTICA
         if (CbDatabase.PlaceBatteriesFeatureEnabled && CraftData.GetEquipmentType(this.Info.TechType) != EquipmentType.Hand)
 #elif BELOWZERO
-        if (CbDatabase.PlaceBatteriesFeatureEnabled && TechData.GetEquipmentType(this.TechType) != EquipmentType.Hand)
+        if (CbDatabase.PlaceBatteriesFeatureEnabled && TechData.GetEquipmentType(this.Info.TechType) != EquipmentType.Hand)
 #endif
         {
             CraftDataHandler.SetEquipmentType(this.Info.TechType, EquipmentType.Hand); // Set equipment type to Hand.
