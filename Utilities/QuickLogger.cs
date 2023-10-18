@@ -2,53 +2,56 @@
 
 using System;
 using System.Reflection;
+using BepInEx.Logging;
 
 internal static class QuickLogger
 {
     private static readonly AssemblyName ModName = Assembly.GetExecutingAssembly().GetName();
+    private static readonly ManualLogSource _manualLogSource;
 
     internal static bool DebugLogsEnabled = false;
 
-    public static void Info(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
+    static QuickLogger()
     {
-        Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:INFO] {msg}");
+        _manualLogSource = Logger.CreateLogSource(ModName.Name);
+    }
 
+    public static void Info(string msg, bool showOnScreen = false)
+    {
+        _manualLogSource.LogInfo(msg);
         if (showOnScreen)
             ErrorMessage.AddMessage(msg);
     }
 
-    public static void Debug(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
+    public static void Debug(string msg, bool showOnScreen = false)
     {
-        if (!DebugLogsEnabled)
-            return;
+        _manualLogSource.LogDebug(msg);
 
-        Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:DEBUG] {msg}");
-
-        if (showOnScreen)
+        if (DebugLogsEnabled && showOnScreen)
             ErrorMessage.AddDebug(msg);
     }
 
-    public static void Error(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
+    public static void Error(string msg, bool showOnScreen = false)
     {
-        Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:ERROR] {msg}");
+        _manualLogSource.LogError(msg);
 
         if (showOnScreen)
             ErrorMessage.AddError(msg);
     }
 
-    public static void Error(string msg, Exception ex, AssemblyName callingAssembly = null)
+    public static void Error(string msg, Exception ex)
     {
-        Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:ERROR] {msg}{Environment.NewLine}{ex.ToString()}");
+        _manualLogSource.LogError($"{ msg}{ Environment.NewLine}{ex}");
     }
 
-    public static void Error(Exception ex, AssemblyName callingAssembly = null)
+    public static void Error(Exception ex)
     {
-        Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:ERROR] {ex.ToString()}");
+        _manualLogSource.LogError(ex);
     }
 
-    public static void Warning(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
+    public static void Warning(string msg, bool showOnScreen = false)
     {
-        Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:WARN] {msg}");
+        _manualLogSource.LogWarning(msg);
 
         if (showOnScreen)
             ErrorMessage.AddWarning(msg);
