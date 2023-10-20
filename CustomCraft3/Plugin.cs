@@ -46,6 +46,15 @@ public class Plugin: BaseUnityPlugin
 
     public IEnumerator Start()
     {
+        while (Language.main is null
+#if BELOWZERO
+            || !SpriteManager.hasInitialized
+#endif
+            )
+        {
+            yield return null;
+        }
+
         QuickLogger.Info($"Started patching. Version {version}");
 
         try
