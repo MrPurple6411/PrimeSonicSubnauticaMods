@@ -4,14 +4,15 @@
 		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
 		<BepInExPluginName>All In One Fabricator (Purple Edition)</BepInExPluginName>
 		<Version>1.0.0.0</Version>
-        <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
+		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
-  <ItemGroup>
-    <Content Include="Assets\AiOFab.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\AiOFabTex.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\AiOFab.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\AiOFabTex.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
 </Project>
