@@ -26,7 +26,7 @@ internal class VModFabricatorFiles
     private const string torpedoesTabID = "TorpedoesModulesCC2";
 
     private static readonly string Today = DateTime.Today.ToString("dd/MMMM/yyyy");
-    private static readonly string CC2Version = QuickLogger.GetAssemblyVersion();
+    private static readonly string CC2Version = MyPluginInfo.PLUGIN_VERSION;
 
     [Test]
     public void Generate()
