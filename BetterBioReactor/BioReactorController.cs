@@ -226,9 +226,7 @@ internal class BioReactorController
                 QuickLogger.Error("Failed to load BetterBioreactor Save Data!!!!!", true);
                 QuickLogger.Error(e.Message);
                 SaveData = new Dictionary<string, float>();
-            }
-
-            
+            }            
         }
 
         foreach (var pair in BioReactor.container._items)
