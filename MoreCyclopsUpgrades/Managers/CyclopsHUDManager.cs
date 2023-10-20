@@ -28,7 +28,7 @@ internal class CyclopsHUDManager
     private Text upgradesText;
 
     private ChargeManager chargeManager;
-    private ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(ref Cyclops).Charge);
+    private ChargeManager ChargeManager => chargeManager ??= CyclopsManager.GetManager(ref Cyclops).Charge;
 
     private bool powerIconsInitialized = false;
     private bool consoleIconsRemoved = false;

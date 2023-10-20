@@ -1,11 +1,10 @@
-﻿namespace CyclopsThermalUpgrades.Management
-{
-    using MoreCyclopsUpgrades.API.AmbientEnergy;
+﻿namespace CyclopsThermalUpgrades.Management;
 
-    internal class ThermalIconOverlay : AmbientEnergyIconOverlay<ThermalUpgradeHandler, ThermalCharger>
+using MoreCyclopsUpgrades.API.AmbientEnergy;
+
+internal class ThermalIconOverlay : AmbientEnergyIconOverlay<ThermalUpgradeHandler, ThermalCharger>
+{
+    public ThermalIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
     {
-        public ThermalIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
-        {
-        }
     }
 }

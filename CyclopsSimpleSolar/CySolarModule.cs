@@ -1,74 +1,44 @@
-﻿namespace CyclopsSimpleSolar
+﻿namespace CyclopsSimpleSolar;
+
+using System.IO;
+using System.Reflection;
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.Upgrades;
+using Nautilus.Crafting;
+using static CraftData;
+
+internal class CySolarModule : CyclopsUpgrade
 {
-    using System.IO;
-    using System.Reflection;
-    using MoreCyclopsUpgrades.API;
-    using Nautilus.Assets;
-    using Nautilus.Crafting;
-    using Nautilus.Utility;
-    using UnityEngine;
-
-    internal class CySolarModule : Equipable
+    public CySolarModule() : base("CySimpSolarCharger",
+               "Cyclops Solar Charging Module",
+               "Recharges the Cyclops power cells while in sunlight.\n" +
+               "DOES NOT STACK with other solar chargers.")
     {
-        private static Atlas.Sprite customSprite;
 
-        public static Atlas.Sprite CustomSprite => customSprite ?? SpriteManager.Get(TechType.SeamothSolarCharge);
+    }
 
-        public CySolarModule()
-            : base("CySimpSolarCharger",
-                   "Cyclops Solar Charging Module",
-                   "Recharges the Cyclops power cells while in sunlight.\n" +
-                   "DOES NOT STACK with other solar chargers.")
+    public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;
+
+    public override string[] StepsToFabricatorTab => MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
+
+    public override TechType RequiredForUnlock => TechType.SeamothSolarCharge;
+
+    public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+
+    protected override TechType PrefabTemplate => TechType.SeamothSolarCharge;
+
+    protected override RecipeData GetBlueprintRecipe()
+    {
+        return new RecipeData()
         {
-            OnStartedPatching += () =>
+            craftAmount = 1,
+            Ingredients =
             {
-                // Load the custom texture
-                string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string folderPath = Path.Combine(executingLocation, "Assets");
-                string spriteLocation = Path.Combine(folderPath, "CySimpSolarCharger.png");
-
-                customSprite = ImageUtils.LoadSpriteFromFile(spriteLocation);
-            };
-        }
-
-        public override EquipmentType EquipmentType => EquipmentType.CyclopsModule;
-
-        public override TechGroup GroupForPDA =>  TechGroup.Cyclops;
-
-        public override TechCategory CategoryForPDA => TechCategory.CyclopsUpgrades;
-
-        public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;
-
-        public override string[] StepsToFabricatorTab => MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
-
-        public override TechType RequiredForUnlock => TechType.SeamothSolarCharge;
-
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsShieldModule);
-            var obj = GameObject.Instantiate(prefab);
-
-            return obj;
-        }
-
-        protected override TechData GetBlueprintRecipe()
-        {
-            return new TechData()
-            {
-                craftAmount = 1,
-                Ingredients =
-                {
-                    new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.Glass, 1),
-                    new Ingredient(TechType.EnameledGlass, 1),
-                    new Ingredient(TechType.Titanium, 1),
-                }
-            };
-        }
-
-        protected override Atlas.Sprite GetItemSprite()
-        {
-            return CustomSprite;
-        }
+                new Ingredient(TechType.AdvancedWiringKit, 1),
+                new Ingredient(TechType.Glass, 1),
+                new Ingredient(TechType.EnameledGlass, 1),
+                new Ingredient(TechType.Titanium, 1),
+            }
+        };
     }
 }

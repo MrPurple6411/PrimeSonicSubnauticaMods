@@ -1,32 +1,31 @@
-﻿namespace CyclopsEnhancedSonar
+﻿namespace CyclopsEnhancedSonar;
+
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+
+internal class SonarPdaDisplay : IconOverlay
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
+    public const string SpeedUpKey = "CySnrSpdUp";
+    public const string SpeedUpText = "Sonar Speed Up";
 
-    internal class SonarPdaDisplay : IconOverlay
+    private readonly string langSpeedUpText;
+
+    public SonarPdaDisplay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        : base(icon, upgradeModule)
     {
-        public const string SpeedUpKey = "CySnrSpdUp";
-        public const string SpeedUpText = "Sonar Speed Up";
+        base.UpperText.FontSize = 12;
+        langSpeedUpText = Language.main.Get(SpeedUpKey);
+    }
 
-        private readonly string langSpeedUpText;
+    public override void UpdateText()
+    {
+        int upgradeCount = MCUServices.CrossMod.GetUpgradeCount(base.Cyclops, TechType.CyclopsSonarModule);
 
-        public SonarPdaDisplay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
-            : base(icon, upgradeModule)
-        {
-            base.UpperText.FontSize = 12;
-            langSpeedUpText = Language.main.Get(SpeedUpKey);
-        }
+        base.LowerText.FontSize = 14 + (3 * upgradeCount);
+        base.LowerText.TextString = $"{upgradeCount}/{SonarUpgradeHandler.MaxUpgrades}";
 
-        public override void UpdateText()
-        {
-            int upgradeCount = MCUServices.CrossMod.GetUpgradeCount(base.Cyclops, TechType.CyclopsSonarModule);
-
-            base.LowerText.FontSize = 14 + (3 * upgradeCount);
-            base.LowerText.TextString = $"{upgradeCount}/{SonarUpgradeHandler.MaxUpgrades}";
-
-            base.UpperText.TextString = upgradeCount == SonarUpgradeHandler.MaxUpgrades 
-                ? $"[{langSpeedUpText}]" 
-                : string.Empty;
-        }
+        base.UpperText.TextString = upgradeCount == SonarUpgradeHandler.MaxUpgrades 
+            ? $"[{langSpeedUpText}]" 
+            : string.Empty;
     }
 }

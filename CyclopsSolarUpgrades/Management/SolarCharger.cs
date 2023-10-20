@@ -1,55 +1,54 @@
-﻿namespace CyclopsSolarUpgrades.Management
+﻿namespace CyclopsSolarUpgrades.Management;
+
+using MoreCyclopsUpgrades.API.AmbientEnergy;
+using UnityEngine;
+
+internal class SolarCharger : AmbientEnergyCharger<SolarUpgradeHandler>
 {
-    using MoreCyclopsUpgrades.API.AmbientEnergy;
-    using UnityEngine;
+    private const float MaxSolarDepth = 200f;
+    private const float PercentageMaker = 100f;
+    private const float SolarChargingFactor = 1.45f;
 
-    internal class SolarCharger : AmbientEnergyCharger<SolarUpgradeHandler>
+    private float lightRatio;
+    private float depthRatio;
+    private float rechargeRatio;
+
+    public SolarCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops)
+        : base(tier1TechType, tier2TechType, cyclops)
     {
-        private const float MaxSolarDepth = 200f;
-        private const float PercentageMaker = 100f;
-        private const float SolarChargingFactor = 1.45f;
+    }
 
-        private float lightRatio;
-        private float depthRatio;
-        private float rechargeRatio;
+    protected override string PercentNotation => "%Θ";
+    protected override float MaximumEnergyStatus => 90f;
+    protected override float MinimumEnergyStatus => 5f;
 
-        public SolarCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops)
-            : base(tier1TechType, tier2TechType, cyclops)
-        {
-        }
+    protected override bool HasAmbientEnergy(ref float ambientEnergyStatus)
+    {
+        ambientEnergyStatus = 0f;
 
-        protected override string PercentNotation => "%Θ";
-        protected override float MaximumEnergyStatus => 90f;
-        protected override float MinimumEnergyStatus => 5f;
+        if (Cyclops.transform.position.y < -MaxSolarDepth)
+            return false;
 
-        protected override bool HasAmbientEnergy(ref float ambientEnergyStatus)
-        {
-            ambientEnergyStatus = 0f;
+        depthRatio = Mathf.Clamp01((MaxSolarDepth + Cyclops.transform.position.y) / MaxSolarDepth);
 
-            if (Cyclops.transform.position.y < -MaxSolarDepth)
-                return false;
+        DayNightCycle daynightCycle = DayNightCycle.main;
+        if (daynightCycle == null)
+            return false;
 
-            depthRatio = Mathf.Clamp01((MaxSolarDepth + Cyclops.transform.position.y) / MaxSolarDepth);
+        lightRatio = daynightCycle.GetLocalLightScalar();
 
-            DayNightCycle daynightCycle = DayNightCycle.main;
-            if (daynightCycle == null)
-                return false;
+        bool hasEnergy = lightRatio > 0.05f;
 
-            lightRatio = daynightCycle.GetLocalLightScalar();
+        rechargeRatio = depthRatio * lightRatio;
 
-            bool hasEnergy = lightRatio > 0.05f;
+        if (hasEnergy)
+            ambientEnergyStatus = rechargeRatio * PercentageMaker;
 
-            rechargeRatio = depthRatio * lightRatio;
+        return hasEnergy;
+    }
 
-            if (hasEnergy)
-                ambientEnergyStatus = rechargeRatio * PercentageMaker;
-
-            return hasEnergy;
-        }
-
-        protected override float GetAmbientEnergy()
-        {
-            return rechargeRatio * DayNightCycle.main.deltaTime * SolarChargingFactor;
-        }
+    protected override float GetAmbientEnergy()
+    {
+        return rechargeRatio * DayNightCycle.main.deltaTime * SolarChargingFactor;
     }
 }

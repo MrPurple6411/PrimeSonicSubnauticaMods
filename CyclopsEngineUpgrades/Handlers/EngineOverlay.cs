@@ -1,51 +1,50 @@
-﻿namespace CyclopsEngineUpgrades.Handlers
+﻿namespace CyclopsEngineUpgrades.Handlers;
+
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+using UnityEngine;
+
+internal class EngineOverlay : IconOverlay
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
-    using UnityEngine;
+    internal const string BonusKey = "CyEngBonusEff";
+    internal const string TotalKey = "CyEngTotalEff";
 
-    internal class EngineOverlay : IconOverlay
+    private readonly EngineHandler engineHandler;
+    private readonly string tierString;
+    private readonly string tierRating;
+
+    public EngineOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
     {
-        internal const string BonusKey = "CyEngBonusEff";
-        internal const string TotalKey = "CyEngTotalEff";
+        engineHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<EngineHandler>(base.Cyclops, TechType.PowerUpgradeModule);
 
-        private readonly EngineHandler engineHandler;
-        private readonly string tierString;
-        private readonly string tierRating;
+        TechType techTypeInSlot = upgradeModule.item.GetTechType();
 
-        public EngineOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
+        tierString = $"MK{engineHandler.TierValue(techTypeInSlot)}";
+        tierRating = $"{Language.main.Get(BonusKey)}\n" +
+                     $"{Mathf.RoundToInt(engineHandler.EngineRating(techTypeInSlot) * 100f)}%";
+    }
+
+    public override void UpdateText()
+    {
+        base.UpperText.FontSize = 12;
+        base.UpperText.TextString = tierRating;
+
+        base.MiddleText.FontSize = 14;
+        base.MiddleText.TextString = tierString;
+
+        float currPowerRating = base.Cyclops.currPowerRating;
+
+        base.LowerText.FontSize = 13;
+        base.LowerText.TextString = $"{Language.main.Get(TotalKey)}\n" +
+                                    $"{Mathf.RoundToInt(currPowerRating * 100f)}%";
+
+        if (currPowerRating >= 1f)
         {
-            engineHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<EngineHandler>(base.Cyclops, TechType.PowerUpgradeModule);
-
-            TechType techTypeInSlot = upgradeModule.item.GetTechType();
-
-            tierString = $"MK{engineHandler.TierValue(techTypeInSlot)}";
-            tierRating = $"{Language.main.Get(BonusKey)}\n" +
-                         $"{Mathf.RoundToInt(engineHandler.EngineRating(techTypeInSlot) * 100f)}%";
+            base.LowerText.TextColor = Color.green;
         }
-
-        public override void UpdateText()
+        else
         {
-            base.UpperText.FontSize = 12;
-            base.UpperText.TextString = tierRating;
-
-            base.MiddleText.FontSize = 14;
-            base.MiddleText.TextString = tierString;
-
-            float currPowerRating = base.Cyclops.currPowerRating;
-
-            base.LowerText.FontSize = 13;
-            base.LowerText.TextString = $"{Language.main.Get(TotalKey)}\n" +
-                                        $"{Mathf.RoundToInt(currPowerRating * 100f)}%";
-
-            if (currPowerRating >= 1f)
-            {
-                base.LowerText.TextColor = Color.green;
-            }
-            else
-            {
-                base.LowerText.TextColor = Color.yellow;
-            }
+            base.LowerText.TextColor = Color.yellow;
         }
     }
 }

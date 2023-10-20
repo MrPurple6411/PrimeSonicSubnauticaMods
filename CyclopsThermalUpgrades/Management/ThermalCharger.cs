@@ -1,39 +1,38 @@
-﻿namespace CyclopsThermalUpgrades.Management
+﻿namespace CyclopsThermalUpgrades.Management;
+
+using MoreCyclopsUpgrades.API.AmbientEnergy;
+
+internal class ThermalCharger : AmbientEnergyCharger<ThermalUpgradeHandler>
 {
-    using MoreCyclopsUpgrades.API.AmbientEnergy;
+    private const float ThermalChargingFactor = 1.5f;
 
-    internal class ThermalCharger : AmbientEnergyCharger<ThermalUpgradeHandler>
+    private float temperature;
+
+    public ThermalCharger(TechType tier2Id2, SubRoot cyclops)
+        : base(TechType.CyclopsThermalReactorModule, tier2Id2, cyclops)
     {
-        private const float ThermalChargingFactor = 1.5f;
+    }
 
-        private float temperature;
+    protected override string PercentNotation => "°C";
+    protected override float MaximumEnergyStatus => 100f;
+    protected override float MinimumEnergyStatus => 35f;
 
-        public ThermalCharger(TechType tier2Id2, SubRoot cyclops)
-            : base(TechType.CyclopsThermalReactorModule, tier2Id2, cyclops)
-        {
-        }
+    protected override bool HasAmbientEnergy(ref float ambientEnergyStatus)
+    {
+        ambientEnergyStatus = 0f;
 
-        protected override string PercentNotation => "°C";
-        protected override float MaximumEnergyStatus => 100f;
-        protected override float MinimumEnergyStatus => 35f;
+        if (WaterTemperatureSimulation.main == null)
+            return false;
 
-        protected override bool HasAmbientEnergy(ref float ambientEnergyStatus)
-        {
-            ambientEnergyStatus = 0f;
+        ambientEnergyStatus = temperature = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
 
-            if (WaterTemperatureSimulation.main == null)
-                return false;
+        return temperature > 35f;
+    }
 
-            ambientEnergyStatus = temperature = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
-
-            return temperature > 35f;
-        }
-
-        protected override float GetAmbientEnergy()
-        {
-            return ThermalChargingFactor *
-                   DayNightCycle.main.deltaTime *
-                   base.Cyclops.thermalReactorCharge.Evaluate(temperature);
-        }
+    protected override float GetAmbientEnergy()
+    {
+        return ThermalChargingFactor *
+               DayNightCycle.main.deltaTime *
+               base.Cyclops.thermalReactorCharge.Evaluate(temperature);
     }
 }

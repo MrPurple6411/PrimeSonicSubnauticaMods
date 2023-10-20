@@ -6,5 +6,10 @@
 		<Version>1.0.0.0</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
+			<Private>True</Private>
+		</ProjectReference>
+	</ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
 </Project>

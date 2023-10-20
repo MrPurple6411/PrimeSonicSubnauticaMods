@@ -1,41 +1,40 @@
-﻿namespace CyclopsSimpleSolar
+﻿namespace CyclopsSimpleSolar;
+
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+using UnityEngine;
+
+internal class SolarPdaOverlay : IconOverlay
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
-    using UnityEngine;
+    private readonly CySolarChargeManager cySolarChargeManager;
 
-    internal class SolarPdaOverlay : IconOverlay
+    private readonly string crossModText;
+
+    public SolarPdaOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        : base(icon, upgradeModule)
     {
-        private readonly CySolarChargeManager cySolarChargeManager;
+        cySolarChargeManager = MCUServices.Find.CyclopsCharger<CySolarChargeManager>(base.Cyclops);
+        crossModText = Language.main.Get(Plugin.CrossModKey);
+    }
 
-        private readonly string crossModText;
-
-        public SolarPdaOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
-            : base(icon, upgradeModule)
+    public override void UpdateText()
+    {
+        if (cySolarChargeManager.SolarEnergyAvailable)
         {
-            cySolarChargeManager = MCUServices.Find.CyclopsCharger<CySolarChargeManager>(base.Cyclops);
-            crossModText = Language.main.Get(MainPatcher.CrossModKey);
+            base.MiddleText.FontSize = 16;
+            base.MiddleText.TextColor = cySolarChargeManager.StatusTextColor();
+            base.MiddleText.TextString = cySolarChargeManager.StatusText();
         }
-
-        public override void UpdateText()
+        else if (cySolarChargeManager.OtherCySolarModsPresent &&
+                 cySolarChargeManager.OtherSolarChargerModsEquipped)
         {
-            if (cySolarChargeManager.SolarEnergyAvailable)
-            {
-                base.MiddleText.FontSize = 16;
-                base.MiddleText.TextColor = cySolarChargeManager.StatusTextColor();
-                base.MiddleText.TextString = cySolarChargeManager.StatusText();
-            }
-            else if (cySolarChargeManager.OtherCySolarModsPresent &&
-                     cySolarChargeManager.OtherSolarChargerModsEquipped)
-            {
-                base.MiddleText.FontSize = 12;
-                base.MiddleText.TextColor = Color.red;
-                base.MiddleText.TextString = crossModText;
-            }
-            else
-            {
-                base.MiddleText.TextString = string.Empty;
-            }
+            base.MiddleText.FontSize = 12;
+            base.MiddleText.TextColor = Color.red;
+            base.MiddleText.TextString = crossModText;
+        }
+        else
+        {
+            base.MiddleText.TextString = string.Empty;
         }
     }
 }

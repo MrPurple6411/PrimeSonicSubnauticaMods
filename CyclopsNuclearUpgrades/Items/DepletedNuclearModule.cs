@@ -1,33 +1,32 @@
-﻿namespace CyclopsNuclearUpgrades
+﻿namespace CyclopsNuclearUpgrades;
+
+using System.IO;
+using System.Reflection;
+using Nautilus.Assets;
+using UnityEngine;
+
+internal class DepletedNuclearModule : Spawnable
 {
-    using System.IO;
-    using System.Reflection;
-    using Nautilus.Assets;
-    using UnityEngine;
+    private readonly CyclopsNuclearModule nuclearModule;
 
-    internal class DepletedNuclearModule : Spawnable
+    public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+
+    public DepletedNuclearModule(CyclopsNuclearModule module)
+        : base("DepletedCyclopsNuclearModule",
+               "Depleted Cyclops Nuclear Reactor Module",
+               "Nuclear waste.")
     {
-        private readonly CyclopsNuclearModule nuclearModule;
+        nuclearModule = module;
 
-        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
-
-        public DepletedNuclearModule(CyclopsNuclearModule module)
-            : base("DepletedCyclopsNuclearModule",
-                   "Depleted Cyclops Nuclear Reactor Module",
-                   "Nuclear waste.")
+        OnStartedPatching += () =>
         {
-            nuclearModule = module;
+            if (!nuclearModule.IsPatched)
+                nuclearModule.Patch();
+        };
+    }
 
-            OnStartedPatching += () =>
-            {
-                if (!nuclearModule.IsPatched)
-                    nuclearModule.Patch();
-            };
-        }
-
-        public override GameObject GetGameObject()
-        {
-            return GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.DepletedReactorRod));
-        }
+    public override GameObject GetGameObject()
+    {
+        return GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.DepletedReactorRod));
     }
 }

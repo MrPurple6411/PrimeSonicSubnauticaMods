@@ -1,42 +1,41 @@
-﻿namespace CyclopsEnhancedSonar
+﻿namespace CyclopsEnhancedSonar;
+
+using MoreCyclopsUpgrades.API.Upgrades;
+
+internal class SonarUpgradeHandler : UpgradeHandler
 {
-    using MoreCyclopsUpgrades.API.Upgrades;
+    public const int MaxUpgrades = 2;
 
-    internal class SonarUpgradeHandler : UpgradeHandler
+    private CySonarComponent cySonar;
+    private CySonarComponent CySonar => cySonar ?? (cySonar = base.Cyclops?.gameObject?.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>());
+
+    private CyclopsSonarButton cyButton;
+    private CyclopsSonarButton CyButton => cyButton ?? (cyButton = base.Cyclops?.gameObject?.GetComponentInChildren<CyclopsSonarButton>());
+
+    public SonarUpgradeHandler(SubRoot cyclops)
+        : base(TechType.CyclopsSonarModule, cyclops)
     {
-        public const int MaxUpgrades = 2;
+        cySonar = base.Cyclops?.gameObject?.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>();
+        cyButton = base.Cyclops?.gameObject?.GetComponentInChildren<CyclopsSonarButton>();
 
-        private CySonarComponent cySonar;
-        private CySonarComponent CySonar => cySonar ?? (cySonar = base.Cyclops?.gameObject?.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>());
-
-        private CyclopsSonarButton cyButton;
-        private CyclopsSonarButton CyButton => cyButton ?? (cyButton = base.Cyclops?.gameObject?.GetComponentInChildren<CyclopsSonarButton>());
-
-        public SonarUpgradeHandler(SubRoot cyclops)
-            : base(TechType.CyclopsSonarModule, cyclops)
+        this.MaxCount = MaxUpgrades;
+        OnFinishedUpgrades = () =>
         {
-            cySonar = base.Cyclops?.gameObject?.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>();
-            cyButton = base.Cyclops?.gameObject?.GetComponentInChildren<CyclopsSonarButton>();
+            bool hasUpgrade = base.HasUpgrade;
 
-            this.MaxCount = MaxUpgrades;
-            OnFinishedUpgrades = () =>
+            // Vanilla behavior that toggles the sonar button
+            base.Cyclops.sonarUpgrade = hasUpgrade;
+
+            // New behavior that toggles the near field sonar map
+            this.CySonar?.SetMapState(hasUpgrade);
+
+            if (hasUpgrade && this.CyButton != null)
             {
-                bool hasUpgrade = base.HasUpgrade;
-
-                // Vanilla behavior that toggles the sonar button
-                base.Cyclops.sonarUpgrade = hasUpgrade;
-
-                // New behavior that toggles the near field sonar map
-                this.CySonar?.SetMapState(hasUpgrade);
-
-                if (hasUpgrade && this.CyButton != null)
-                {
-                    // 1 sonar module = 5 seconds (vanilla)
-                    // 2 sonar modules = 3.9 seconds
-                    float pinginterval = 6.1f - 1.1f * this.Count;
-                    this.CyButton.pingIterationDuration = pinginterval;
-                }
-            };
-        }
+                // 1 sonar module = 5 seconds (vanilla)
+                // 2 sonar modules = 3.9 seconds
+                float pinginterval = 6.1f - 1.1f * this.Count;
+                this.CyButton.pingIterationDuration = pinginterval;
+            }
+        };
     }
 }

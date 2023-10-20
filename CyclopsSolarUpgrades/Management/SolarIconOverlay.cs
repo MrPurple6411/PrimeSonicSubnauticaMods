@@ -1,11 +1,10 @@
-﻿namespace CyclopsSolarUpgrades.Management
-{
-    using MoreCyclopsUpgrades.API.AmbientEnergy;
+﻿namespace CyclopsSolarUpgrades.Management;
 
-    internal class SolarIconOverlay : AmbientEnergyIconOverlay<SolarUpgradeHandler, SolarCharger>
+using MoreCyclopsUpgrades.API.AmbientEnergy;
+
+internal class SolarIconOverlay : AmbientEnergyIconOverlay<SolarUpgradeHandler, SolarCharger>
+{
+    public SolarIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
     {
-        public SolarIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
-        {
-        }
     }
 }

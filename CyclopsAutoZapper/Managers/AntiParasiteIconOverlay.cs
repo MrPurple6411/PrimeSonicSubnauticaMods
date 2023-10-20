@@ -1,59 +1,58 @@
-﻿namespace CyclopsAutoZapper.Managers
+﻿namespace CyclopsAutoZapper.Managers;
+
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+using UnityEngine;
+
+internal class AntiParasiteIconOverlay : IconOverlay
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
-    using UnityEngine;
+    private readonly ShieldPulser shieldPulser;
 
-    internal class AntiParasiteIconOverlay : IconOverlay
+    public AntiParasiteIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
     {
-        private readonly ShieldPulser shieldPulser;
+        shieldPulser = MCUServices.Find.AuxCyclopsManager<ShieldPulser>(base.Cyclops);
+    }
 
-        public AntiParasiteIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
+    public override void UpdateText()
+    {
+        if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
         {
-            shieldPulser = MCUServices.Find.AuxCyclopsManager<ShieldPulser>(base.Cyclops);
+            base.MiddleText.FontSize = 20;
+            base.MiddleText.TextString = DisplayTexts.Main.CyclopsPowerLow;
+            base.MiddleText.TextColor = Color.red;
+
+            base.UpperText.TextString = string.Empty;
+            base.LowerText.TextString = string.Empty;
         }
-
-        public override void UpdateText()
+        else
         {
-            if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
-            {
-                base.MiddleText.FontSize = 20;
-                base.MiddleText.TextString = DisplayTexts.Main.CyclopsPowerLow;
-                base.MiddleText.TextColor = Color.red;
+            base.UpperText.FontSize = 12;
+            base.MiddleText.FontSize = 12;
+            base.LowerText.FontSize = 12;
 
-                base.UpperText.TextString = string.Empty;
-                base.LowerText.TextString = string.Empty;
-            }
-            else
+            if (shieldPulser.HasShieldModule)
             {
-                base.UpperText.FontSize = 12;
-                base.MiddleText.FontSize = 12;
-                base.LowerText.FontSize = 12;
+                base.UpperText.TextString = DisplayTexts.Main.ShieldConnected;
+                base.UpperText.TextColor = Color.green;
 
-                if (shieldPulser.HasShieldModule)
+                if (shieldPulser.IsOnCooldown)
                 {
-                    base.UpperText.TextString = DisplayTexts.Main.ShieldConnected;
-                    base.UpperText.TextColor = Color.green;
-
-                    if (shieldPulser.IsOnCooldown)
-                    {
-                        base.LowerText.TextString = DisplayTexts.Main.DefenseCooldown;
-                        base.LowerText.TextColor = Color.yellow;
-                    }
-                    else
-                    {
-                        base.LowerText.TextString = DisplayTexts.Main.DefenseCharged;
-                        base.LowerText.TextColor = Color.white;
-                    }
+                    base.LowerText.TextString = DisplayTexts.Main.DefenseCooldown;
+                    base.LowerText.TextColor = Color.yellow;
                 }
                 else
                 {
-                    base.UpperText.TextString = DisplayTexts.Main.ShieldNotConnected;
-                    base.UpperText.TextColor = Color.red;
-
-                    base.MiddleText.TextString = string.Empty;
-                    base.LowerText.TextString = string.Empty;
+                    base.LowerText.TextString = DisplayTexts.Main.DefenseCharged;
+                    base.LowerText.TextColor = Color.white;
                 }
+            }
+            else
+            {
+                base.UpperText.TextString = DisplayTexts.Main.ShieldNotConnected;
+                base.UpperText.TextColor = Color.red;
+
+                base.MiddleText.TextString = string.Empty;
+                base.LowerText.TextString = string.Empty;
             }
         }
     }

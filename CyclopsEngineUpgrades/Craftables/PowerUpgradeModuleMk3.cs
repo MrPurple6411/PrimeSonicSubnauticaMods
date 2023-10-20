@@ -1,45 +1,41 @@
-﻿namespace CyclopsEngineUpgrades.Craftables
+﻿namespace CyclopsEngineUpgrades.Craftables;
+
+using System.IO;
+using System.Reflection;
+using MoreCyclopsUpgrades.API.Upgrades;
+using Nautilus.Crafting;
+using static CraftData;
+
+internal class PowerUpgradeModuleMk3 : CyclopsUpgrade
 {
-    using System.IO;
-    using System.Reflection;
-    using MoreCyclopsUpgrades.API.Upgrades;
-    using Nautilus.Crafting;
+    private readonly PowerUpgradeModuleMk2 previousTier;
 
-    internal class PowerUpgradeModuleMk3 : CyclopsUpgrade
+    public PowerUpgradeModuleMk3(PowerUpgradeModuleMk2 mk2Upgrade)
+        : base("PowerUpgradeModuleMk3",
+              "Cyclops Engine Efficiency Module MK3",
+              "Maximum engine efficiency. Silent running, Sonar, and Shield greatly optimized.\n" +
+              "Does not stack with other engine upgrades.")
     {
-        private readonly PowerUpgradeModuleMk2 previousTier;
+        previousTier = mk2Upgrade;
+        if (!previousTier.IsPatched)
+            previousTier.Patch();
+    }
 
-        public PowerUpgradeModuleMk3(PowerUpgradeModuleMk2 mk2Upgrade)
-            : base("PowerUpgradeModuleMk3",
-                  "Cyclops Engine Efficiency Module MK3",
-                  "Maximum engine efficiency. Silent running, Sonar, and Shield greatly optimized.\n" +
-                  "Does not stack with other engine upgrades.")
+    public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
+    public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+    public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
+
+    protected override RecipeData GetBlueprintRecipe()
+    {
+        return new RecipeData()
         {
-            previousTier = mk2Upgrade;
-
-            OnStartedPatching += () =>
+            craftAmount = 1,
+            Ingredients =
             {
-                if (!previousTier.IsPatched)
-                    previousTier.Patch();
-            };
-        }
-
-        public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
-        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
-        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
-
-        protected override TechData GetBlueprintRecipe()
-        {
-            return new TechData()
-            {
-                craftAmount = 1,
-                Ingredients =
-                {
-                    new Ingredient(previousTier.TechType, 1),
-                    new Ingredient(TechType.PrecursorIonCrystal, 1),
-                    new Ingredient(TechType.Nickel, 1),
-                }
-            };
-        }
+                new Ingredient(previousTier.TechType, 1),
+                new Ingredient(TechType.PrecursorIonCrystal, 1),
+                new Ingredient(TechType.Nickel, 1),
+            }
+        };
     }
 }

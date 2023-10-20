@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades;
 
+using System;
 using System.Collections;
 using System.IO;
 using System.Reflection;
@@ -54,10 +55,19 @@ public abstract class CyclopsUpgrade
     /// </summary>
     public virtual TechType SortAfter => TechType.None;
 
+    public virtual CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
+    public virtual string[] StepsToFabricatorTab { get; } = new[] { "Vanilla" };
+
+    public virtual float CraftingTime => 0f;
 
     public PrefabInfo Info { get; private init; }
     public TechType TechType => Info.TechType;
     public CustomPrefab CustomPrefab { get; private init; }
+    public bool IsPatched { get; internal set; }
+
+    public event Action OnStartedPatching;
+
+    public event Action OnFinishedPatching;
 
     /// <summary>
     /// Initializes a new instance of the <seealso cref="Craftable"/> <see cref="CyclopsUpgrade"/> class.<para/>
@@ -92,14 +102,23 @@ public abstract class CyclopsUpgrade
             scanningGadget.WithAnalysisTech(null);
         }
 
-        CustomPrefab.SetRecipe(GetBlueprintRecipe());
-        CustomPrefab.SetGameObject(GetGameObjectAsync);
+        CustomPrefab.SetRecipe(GetBlueprintRecipe())
+            .WithFabricatorType(FabricatorType)
+            .WithStepsToFabricatorTab(StepsToFabricatorTab)
+            .WithCraftingTime(CraftingTime);
 
+        CustomPrefab.SetGameObject(GetGameObjectAsync);
     }
 
     public void Patch()
     {
+        if(IsPatched)
+            return;
+
+        OnStartedPatching?.Invoke();
         CustomPrefab.Register();
+        OnFinishedPatching?.Invoke();
+        IsPatched = true;
     }
 
     protected virtual RecipeData GetBlueprintRecipe() => CraftDataHandler.GetRecipeData(PrefabTemplate);

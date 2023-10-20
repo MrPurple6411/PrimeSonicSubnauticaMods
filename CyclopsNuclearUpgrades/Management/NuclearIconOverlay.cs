@@ -1,44 +1,43 @@
-﻿namespace CyclopsNuclearUpgrades.Management
+﻿namespace CyclopsNuclearUpgrades.Management;
+
+using Common;
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+using UnityEngine;
+
+internal class NuclearIconOverlay : IconOverlay
 {
-    using Common;
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
-    using UnityEngine;
+    private readonly NuclearChargeHandler chargeHandler;
+    private readonly Battery battery;
 
-    internal class NuclearIconOverlay : IconOverlay
+    public NuclearIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        : base(icon, upgradeModule)
     {
-        private readonly NuclearChargeHandler chargeHandler;
-        private readonly Battery battery;
+        chargeHandler = MCUServices.Find.CyclopsCharger<NuclearChargeHandler>(base.Cyclops);
+        battery = base.Item.item.GetComponent<Battery>();
+    }
 
-        public NuclearIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
-            : base(icon, upgradeModule)
+    public override void UpdateText()
+    {
+        float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, 24f);
+
+        if (chargeHandler.IsOverheated)
         {
-            chargeHandler = MCUServices.Find.CyclopsCharger<NuclearChargeHandler>(base.Cyclops);
-            battery = base.Item.item.GetComponent<Battery>();
+            base.UpperText.TextString = CyclopsNuclearModule.OverheatMsg;
+            base.UpperText.FontSize = 14;
+        }
+        else
+        {
+            base.UpperText.TextString = NumberFormatter.FormatValue(displayTemperature) + "°C";
+            base.UpperText.FontSize = 20;
         }
 
-        public override void UpdateText()
+        base.UpperText.TextColor = chargeHandler.StatusTextColor();
+
+        if (battery != null)
         {
-            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, 24f);
-
-            if (chargeHandler.IsOverheated)
-            {
-                base.UpperText.TextString = CyclopsNuclearModule.OverheatMsg;
-                base.UpperText.FontSize = 14;
-            }
-            else
-            {
-                base.UpperText.TextString = NumberFormatter.FormatValue(displayTemperature) + "°C";
-                base.UpperText.FontSize = 20;
-            }
-
-            base.UpperText.TextColor = chargeHandler.StatusTextColor();
-
-            if (battery != null)
-            {
-                base.LowerText.TextString = NumberFormatter.FormatValue(battery._charge);
-                base.MiddleText.TextColor = NumberFormatter.GetNumberColor(battery._charge, CyclopsNuclearModule.NuclearEnergyPotential, 0f);
-            }
+            base.LowerText.TextString = NumberFormatter.FormatValue(battery._charge);
+            base.MiddleText.TextColor = NumberFormatter.GetNumberColor(battery._charge, CyclopsNuclearModule.NuclearEnergyPotential, 0f);
         }
     }
 }

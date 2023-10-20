@@ -14,5 +14,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
+			<Private>True</Private>
+		</ProjectReference>
+	</ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
 </Project>

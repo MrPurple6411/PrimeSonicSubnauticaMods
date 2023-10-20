@@ -1,66 +1,65 @@
-﻿namespace CyclopsAutoZapper.Managers
+﻿namespace CyclopsAutoZapper.Managers;
+
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+using UnityEngine;
+
+internal class AutoDefenseIconOverlay : IconOverlay
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
-    using UnityEngine;
+    private readonly AutoDefenser zapper;
 
-    internal class AutoDefenseIconOverlay : IconOverlay
+    public AutoDefenseIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
     {
-        private readonly AutoDefenser zapper;
+        zapper = MCUServices.Find.AuxCyclopsManager<AutoDefenser>(base.Cyclops);
+    }
 
-        public AutoDefenseIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
+    public override void UpdateText()
+    {
+        if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
         {
-            zapper = MCUServices.Find.AuxCyclopsManager<AutoDefenser>(base.Cyclops);
+            base.MiddleText.FontSize = 20;
+            base.MiddleText.TextString = DisplayTexts.Main.CyclopsPowerLow;
+            base.MiddleText.TextColor = Color.red;
+
+            base.UpperText.TextString = string.Empty;
+            base.LowerText.TextString = string.Empty;
         }
-
-        public override void UpdateText()
+        else
         {
-            if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
-            {
-                base.MiddleText.FontSize = 20;
-                base.MiddleText.TextString = DisplayTexts.Main.CyclopsPowerLow;
-                base.MiddleText.TextColor = Color.red;
+            base.UpperText.FontSize = 12;
+            base.LowerText.FontSize = 12;
 
-                base.UpperText.TextString = string.Empty;
-                base.LowerText.TextString = string.Empty;
-            }
-            else
+            if (zapper.SeamothInBay)
             {
-                base.UpperText.FontSize = 12;
-                base.LowerText.FontSize = 12;
+                base.UpperText.TextString = DisplayTexts.Main.SeamothConnected;
+                base.UpperText.TextColor = Color.green;
 
-                if (zapper.SeamothInBay)
+                if (zapper.HasSeamothWithElectricalDefense)
                 {
-                    base.UpperText.TextString = DisplayTexts.Main.SeamothConnected;
-                    base.UpperText.TextColor = Color.green;
-
-                    if (zapper.HasSeamothWithElectricalDefense)
+                    if (zapper.IsOnCooldown)
                     {
-                        if (zapper.IsOnCooldown)
-                        {
-                            base.LowerText.TextString = DisplayTexts.Main.DefenseCooldown;
-                            base.LowerText.TextColor = Color.yellow;
-                        }
-                        else
-                        {
-                            base.LowerText.TextString = DisplayTexts.Main.DefenseCharged;
-                            base.LowerText.TextColor = Color.white;
-                        }
+                        base.LowerText.TextString = DisplayTexts.Main.DefenseCooldown;
+                        base.LowerText.TextColor = Color.yellow;
                     }
                     else
                     {
-                        base.LowerText.TextString = DisplayTexts.Main.DefenseMissing;
-                        base.LowerText.TextColor = Color.red;
+                        base.LowerText.TextString = DisplayTexts.Main.DefenseCharged;
+                        base.LowerText.TextColor = Color.white;
                     }
                 }
                 else
                 {
-                    base.UpperText.TextString = DisplayTexts.Main.SeamothNotConnected;
-                    base.UpperText.TextColor = Color.red;
-
-                    base.MiddleText.TextString = string.Empty;
-                    base.LowerText.TextString = string.Empty;
+                    base.LowerText.TextString = DisplayTexts.Main.DefenseMissing;
+                    base.LowerText.TextColor = Color.red;
                 }
+            }
+            else
+            {
+                base.UpperText.TextString = DisplayTexts.Main.SeamothNotConnected;
+                base.UpperText.TextColor = Color.red;
+
+                base.MiddleText.TextString = string.Empty;
+                base.LowerText.TextString = string.Empty;
             }
         }
     }
