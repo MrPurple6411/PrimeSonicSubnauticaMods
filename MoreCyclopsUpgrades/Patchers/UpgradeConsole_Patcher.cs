@@ -1,102 +1,74 @@
-﻿namespace MoreCyclopsUpgrades.Patchers
+﻿namespace MoreCyclopsUpgrades.Patchers;
+
+using System.Collections.Generic;
+using System.IO;
+using Common;
+using HarmonyLib;
+using MoreCyclopsUpgrades.API.Buildables;
+using Newtonsoft.Json;
+
+[HarmonyPatch(typeof(UpgradeConsole))]
+internal static class UpgradeConsole_OnProtoDeserializeObjectTree_Patcher
 {
-    using Common;
-    using HarmonyLib;
-    using MoreCyclopsUpgrades.AuxConsole;
-    using MoreCyclopsUpgrades.Managers;
-    using UnityEngine;
 
-    [HarmonyPatch(typeof(UpgradeConsole), nameof(UpgradeConsole.OnHandClick))]
-    internal static class UpgradeConsole_OnHandClick_Patcher
+    [HarmonyPatch(nameof(UpgradeConsole.OnProtoDeserializeObjectTree))]
+    [HarmonyPrefix]
+    public static void Prefix(UpgradeConsole __instance)
     {
-        [HarmonyPrefix]
-        public static void Prefix(UpgradeConsole __instance)
+        if (__instance is AuxiliaryUpgradeConsole auxiliary)
         {
-            PdaOverlayManager.StartConnectingToPda(__instance.modules);
-        }
+            var saveFolder = Path.Combine(SaveLoadManager.GetTemporarySavePath(), "MoreCyclopsUpgrades");
+            if (!Directory.Exists(saveFolder))
+                Directory.CreateDirectory(saveFolder);
 
-        [HarmonyPostfix]
-        public static void Postfix(UpgradeConsole __instance)
-        {
-            PDA pda = Player.main.GetPDA();
-            pda.onClose = new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda());
-        }
-    }
+            var uniqueIdentifier = auxiliary.GetComponentInParent<UniqueIdentifier>(true);
 
-    [HarmonyPatch(typeof(UpgradeConsole), nameof(UpgradeConsole.UnlockDefaultModuleSlots))]
-    internal static class UpgradeConsole_UnlockDefaultModuleSlots_Patcher
-    {
-        [HarmonyPostfix]
-        public static void Postfix(UpgradeConsole __instance)
-        {
-            if (ModuleDisplayIconCollection.IsRegistered(__instance))
+            if (uniqueIdentifier == null)
+            {
+                QuickLogger.Error($"Failed to load MoreCyclopsUpgrades Save Data as no identifier could be found!!!!!", true);
                 return;
+            }
 
-            var rotation = Quaternion.Euler(0f, 155f, 90f);
+            var savePath = Path.Combine(saveFolder, $"MCUSaveData_{uniqueIdentifier.Id}.json");
+            try
+            {
+                if (File.Exists(savePath))
+                    auxiliary.serializedModuleSlots = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(savePath));
+                else
+                    QuickLogger.Debug($"No MoreCyclopsUpgrades Save Data found at {savePath}", true);
 
-            Equipment modules = __instance.modules;
-
-            const float topRowX = -0.124f;
-            const float botRowX = -0.271f;
-
-            const float rigtColY = 0.151f;
-            const float middColY = 0f;
-            const float leftColY = -rigtColY;
-
-            const float topRowZ = 1.18f;
-            const float botRowZ = 1.1f;
-
-            Canvas moduleDisplay1 = IconCreator.CreateModuleDisplay(__instance.gameObject, new Vector3(topRowX, leftColY, topRowZ), rotation, modules.GetTechTypeInSlot("Module1"));
-            Canvas moduleDisplay2 = IconCreator.CreateModuleDisplay(__instance.gameObject, new Vector3(topRowX, middColY, topRowZ), rotation, modules.GetTechTypeInSlot("Module2"));
-            Canvas moduleDisplay3 = IconCreator.CreateModuleDisplay(__instance.gameObject, new Vector3(topRowX, rigtColY, topRowZ), rotation, modules.GetTechTypeInSlot("Module3"));
-
-            Canvas moduleDisplay4 = IconCreator.CreateModuleDisplay(__instance.gameObject, new Vector3(botRowX, leftColY, botRowZ), rotation, modules.GetTechTypeInSlot("Module4"));
-            Canvas moduleDisplay5 = IconCreator.CreateModuleDisplay(__instance.gameObject, new Vector3(botRowX, middColY, botRowZ), rotation, modules.GetTechTypeInSlot("Module5"));
-            Canvas moduleDisplay6 = IconCreator.CreateModuleDisplay(__instance.gameObject, new Vector3(botRowX, rigtColY, botRowZ), rotation, modules.GetTechTypeInSlot("Module6"));
-
-            ModuleDisplayIconCollection.Register(__instance, moduleDisplay1, moduleDisplay2, moduleDisplay3, moduleDisplay4, moduleDisplay5, moduleDisplay6);
-
-            QuickLogger.Debug("Added module display icons to Cyclops engine room");
+            }
+            catch (System.Exception e)
+            {
+                QuickLogger.Error($"Failed to load MoreCyclopsUpgrades Save Data at {savePath}!!!!!", true);
+                QuickLogger.Error(e.Message);
+            }
         }
     }
 
-    [HarmonyPatch(typeof(UpgradeConsole), nameof(UpgradeConsole.OnEquip))]
-    internal static class UpgradeConsole_OnEquip_Patcher
+    [HarmonyPatch(nameof(UpgradeConsole.OnProtoSerialize))]
+    [HarmonyPostfix]
+    public static void Postfix(UpgradeConsole __instance)
     {
-        [HarmonyPrefix]
-        public static bool Prefix(UpgradeConsole __instance, string slot, InventoryItem item)
+        if (__instance is AuxiliaryUpgradeConsole auxiliary)
         {
-            if (ModuleDisplayIconCollection.TryGetRegistered(__instance, out ModuleIconDisplay consoleIcons))
+            var saveFolder = Path.Combine(SaveLoadManager.GetTemporarySavePath(), "MoreCyclopsUpgrades");
+            if (!Directory.Exists(saveFolder))
+                Directory.CreateDirectory(saveFolder);
+
+            var uniqueIdentifier = auxiliary.GetComponentInParent<UniqueIdentifier>();
+            var savePath = Path.Combine(saveFolder, $"MCUSaveData_{uniqueIdentifier.Id}.json");
+            try
             {
-                TechType techType = __instance.modules.GetTechTypeInSlot(slot);
-                consoleIcons.EnableIcon(slot, techType);
+                File.WriteAllText(savePath, JsonConvert.SerializeObject(auxiliary.serializedModuleSlots, Formatting.Indented));
 
-                GameObject modulePlug = ModuleDisplayIconCollection.GetModulePlug(__instance, slot);
-                modulePlug.SetActive(true);
-                return false;
+                QuickLogger.Debug($"Saved MoreCyclopsUpgrades Save Data to {savePath}", true);
             }
-
-            return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(UpgradeConsole), nameof(UpgradeConsole.OnUnequip))]
-    internal static class UpgradeConsole_OnUnequip_Patcher
-    {
-        [HarmonyPrefix]
-        public static bool Prefix(UpgradeConsole __instance, string slot, InventoryItem item)
-        {
-            if (ModuleDisplayIconCollection.TryGetRegistered(__instance, out ModuleIconDisplay consoleIcons))
+            catch (System.Exception e)
             {
-                consoleIcons.DisableIcon(slot);
-
-                GameObject modulePlug = ModuleDisplayIconCollection.GetModulePlug(__instance, slot);
-                modulePlug.SetActive(false);
-
-                return false;
+                QuickLogger.Error($"Failed to save MoreCyclopsUpgrades Save Data at {savePath}!!!!!", true);
+                QuickLogger.Error(e.Message);
             }
-
-            return true;
         }
     }
 }

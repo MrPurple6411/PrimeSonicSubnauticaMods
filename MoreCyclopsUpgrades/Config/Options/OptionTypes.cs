@@ -1,9 +1,8 @@
-﻿namespace MoreCyclopsUpgrades.Config.Options
+﻿namespace MoreCyclopsUpgrades.Config.Options;
+
+internal enum OptionTypes
 {
-    internal enum OptionTypes
-    {
-        Slider,        
-        Choice,
-        Toggle
-    }
+    Slider,        
+    Choice,
+    Toggle
 }

@@ -1,23 +1,22 @@
-﻿namespace MoreCyclopsUpgrades.Managers
+﻿namespace MoreCyclopsUpgrades.Managers;
+
+using UnityEngine.UI;
+
+internal class PowerIndicatorIcon
 {
-    using UnityEngine.UI;
+    internal uGUI_Icon Icon;
+    internal Text Text;
 
-    internal class PowerIndicatorIcon
+    internal PowerIndicatorIcon(uGUI_Icon icon, Text text)
     {
-        internal uGUI_Icon Icon;
-        internal Text Text;
+        Icon = icon;
+        Text = text;
+        SetEnabled(false);
+    }
 
-        internal PowerIndicatorIcon(uGUI_Icon icon, Text text)
-        {
-            Icon = icon;
-            Text = text;
-            SetEnabled(false);
-        }
-
-        internal void SetEnabled(bool value)
-        {
-            Icon.enabled = value;
-            Text.enabled = value;
-        }
+    internal void SetEnabled(bool value)
+    {
+        Icon.enabled = value;
+        Text.enabled = value;
     }
 }

@@ -1,30 +1,29 @@
-﻿namespace MoreCyclopsUpgrades.VanillaModules
+﻿namespace MoreCyclopsUpgrades.VanillaModules;
+
+using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.PDA;
+
+internal class VanillaThermalPdaOverlay : IconOverlay
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.PDA;
+    private readonly VanillaThermalChargeManager thermalCharger;
 
-    internal class VanillaThermalPdaOverlay : IconOverlay
+    public VanillaThermalPdaOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        : base(icon, upgradeModule)
     {
-        private readonly VanillaThermalChargeManager thermalCharger;
+        thermalCharger = MCUServices.Find.CyclopsCharger<VanillaThermalChargeManager>(base.Cyclops);
+    }
 
-        public VanillaThermalPdaOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
-            : base(icon, upgradeModule)
+    public override void UpdateText()
+    {
+        if (thermalCharger.ThermalEnergyAvailable)
         {
-            thermalCharger = MCUServices.Find.CyclopsCharger<VanillaThermalChargeManager>(base.Cyclops);
+            base.MiddleText.FontSize = 16;
+            base.MiddleText.TextColor = thermalCharger.StatusTextColor();
+            base.MiddleText.TextString = thermalCharger.StatusText();
         }
-
-        public override void UpdateText()
+        else
         {
-            if (thermalCharger.ThermalEnergyAvailable)
-            {
-                base.MiddleText.FontSize = 16;
-                base.MiddleText.TextColor = thermalCharger.StatusTextColor();
-                base.MiddleText.TextString = thermalCharger.StatusText();
-            }
-            else
-            {
-                base.MiddleText.TextString = string.Empty;
-            }
+            base.MiddleText.TextString = string.Empty;
         }
     }
 }
