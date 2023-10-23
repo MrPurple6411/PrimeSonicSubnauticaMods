@@ -9,7 +9,7 @@ using Nautilus.Handlers;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency("com.snmodding.nautilus", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.HardDependency)]
-[BepInDependency("com.mrpurple6411.CyclopsSolarUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInIncompatibility("com.mrpurple6411.CyclopsSolarUpgrades")]
 public class Plugin: BaseUnityPlugin
 {
     private static TechType solarChargerMk1 = TechType.None;
