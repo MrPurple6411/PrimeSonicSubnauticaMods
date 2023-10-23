@@ -17,9 +17,10 @@ public class Plugin : BaseUnityPlugin
         QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
         var engineMk2Upgrade = new PowerUpgradeModuleMk2();
-        var engineMk3Upgrade = new PowerUpgradeModuleMk3(engineMk2Upgrade);
-
         engineMk2Upgrade.Patch();
+
+        PowerUpgradeModuleMk3.PreviousTier = engineMk2Upgrade;
+        var engineMk3Upgrade = new PowerUpgradeModuleMk3();
         engineMk3Upgrade.Patch();
 
         LanguageHandler.SetLanguageLine(EngineOverlay.BonusKey, "[Bonus Efficiency]");
