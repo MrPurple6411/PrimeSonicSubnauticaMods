@@ -18,7 +18,7 @@ public class Plugin : BaseUnityPlugin
 
         try
         {
-            var harmony = new Harmony("com.CyclopsEnhancedSonar.psmod");
+            var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
             harmony.Patch( // Create a postfix patch on the SubControl Start method to add the CySonarComponent
                 original: AccessTools.Method(typeof(SubControl), nameof(SubControl.Start)), 
                 postfix: new HarmonyMethod(typeof(Plugin), nameof(Plugin.SubControlStartPostfix)));

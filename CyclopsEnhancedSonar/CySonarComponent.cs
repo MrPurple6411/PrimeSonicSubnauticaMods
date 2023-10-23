@@ -2,20 +2,12 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using Common;
 using UnityEngine;
 
 // Code adapted from the original CyclopsNearFieldSonar mod by frigidpenguin
 internal class CySonarComponent : MonoBehaviour
 {
-    private static IEnumerator<YieldInstruction> EachFrameUntil(Func<bool> action)
-    {
-        while (!action())
-        {
-            yield return null;
-        }
-    }
-
     public void SetMapState(bool state)
     {
         if (state)
@@ -27,20 +19,37 @@ internal class CySonarComponent : MonoBehaviour
     private const float scale = 6.699605f;
     private const float fadeRadius = 1.503953f;
     private const float shipScale = 0.2f;
-    private readonly Vector3 position = new Vector3(-0.9762846f, 2, -10.6917f);
-    private readonly Vector3 shipPosition = new Vector3(0, 0, 0);
+    private readonly Vector3 position = new(-0.9762846f, 2, -10.6917f);
+    private readonly Vector3 shipPosition = new(0, 0, 0);
+
+    private Vector3 originalLocation;
+    private Vector3 compassLocation = new(0, 0, -1);
+    private Transform compass;
+    private Transform sonarMap;
+    private GameObject projector;
+    private bool frontMapActive;
 
     private MiniWorld script;
-    private Material material;
+    private MiniWorld scriptFront;
     private GameObject ship;
+    private SubRoot subRoot;
 
-    private IEnumerator Start()
+    public void Awake()
     {
-        Transform root = this.gameObject.transform.Find("SonarMap_Small");
-        var holder = new GameObject("NearFieldSonar");
-        holder.transform.SetParent(root, false);
-        holder.transform.localScale = Vector3.one * 0.1f;
+        subRoot = GetComponentInParent<SubRoot>();
+    }
 
+    public IEnumerator Start()
+    {
+        compass = this.gameObject.transform.Find("Compass");
+        sonarMap = this.gameObject.transform.Find("SonarMap_Small");
+        originalLocation = sonarMap.localPosition;
+
+        projector = sonarMap.Find("submarine_hologram_projector").gameObject;
+
+        var holder = new GameObject("NearFieldSonar");
+        holder.transform.SetParent(sonarMap, false);
+        holder.transform.localScale = Vector3.one * 0.1f;
 
         var task = CraftData.GetPrefabForTechTypeAsync(TechType.Seaglide);
         yield return task;
@@ -51,17 +60,18 @@ internal class CySonarComponent : MonoBehaviour
         hologram.transform.SetParent(holder.transform, false);
 
         script = hologram.GetComponentInChildren<MiniWorld>();
+        script.fadeRadius = fadeRadius;
+        script.fadeSharpness /= 16f;
+        script.hologramHolder.transform.localScale = Vector3.one * scale;
+        script.hologramHolder.transform.localPosition = position * (1 / scale);
         script.active = true;
         script.EnableMap();
 
-        StartCoroutine(EachFrameUntil(() =>
-        {
-            material = script.materialInstance;
-            return UpdateParameters();
-        }));
-
-        ship = GameObject.Instantiate(this.gameObject.transform.Find("HolographicDisplay/CyclopsMini_Mid").gameObject);
-        ship.transform.SetParent(root, false);
+        ship = GameObject.Instantiate(this.gameObject.transform.Find("HolographicDisplay/HolographicDisplayVisuals/CyclopsMini_Mid").gameObject);
+        ship.gameObject.name = "CyclopsMini_Mid";
+        ship.transform.SetParent(sonarMap, false);
+        ship.transform.localPosition = shipPosition;
+        ship.transform.localScale = Vector3.one * shipScale;
 
         MeshRenderer[] cyclopsMeshRenderers = ship.transform.GetComponentsInChildren<MeshRenderer>();
 
@@ -73,29 +83,41 @@ internal class CySonarComponent : MonoBehaviour
             }
         }
 
-        MeshRenderer oldShipRenderer = root.Find("CyclopsMini").GetComponent<MeshRenderer>();
+        MeshRenderer oldShipRenderer = sonarMap.Find("CyclopsMini").GetComponent<MeshRenderer>();
         Material shipMaterial = oldShipRenderer.material;
 
         foreach (MeshRenderer meshRenderer in cyclopsMeshRenderers)
             meshRenderer.sharedMaterial = shipMaterial;
 
         oldShipRenderer.enabled = false;
-        root.Find("Base").GetComponent<MeshRenderer>().enabled = false;
+        sonarMap.Find("Base").GetComponent<MeshRenderer>().enabled = false;
     }
 
-    private bool UpdateParameters()
+    public void Update()
     {
-        if (material == null)
-            return false;
+        if (sonarMap == null || !Player.main.IsPiloting() || Player.main.currentSub != subRoot)
+            return;
 
-        script.hologramHolder.transform.localScale = Vector3.one * scale;
-        script.hologramHolder.transform.localPosition = position * (1 / scale);
+        if (GameInput.GetButtonDown(GameInput.Button.AltTool))
+        {
+            frontMapActive = !frontMapActive;
+            if(frontMapActive)
+            {
+                sonarMap.SetParent(compass);
+                sonarMap.localPosition = compassLocation;
+                projector.SetActive(false);
+            }
+            else
+            {
+                sonarMap.SetParent(this.gameObject.transform);
+                sonarMap.localPosition = originalLocation;
+                projector.SetActive(true);
+            }
+            
+            return;
+        }
 
-        material.SetFloat("_FadeRadius", fadeRadius);
-
-        ship.transform.localPosition = shipPosition;
-        ship.transform.localScale = Vector3.one * shipScale;
-
-        return true;
+        if (!frontMapActive)
+            return;
     }
 }
