@@ -34,8 +34,6 @@ public class Plugin : BaseUnityPlugin
     {
         QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-        QuickLogger.DebugLogsEnabled = true;
-
         // If enabled, patch the Auxiliary Upgrade Console as a new buildable.
         if (ModConfig.Main.AuxConsoleEnabled)
             AuxCyUpgradeConsole.CreateAndRegister();

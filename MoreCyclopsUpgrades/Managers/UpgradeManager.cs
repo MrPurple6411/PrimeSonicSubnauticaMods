@@ -171,25 +171,24 @@ internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
         foreach (UpgradeHandler upgrade in KnownsUpgradeModules.Values)
             upgradeHandlers[u++] = upgrade;
 
-        QuickLogger.Debug("Attaching events to Engine Room Upgrade Console");
-
         engineRoomUpgradeConsole ??= Cyclops.upgradeConsole.modules;
-
         AttachEquipmentEvents(ref engineRoomUpgradeConsole);
 
         Initialized = true;
         TooLateToRegister = true;
     }
 
-    public void AttachEquipmentEvents(ref Equipment upgradeConsoleEquipment)
+    public void AttachEquipmentEvents(ref Equipment equipment)
     {
-        if (upgradeConsoleEquipment == null)
+        QuickLogger.Debug("Attaching events to Engine Room Upgrade Console");
+
+        if (equipment == null)
         {
-            QuickLogger.Error("Engine room upgrade console in Cyclops was null");
+            QuickLogger.Error("Upgrade Console in Cyclops was null");
             return;
         }
 
-        upgradeConsoleEquipment.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
+        equipment.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
         {
             if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
             {
@@ -199,7 +198,7 @@ internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
             return true;
         };
 
-        upgradeConsoleEquipment.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
+        equipment.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
         {
             if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
             {
@@ -207,6 +206,18 @@ internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
             }
 
             return true;
+        };
+
+        equipment.onEquip += (string slot, InventoryItem item) =>
+        {
+            if (KnownsUpgradeModules.TryGetValue(item.item.GetTechType(), out UpgradeHandler handler))
+                handler.OnEquip(slot, item);
+        };
+
+        equipment.onUnequip += (string slot, InventoryItem item) =>
+        {
+            if (KnownsUpgradeModules.TryGetValue(item.item.GetTechType(), out UpgradeHandler handler))
+                handler.OnUnequip(slot, item);
         };
     }
 
@@ -233,7 +244,7 @@ internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
         // Go through all slots and check what upgrades are available
         QuickLogger.Debug($"UpgradeManager checking upgrade slots");
 
-        var UpgradeConsoles = Cyclops.gameObject.GetComponentsInChildren<UpgradeConsole>();
+        var UpgradeConsoles = Cyclops.gameObject.GetComponentsInChildren<UpgradeConsole>(true);
         UpgradeSlots = new();
 
         foreach(UpgradeConsole console in UpgradeConsoles)

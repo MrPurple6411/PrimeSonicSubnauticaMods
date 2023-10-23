@@ -60,7 +60,7 @@ public abstract partial class AuxiliaryUpgradeConsole
         else
         {
             QuickLogger.Debug("CyUpgradeConsoleMono: Parent cyclops found!");
-            ConnectToCyclops();
+            ConnectToCyclops(_upgradeManager);
         }
     }
 

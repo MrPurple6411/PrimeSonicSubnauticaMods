@@ -5,15 +5,15 @@ using System.IO;
 using Common;
 using HarmonyLib;
 using MoreCyclopsUpgrades.API.Buildables;
+using MoreCyclopsUpgrades.Managers;
 using Newtonsoft.Json;
 
 [HarmonyPatch(typeof(UpgradeConsole))]
-internal static class UpgradeConsole_OnProtoDeserializeObjectTree_Patcher
+internal static class UpgradeConsole_Patcher
 {
-
     [HarmonyPatch(nameof(UpgradeConsole.OnProtoDeserializeObjectTree))]
     [HarmonyPrefix]
-    public static void Prefix(UpgradeConsole __instance)
+    public static void OnProtoDeserializeObjectTree_Prefix(UpgradeConsole __instance)
     {
         if (__instance is AuxiliaryUpgradeConsole auxiliary)
         {
@@ -48,7 +48,7 @@ internal static class UpgradeConsole_OnProtoDeserializeObjectTree_Patcher
 
     [HarmonyPatch(nameof(UpgradeConsole.OnProtoSerialize))]
     [HarmonyPostfix]
-    public static void Postfix(UpgradeConsole __instance)
+    public static void OnProtoSerialize_Postfix(UpgradeConsole __instance)
     {
         if (__instance is AuxiliaryUpgradeConsole auxiliary)
         {
@@ -70,5 +70,20 @@ internal static class UpgradeConsole_OnProtoDeserializeObjectTree_Patcher
                 QuickLogger.Error(e.Message);
             }
         }
+    }
+
+    [HarmonyPatch(nameof(UpgradeConsole.OnHandClick))]
+    [HarmonyPrefix]
+    public static void OnHandClick_Prefix(UpgradeConsole __instance)
+    {
+        PdaOverlayManager.StartConnectingToPda(__instance.modules);
+    }
+
+    [HarmonyPatch(nameof(UpgradeConsole.OnHandClick))]
+    [HarmonyPostfix]
+    public static void OnHandClick_Postfix(UpgradeConsole __instance)
+    {
+        PDA pda = Player.main.GetPDA();
+        pda.onCloseCallback = new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda());
     }
 }

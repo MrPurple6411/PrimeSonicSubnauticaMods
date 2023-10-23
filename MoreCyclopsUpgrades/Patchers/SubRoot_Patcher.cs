@@ -1,8 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers;
 
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using BepInEx;
 using Common;
 using HarmonyLib;
 using Managers;
@@ -14,19 +17,23 @@ internal class SubRoot_Awake_Patcher
     [HarmonyPrefix]
     public static void Prefix(ref SubRoot __instance)
     {
-        if (__instance.isCyclops)
+        if (!__instance.isCyclops)
+            return;
+
+        // Set up a CyclopsManager early if possible
+        var mgr = CyclopsManager.GetManager(ref __instance);
+
+        // Fix for the Fire Extinguisher in the engine room not being effected by the Cyclops' lighting.
+        Renderer[] renderers = mgr.Cyclops.transform.Find("FireExtinguisherHolder_Aft").GetComponentsInChildren<Renderer>();
+        foreach (SkyApplier skyApplier in mgr.Cyclops.transform.GetComponentsInChildren<SkyApplier>())
         {
-            // Set up a CyclopsManager early if possible
-            var mgr = CyclopsManager.GetManager(ref __instance);
+            if(skyApplier.gameObject != mgr.Cyclops.gameObject)
+                continue;
 
-            // Big thanks to Waisie Milliams Hah for helping to fix the upgrade console lighting bug
-            Transform consoleMesh = mgr.Cyclops.transform.Find("CyclopsMeshStatic/undamaged/cyclops_LOD0/cyclops_engine_room/cyclops_engine_console/Submarine_engine_GEO/submarine_engine_console_01_wide");
-
-            foreach (Renderer mesh in consoleMesh.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in renderers)
             {
-                SkyApplier skyApplier = mesh.gameObject.EnsureComponent<SkyApplier>();
-                skyApplier.renderers = mesh.GetComponentsInChildren<MeshRenderer>();
-                skyApplier.anchorSky = Skies.Auto;
+                if (!skyApplier.renderers.Contains(renderer))
+                    skyApplier.renderers = skyApplier.renderers.AddToArray(renderer);
             }
         }
     }
@@ -59,7 +66,7 @@ internal class SubRoot_UpdatePowerRating_Patcher
     {
         // This replaces the entire contents of the original method with a simple call to PowerRatingUpdate.
         QuickLogger.Debug("Transpiling SubRoot.UpdatePowerRating");
-        MethodInfo powerRatingMethod = typeof(SubRoot_UpdatePowerRating_Patcher).GetMethod(nameof(SubRoot_UpdatePowerRating_Patcher.PowerRatingUpdate));
+        MethodInfo powerRatingMethod = typeof(SubRoot_UpdatePowerRating_Patcher).GetMethod(nameof(PowerRatingUpdate));
 
         // This is handled as a simple method call to avoid replicating the many null checks of the PowerRatingUpdate method.
         yield return new CodeInstruction(OpCodes.Ldarg_0);
@@ -82,7 +89,7 @@ internal class SubRoot_SetCyclopsUpgrades_Patcher
         // This replaces the entire contents of the original method with a simple call to SetUpgrades.
         // No need to execute original method anymore as it wouldn't handle the AuxUpgradeConsole.
 
-        MethodInfo setUpgradesMethod = typeof(SubRoot_SetCyclopsUpgrades_Patcher).GetMethod(nameof(SubRoot_SetCyclopsUpgrades_Patcher.SetUpgrades));
+        MethodInfo setUpgradesMethod = typeof(SubRoot_SetCyclopsUpgrades_Patcher).GetMethod(nameof(SetUpgrades));
 
         // This is handled as a simple method call to avoid replicating the many checks of the SetUpgrades method.
         yield return new CodeInstruction(OpCodes.Ldarg_0);

@@ -195,7 +195,6 @@ public class UpgradeHandler
     internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
     {
         dictionary.Add(TechType, this);
-        QuickLogger.Debug($"Added UpgradeHandler for '{TechType.AsString()}'");
     }
 
     internal virtual bool CanUpgradeBeAdded(Pickupable item, bool verbose)
@@ -229,5 +228,29 @@ public class UpgradeHandler
         }
 
         return true;
+    }
+
+    internal virtual void OnEquip(string slot, InventoryItem item)
+    {
+        if (trackedItems.Contains(item))
+            return;
+
+        count++;
+        trackedItems.Add(item);
+        OnUpgradeCounted?.Invoke();
+        OnUpgradeCountedDetailed?.Invoke(null, slot, item);
+        Cyclops.subModulesDirty = true;
+    }
+
+    internal virtual void OnUnequip(string slot, InventoryItem item)
+    {
+        if (!trackedItems.Contains(item))
+            return;
+
+        count--;
+        trackedItems.Remove(item);
+        OnUpgradeCounted?.Invoke();
+        OnUpgradeCountedDetailed?.Invoke(null, slot, item);
+        Cyclops.subModulesDirty = true;
     }
 }

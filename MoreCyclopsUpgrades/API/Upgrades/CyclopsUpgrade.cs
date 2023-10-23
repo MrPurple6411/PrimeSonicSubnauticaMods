@@ -94,18 +94,20 @@ public abstract class CyclopsUpgrade
         if (File.Exists(iconPath))
         {
             Texture2D spriteTexture = ImageUtils.LoadTextureFromFile(iconPath);
-            Info.WithIcon(ImageUtils.LoadSpriteFromTexture(spriteTexture));
-            scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)));
+            this.Info = this.Info.WithIcon(ImageUtils.LoadSpriteFromTexture(spriteTexture));
+            scanningGadget = scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)));
         }
         else
         {
-            scanningGadget.WithAnalysisTech(null);
+            scanningGadget = scanningGadget.WithAnalysisTech(null);
         }
 
-        CustomPrefab.SetRecipe(GetBlueprintRecipe())
+        var craftingGadget = CustomPrefab.SetRecipe(GetBlueprintRecipe())
             .WithFabricatorType(FabricatorType)
             .WithStepsToFabricatorTab(StepsToFabricatorTab)
             .WithCraftingTime(CraftingTime);
+
+        var equipmentGadget = CustomPrefab.SetEquipment(EquipmentType);
 
         CustomPrefab.SetGameObject(GetGameObjectAsync);
     }
