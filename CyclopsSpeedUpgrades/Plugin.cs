@@ -21,7 +21,7 @@ public class Plugin : BaseUnityPlugin
         MCUServices.Register.CyclopsUpgradeHandler(speedUpgrade.CreateSpeedUpgradeHandler);
         MCUServices.Register.PdaIconOverlay(speedUpgrade.TechType, speedUpgrade.CreateSpeedIconOverlay);
 
-        var harmony = new Harmony("com.cyclopsspeedupgrades.psmod");
+        var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
         QuickLogger.Info($"Finished patching.");

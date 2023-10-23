@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSpeedUpgrades;
 
+using System;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.General;
 using MoreCyclopsUpgrades.API.Upgrades;
@@ -28,6 +29,7 @@ internal class SpeedHandler : UpgradeHandler
 
     private readonly float[] originalSpeeds = new float[3];
     private readonly float[] originalNoise = new float[3];
+    private readonly float originalTurningTorque;
 
     private int lastKnownSpeedIndex = -1;
 
@@ -48,6 +50,7 @@ internal class SpeedHandler : UpgradeHandler
         originalNoise[0] = this.MotorMode.motorModeNoiseValues[0];
         originalNoise[1] = this.MotorMode.motorModeNoiseValues[1];
         originalNoise[2] = this.MotorMode.motorModeNoiseValues[2];
+        originalTurningTorque = this.SubControl.BaseTurningTorque;
 
         OnFirstTimeMaxCountReached = () =>
         {
@@ -80,7 +83,10 @@ internal class SpeedHandler : UpgradeHandler
 
             // These will apply immediately
             CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
-            this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
+            float currentSpeed = this.MotorMode.motorModeSpeeds[(int)currentMode];
+            this.SubControl.BaseForwardAccel = currentSpeed;
+            this.SubControl.BaseVerticalAccel = currentSpeed;
+            this.SubControl.BaseTurningTorque = originalTurningTorque * speedMultiplier;
 
             ErrorMessage.AddMessage(CyclopsSpeedModule.SpeedRatingText(lastKnownSpeedIndex, speedMultiplier));
         };
