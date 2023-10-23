@@ -10,6 +10,8 @@ using Sprite = Atlas.Sprite;
 
 internal class SpeedBooster : VehicleUpgradeModule
 {
+    public static TechType TechType { get; private set; }
+
     public SpeedBooster()
         : base(classId: "SpeedModule",
             friendlyName: "Speed Boost Module",
@@ -18,7 +20,7 @@ internal class SpeedBooster : VehicleUpgradeModule
         CustomPrefab.AddOnRegister(() =>
         {
             VehicleUpgrader.CommonUpgradeModules.Add(Info.TechType);
-            VehicleUpgrader.SpeedBoostingModule = Info.TechType;
+            VehicleUpgrader.SpeedBoostingModules.Add(Info.TechType, 1);
         });
     }
 
@@ -29,9 +31,9 @@ internal class SpeedBooster : VehicleUpgradeModule
             craftAmount = 1,
             Ingredients = new List<Ingredient>
             {
-                new Ingredient(TechType.Aerogel, 1),
-                new Ingredient(TechType.Magnetite, 1),
                 new Ingredient(TechType.Titanium, 2),
+                new Ingredient(TechType.WiringKit, 1),
+                new Ingredient(TechType.ComputerChip, 1),
             }
         };
     }

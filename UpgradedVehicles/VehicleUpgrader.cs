@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Common;
 using UnityEngine;
 using UpgradedVehicles.SaveData;
@@ -28,8 +29,10 @@ public class VehicleUpgrader : VehicleAccelerationModifier
         // HullArmorUpgrades added during patching
     };
 
-    // Added during patching
-    internal static TechType SpeedBoostingModule;
+    internal static readonly IDictionary<TechType, int> SpeedBoostingModules = new Dictionary<TechType, int>()
+    {
+        // SpeedUpgrades added during patching
+    };
 
     internal static IDictionary<TechType, int> SeamothDepthModules = new Dictionary<TechType, int>()
     {
@@ -299,7 +302,7 @@ public class VehicleUpgrader : VehicleAccelerationModifier
 
         bool updateAll = DepthUpgradeModules.Contains(upgradeModule);
         bool updateArmor = updateAll || ArmorPlatingModules.ContainsKey(upgradeModule);
-        bool updateSpeed = updateAll || upgradeModule == SpeedBoostingModule;
+        bool updateSpeed = updateAll || SpeedBoostingModules.ContainsKey(upgradeModule);
         bool updateEfficiency = updateAll || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
         QuickLogger.Debug($"updateAll:{updateAll} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}");
 
@@ -322,14 +325,23 @@ public class VehicleUpgrader : VehicleAccelerationModifier
 
         if (updateEfficiency) // Efficiency
         {
-            int speedBoosterCount = this.UpgradeModules.GetCount(SpeedBoostingModule);
+            int speedBoostMultiplier = 0;
+            int speedBoosterModuleCount = 0;
+            foreach(var kvp in SpeedBoostingModules)
+            {
+                int moduleCount = this.UpgradeModules.GetCount(kvp.Key);
+                speedBoostMultiplier += moduleCount * kvp.Value;
+                speedBoosterModuleCount += moduleCount;
+
+            }
+
             int powerModuleCount = this.UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
 
-            UpdatePowerRating(speedBoosterCount, powerModuleCount);
+            UpdatePowerRating(powerModuleCount, speedBoosterModuleCount);
 
             if (updateSpeed) // Speed
             {
-                UpdateSpeedRating(speedBoosterCount);
+                UpdateSpeedRating(speedBoostMultiplier);
             }
         }
     }
@@ -340,7 +352,7 @@ public class VehicleUpgrader : VehicleAccelerationModifier
         ErrorMessage.AddMessage($"Speed Boost: ({this.accelerationMultiplier * 100f:00}%)");
     }
 
-    private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
+    private void UpdatePowerRating(int powerModuleCount, int speedBoosterCount)
     {
         this.PowerRating = GetEfficiencyBonus(powerModuleCount) / GetEfficiencyPentalty(speedBoosterCount);
 

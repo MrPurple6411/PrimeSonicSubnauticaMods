@@ -17,7 +17,8 @@ public abstract class VehicleUpgradeModule
 
     protected VehicleUpgradeModule(string classId, string friendlyName, string description)
     {
-        Info = PrefabInfo.WithTechType(classId, friendlyName, description, "English", RequiredForUnlock == TechType.None).WithSizeInInventory(SizeInInventory);
+        Info = PrefabInfo.WithTechType(classId, friendlyName, description, "English", RequiredForUnlock == TechType.None)
+            .WithSizeInInventory(SizeInInventory);
 
         var iconPath = Path.Combine(AssetsFolder, $"{classId}.png");
         if (File.Exists(iconPath))

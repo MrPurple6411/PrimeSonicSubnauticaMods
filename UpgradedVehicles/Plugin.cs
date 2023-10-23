@@ -15,9 +15,13 @@ using static BepInEx.Bootstrap.Chainloader;
 [BepInDependency("MoreSeamothDepth", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
 {
-    internal const string WorkBenchTab = "HullArmor";
+    internal const string WorkBenchArmorTab = "HullArmor";
+    internal const string WorkBenchSpeedTab = "SpeedModules";
 
     internal static SpeedBooster SpeedBooster { get; private set; }
+    internal static SpeedBoosterMK2 SpeedBoosterMK2 { get; private set; }
+    internal static SpeedBoosterMK3 SpeedBoosterMK3 { get; private set; }
+    internal static SpeedBoosterMK4 SpeedBoosterMK4 { get; private set; }
     internal static HullArmorMk2 HullArmorMk2 { get; private set; }
     internal static HullArmorMk3 HullArmorMk3 { get; private set; }
     internal static HullArmorMk4 HullArmorMk4 { get; private set; }
@@ -37,20 +41,28 @@ public class Plugin : BaseUnityPlugin
 
             CrossModUpdates();
 
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
+            
+            
 
             //Handle SpeedBooster
             SpeedBooster = new SpeedBooster();
+            SpeedBooster.CustomPrefab.Register();
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchSpeedTab, "Speed Modules", SpriteManager.Get(SpeedBooster.Info.TechType));
+            
+            SpeedBoosterMK2 = new SpeedBoosterMK2();
+            SpeedBoosterMK2.CustomPrefab.Register();
+            SpeedBoosterMK3 = new SpeedBoosterMK3();
+            SpeedBoosterMK3.CustomPrefab.Register();
+            SpeedBoosterMK4 = new SpeedBoosterMK4();
+            SpeedBoosterMK4.CustomPrefab.Register();
 
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchArmorTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
             //Handle HullArmorUpgrades
             HullArmorMk2 = new HullArmorMk2();
-            HullArmorMk3 = new HullArmorMk3();
-            HullArmorMk4 = new HullArmorMk4();
-
-            //Register the upgrades
-            SpeedBooster.CustomPrefab.Register();
             HullArmorMk2.CustomPrefab.Register();
+            HullArmorMk3 = new HullArmorMk3();
             HullArmorMk3.CustomPrefab.Register();
+            HullArmorMk4 = new HullArmorMk4();
             HullArmorMk4.CustomPrefab.Register();
 
             VehicleUpgrader.SetBonusSpeedMultipliers(configOptions);

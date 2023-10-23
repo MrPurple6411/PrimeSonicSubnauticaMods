@@ -21,7 +21,7 @@ internal class HullArmorMk4 : VehicleUpgradeModule
     }
 
     protected override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
-    protected override string[] StepsToFabricatorTab => new[] { Plugin.WorkBenchTab };
+    protected override string[] StepsToFabricatorTab => new[] { Plugin.WorkBenchArmorTab };
 
     protected override RecipeData GetBlueprintRecipe()
     {
