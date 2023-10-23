@@ -3,13 +3,12 @@
 using System;
 using System.Collections.Generic;
 using BepInEx;
-using BepInEx.Logging;
 using Common;
 using CustomBatteries.Items;
 using CustomBatteries.PackReading;
 using CustomBatteries.Patches;
 using HarmonyLib;
-using MidGameBatteries.Patchers;
+using CustomBatteries.Patchers;
 using Nautilus.Handlers;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
@@ -28,7 +27,7 @@ public class Plugin : BaseUnityPlugin
             // Packs from external mods are patched as they arrive.
             // They can still be patched in even after the harmony patches have completed.
 
-            var harmony = new Harmony("com.custombatteries.mod");
+            var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
             EnergyMixinPatcher.Patch(harmony);
             ChargerPatcher.Patch(harmony);
 
