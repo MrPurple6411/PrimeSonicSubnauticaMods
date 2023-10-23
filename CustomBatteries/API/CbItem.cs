@@ -91,9 +91,8 @@ public abstract class CbItem
         }
     }            
 
-    internal void Patch(ItemTypes itemType)
+    internal void Patch(ItemTypes itemType, string name)
     {
-        string name = this.GetType().Assembly.GetName().Name;
         QuickLogger.Info($"Received Custom {itemType} pack from '{name}'");
 
         // Check for required data
