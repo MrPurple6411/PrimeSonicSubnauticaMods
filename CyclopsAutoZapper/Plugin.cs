@@ -13,7 +13,6 @@ public class Plugin : BaseUnityPlugin
     public void Awake()
     {
         QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
-        QuickLogger.DebugLogsEnabled = false;
 
         var defenseSystem = new CyclopsAutoDefense();
         defenseSystem.Patch();
@@ -26,7 +25,7 @@ public class Plugin : BaseUnityPlugin
 
         DisplayTexts.Main.Patch();
 
-        var harmony = new Harmony("com.cyclopsautozapper.psmod");
+        var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
         QuickLogger.Info("Finished Patching");
