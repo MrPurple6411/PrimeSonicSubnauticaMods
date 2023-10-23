@@ -12,15 +12,13 @@ internal class CyclopsSolarChargerMk2 : CyclopsUpgrade
 {
     internal const float BatteryCapacity = 120f;
 
-    private readonly CyclopsSolarCharger previousTier;
-    public CyclopsSolarChargerMk2(CyclopsSolarCharger cyclopsSolarCharger)
+    public static CyclopsSolarCharger PreviousTier { get; internal set; }
+
+    public CyclopsSolarChargerMk2()
         : base("CyclopsSolarChargerMk2",
                "Cyclops Solar Charger Mk2",
                "Improved solar charging for the Cyclops with additional backup power.\nStacks with other solar chargers.")
     {
-        previousTier = cyclopsSolarCharger;
-        if (!previousTier.IsPatched)
-            previousTier.Patch();
     }
 
     public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
@@ -35,7 +33,7 @@ internal class CyclopsSolarChargerMk2 : CyclopsUpgrade
             craftAmount = 1,
             Ingredients =
             {
-                new Ingredient(previousTier.TechType, 1),
+                new Ingredient(PreviousTier.TechType, 1),
                 new Ingredient(TechType.Battery, 2),
                 new Ingredient(TechType.WiringKit, 1)
             }

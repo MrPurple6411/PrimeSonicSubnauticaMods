@@ -20,9 +20,10 @@ public class Plugin : BaseUnityPlugin
             QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
             var solar1 = new CyclopsSolarCharger();
-            var solar2 = new CyclopsSolarChargerMk2(solar1);
-
             solar1.Patch();
+
+            CyclopsSolarChargerMk2.PreviousTier = solar1;
+            var solar2 = new CyclopsSolarChargerMk2();
             solar2.Patch();
 
             MCUServices.Register.CyclopsCharger<SolarCharger>((SubRoot cyclops) =>
