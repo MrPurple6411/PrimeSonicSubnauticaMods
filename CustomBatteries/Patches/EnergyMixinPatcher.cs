@@ -1,12 +1,15 @@
-﻿namespace MidGameBatteries.Patchers;
+﻿namespace CustomBatteries.Patchers;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Common;
 using CustomBatteries.API;
 using CustomBatteries.Items;
 using HarmonyLib;
+using Nautilus.Extensions;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static EnergyMixin;
 
 internal static class EnergyMixinPatcher
@@ -61,14 +64,14 @@ internal static class EnergyMixinPatcher
         }
     }
 
+    // This is necessary to allow the new batteries to be compatible with tools and vehicles
     public static void AwakePrefix(ref EnergyMixin __instance)
     {
-        // This is necessary to allow the new batteries to be compatible with tools and vehicles
 
         if (!__instance.allowBatteryReplacement)
             return; // Battery replacement not allowed - No need to make changes
 
-        if (CbDatabase.BatteryItems.Count == 0)
+        if (CbDatabase.BatteryItems.Count == 0 && CbDatabase.PowerCellItems.Count == 0)
             return;
 
         List<TechType> compatibleBatteries = __instance.compatibleBatteries;
@@ -83,11 +86,10 @@ internal static class EnergyMixinPatcher
         List<TechType> existingTechtypes = new List<TechType>();
         List<GameObject> existingModels = new List<GameObject>();
 
-
         //First check for models already setup
         for (int b = 0; b < Models.Count; b++)
         {
-            BatteryModels model = Models[b]; 
+            BatteryModels model = Models[b];
             switch (model.techType)
             {
                 case TechType.Battery:
@@ -149,20 +151,28 @@ internal static class EnergyMixinPatcher
             }
             else if (batteryModel != null)
             {
-
-                GameObject ionBatteryPrefab = Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
                 ionBatteryModel = GameObject.Instantiate(batteryModel, batteryModel.transform.parent);
                 ionBatteryModel.name = "precursorIonBatteryModel";
+                Models.Add(new BatteryModels() { model = ionBatteryModel, techType = TechType.PrecursorIonBattery });
+                existingTechtypes.Add(TechType.PrecursorIonBattery);
+                existingModels.Add(ionBatteryModel);
 
-
-                Material ionBatteryMaterial = ionBatteryPrefab?.GetComponentInChildren<Renderer>()?.material;
-                if (ionBatteryMaterial != null)
+                var ar = new AssetReferenceGameObject("WorldEntities/Tools/PrecursorIonBattery.prefab").ForceValid();
+                ar.LoadAssetAsync().Completed += (task) =>
                 {
-                    ionBatteryModel.GetComponentInChildren<Renderer>().material = new Material(ionBatteryMaterial);
-                    Models.Add(new BatteryModels() { model = ionBatteryModel, techType = TechType.PrecursorIonBattery });
-                    existingTechtypes.Add(TechType.PrecursorIonBattery);
-                    existingModels.Add(ionBatteryModel);
-                }
+                    if (task.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        QuickLogger.Error("Failed to load PrecursorIonBattery prefab");
+                        return;
+                    }
+
+                    var ionBatteryPrefab = task.Result;
+                    Material ionBatteryMaterial = ionBatteryPrefab?.GetComponentInChildren<Renderer>()?.material;
+                    if (ionBatteryMaterial != null)
+                    {
+                        ionBatteryModel.GetComponentInChildren<Renderer>().material = new Material(ionBatteryMaterial);
+                    }
+                };
             }
         }
 
@@ -185,27 +195,35 @@ internal static class EnergyMixinPatcher
             }
             else if (powerCellModel != null)
             {
-
-                GameObject ionPowerCellPrefab = Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
                 ionPowerCellModel = GameObject.Instantiate(powerCellModel, powerCellModel.transform.parent);
                 ionPowerCellModel.name = "PrecursorIonPowerCellModel";
+                Models.Add(new BatteryModels() { model = ionPowerCellModel, techType = TechType.PrecursorIonPowerCell });
+                existingTechtypes.Add(TechType.PrecursorIonPowerCell);
+                existingModels.Add(ionPowerCellModel);
 
-
-                Material precursorIonPowerCellMaterial = ionPowerCellPrefab?.GetComponentInChildren<Renderer>()?.material;
-                if (precursorIonPowerCellMaterial != null)
+                var ar = new AssetReferenceGameObject("WorldEntities/Tools/PrecursorIonPowerCell.prefab").ForceValid();
+                ar.LoadAssetAsync().Completed += (task) =>
                 {
-                    ionPowerCellModel.GetComponentInChildren<Renderer>().material = new Material(precursorIonPowerCellMaterial);
-                    Models.Add(new BatteryModels() { model = ionPowerCellModel, techType = TechType.PrecursorIonPowerCell });
-                    existingTechtypes.Add(TechType.PrecursorIonPowerCell);
-                    existingModels.Add(ionPowerCellModel);
-                }
+                    if (task.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        QuickLogger.Error("Failed to load PrecursorIonPowerCell prefab");
+                        return;
+                    }
+
+                    var ionPowerCellPrefab = task.Result;
+                    Material precursorIonPowerCellMaterial = ionPowerCellPrefab?.GetComponentInChildren<Renderer>()?.material;
+                    if (precursorIonPowerCellMaterial != null)
+                    {
+                        ionPowerCellModel.GetComponentInChildren<Renderer>().material = new Material(precursorIonPowerCellMaterial);
+                    }
+                };
             }
         }
 
         //Remove models from the controlled objects list after we have added them as controlled models instead.
         List<GameObject> controlledObjects = new List<GameObject>(__instance.controlledObjects ?? new GameObject[0]);
 
-        foreach(GameObject gameObject in __instance.controlledObjects ?? new GameObject[0])
+        foreach (GameObject gameObject in __instance.controlledObjects ?? new GameObject[0])
         {
             if (!existingModels.Contains(gameObject))
                 controlledObjects.Add(gameObject);
@@ -237,28 +255,30 @@ internal static class EnergyMixinPatcher
         }
 
         __instance.batteryModels = Models.ToArray();
+
+        if (__instance.batteryModels == null || __instance.batteryModels.Length == 0)
+            return;
+
+        if (__instance.batterySlot?.storedItem == null)
+            return;
+
+        var techType = __instance.batterySlot.storedItem.techType;
+
+        if (!__instance.batteryModels.Any(x => x.techType == techType))
+            return;
+
+        // Ensure the correct model is shown if already equipped
+        for (int b = 0; b < __instance.batteryModels.Length; b++)
+        {
+            var modelData = __instance.batteryModels[b];
+            modelData.model.SetActive(modelData.techType == techType);
+        }
     }
 
     private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
     {
-        Renderer originalRenderer = originalModel.GetComponentInChildren<Renderer>();
-
         SkyApplier skyApplier = null;
         List<Renderer> renderers = null;
-        foreach (SkyApplier sa in originalModel.GetComponentsInParent<SkyApplier>())
-        {
-            foreach(Renderer renderer in sa.renderers)
-            {
-                if (renderer == originalRenderer)
-                {
-                    skyApplier = sa;
-                    renderers = new List<Renderer>(skyApplier.renderers);
-                    break;
-                }
-            }
-            if (skyApplier != null)
-                break;
-        }
 
         foreach (KeyValuePair<TechType, CBModelData> pair in customModels)
         {
@@ -268,6 +288,23 @@ internal static class EnergyMixinPatcher
 
             //check which model to base the new model from
             GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) ? ionModel : originalModel;
+
+            // Find the SkyApplier for the modelBase
+            Renderer originalRenderer = modelBase.GetComponentInChildren<Renderer>();
+            foreach (SkyApplier sa in modelBase.GetComponentsInParent<SkyApplier>())
+            {
+                foreach (Renderer skyrenderer in sa.renderers)
+                {
+                    if (skyrenderer == originalRenderer)
+                    {
+                        skyApplier = sa;
+                        renderers = new List<Renderer>(skyApplier.renderers);
+                        break;
+                    }
+                }
+                if (skyApplier != null)
+                    break;
+            }
 
             //create the new model and set it to have the same parent as the original
             GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
@@ -281,7 +318,6 @@ internal static class EnergyMixinPatcher
                 if (pair.Value != null)
                 {
                     //Set the customized textures for the newly created model to the textures given by the modder.
-
                     if (pair.Value.CustomTexture != null)
                         renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.CustomTexture);
 
@@ -299,15 +335,15 @@ internal static class EnergyMixinPatcher
                     }
                 }
 
-                if(skyApplier != null)
-                renderers.Add(renderer);
+                if (skyApplier != null)
+                    renderers.Add(renderer);
             }
 
             Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
             existingTechtypes.Add(pair.Key);
         }
 
-        if(skyApplier != null)
+        if (skyApplier != null)
             skyApplier.renderers = renderers.ToArray();
 
     }
