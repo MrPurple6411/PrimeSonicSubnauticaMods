@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using CustomBatteries.API;
-using Nautilus.Assets;
-using UnityEngine;
 
 namespace CustomBatteries.Items;
 
@@ -49,30 +47,5 @@ internal static class CbDatabase
             }
             return _placeBatteriesFeatureEnabled != null && _placeBatteriesFeatureEnabled.Value;
         }
-    }
-
-    private static GameObject _precursorionbattery;
-    private static GameObject _precursorionpowercell;
-    private static GameObject _battery;
-    private static GameObject _powercell;
-
-    public static GameObject IonBattery()
-    {
-        return _precursorionbattery ??= Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
-    }
-
-    public static GameObject IonPowerCell()
-    {
-        return _precursorionpowercell ??= Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
-    }
-
-    public static GameObject Battery()
-    {
-        return _battery ??= Resources.Load<GameObject>("worldentities/tools/battery");
-    }
-
-    public static GameObject PowerCell()
-    {
-        return _powercell ??= Resources.Load<GameObject>("worldentities/tools/powercell");
     }
 }
