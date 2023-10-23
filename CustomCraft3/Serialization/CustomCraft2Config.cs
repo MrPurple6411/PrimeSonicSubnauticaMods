@@ -43,7 +43,6 @@ internal class CustomCraft2Config : EmPropertyCollection
         if (!File.Exists(FileLocations.ConfigFile))
         {
             File.WriteAllText(FileLocations.ConfigFile, Config.PrettyPrint());
-            QuickLogger.DebugLogsEnabled = false;
             QuickLogger.Info("CustomCraft2Config file was not found. Default file written.");
         }
         else
