@@ -1,9 +1,8 @@
 ﻿namespace UnSlowSeaTruck;
 
-using Newtonsoft.Json;
+using Nautilus.Json;
 
-[JsonObject]
-public class SeaTruckConfig
+public class SeaTruckConfig : ConfigFile
 {
     public float SteeringMultiplier { get; set; } = 1.17f;
 
