@@ -42,7 +42,11 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
         $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
         $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
-        $"        Valid options are: {Model.Fabricator}|{Model.MoonPool}|{Model.Workbench}",
+        $"        Valid options are: {Model.Fabricator}|+" +
+#if SUBNAUTICA
+        $"{Model.MoonPool}|"+
+#endif
+        $"{Model.Workbench}",
         $"        This property is optional. Defaults to {Model.Fabricator}.",
         $"    {ColorTintKey}: This optional property lets you apply a color tint over your fabricator.",
         $"        This value is a list of floating point numbers.",
@@ -157,10 +161,16 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         {
             case Model.Fabricator:
             case Model.Workbench:
+#if SUBNAUTICA
             case Model.MoonPool:
+#endif
                 break;
             default:
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}|{Model.MoonPool}");
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}"
+#if SUBNAUTICA
+                    +$"|{Model.MoonPool}"
+#endif
+                    );
                 return false;
         }
 
@@ -337,10 +347,12 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
                 case Model.Workbench:
                     sprite = SpriteManager.Get(TechType.Workbench);
                     break;
+#if SUBNAUTICA
                 case Model.MoonPool:
                     imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
                     sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                     break;
+#endif
                 default:
                     throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
             }

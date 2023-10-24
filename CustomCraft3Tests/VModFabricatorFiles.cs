@@ -42,7 +42,13 @@ internal class VModFabricatorFiles
             PdaCategory = TechCategory.InteriorModule,
             AllowedInBase = true,
             AllowedInCyclops = true,
-            Model = FabricatorTemplate.Model.MoonPool,
+            Model =
+#if SUBNAUTICA
+            FabricatorTemplate.Model.MoonPool,
+#elif BELOWZERO
+            FabricatorTemplate.Model.Fabricator,
+#endif
+
             EmIngredients =
             {
                 new EmIngredient(TechType.Titanium, 2),
