@@ -7,7 +7,6 @@ using Common;
 using HarmonyLib;
 using Nautilus.Handlers;
 using UpgradedVehicles.SaveData;
-using static BepInEx.Bootstrap.Chainloader;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency("com.snmodding.nautilus", BepInDependency.DependencyFlags.HardDependency)]
