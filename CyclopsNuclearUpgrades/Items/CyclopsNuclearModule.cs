@@ -46,7 +46,6 @@ internal class CyclopsNuclearModule : CyclopsUpgrade
         };
     }
 
-
     public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
     {
         var task = new TaskResult<GameObject>();

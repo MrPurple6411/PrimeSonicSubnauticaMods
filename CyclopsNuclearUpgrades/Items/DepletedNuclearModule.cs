@@ -3,30 +3,35 @@
 using System.IO;
 using System.Reflection;
 using Nautilus.Assets;
-using UnityEngine;
+using Nautilus.Assets.PrefabTemplates;
+using Nautilus.Utility;
 
-internal class DepletedNuclearModule : Spawnable
+internal static class DepletedNuclearModule
 {
-    private readonly CyclopsNuclearModule nuclearModule;
+    private const string ClassId = "DepletedCyclopsNuclearModule";
+    private const string DisplayName = "Depleted Cyclops Nuclear Reactor Module";
+    private const string Description = "Nuclear waste.";
+    private const TechType depletedReactorRod = TechType.DepletedReactorRod;
 
-    public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+    public static string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-    public DepletedNuclearModule(CyclopsNuclearModule module)
-        : base("DepletedCyclopsNuclearModule",
-               "Depleted Cyclops Nuclear Reactor Module",
-               "Nuclear waste.")
+    public static PrefabInfo Info { get; private set; }
+    public static CustomPrefab CustomPrefab { get; private set; }
+
+    internal static void CreateAndRegister()
     {
-        nuclearModule = module;
+        // Creates the PrefabInfo
+        Info = PrefabInfo.WithTechType(ClassId, DisplayName, Description);
+        var spritePath = Path.Combine(AssetsFolder, $"{ClassId}.png");
 
-        OnStartedPatching += () =>
-        {
-            if (!nuclearModule.IsPatched)
-                nuclearModule.Patch();
-        };
-    }
+        if(File.Exists(spritePath))
+            Info.WithIcon(ImageUtils.LoadSpriteFromFile(spritePath));
+        else
+            Info.WithIcon(SpriteManager.Get(depletedReactorRod));
 
-    public override GameObject GetGameObject()
-    {
-        return GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.DepletedReactorRod));
+        CustomPrefab = new CustomPrefab(Info);
+        CustomPrefab.SetGameObject(new CloneTemplate(Info, depletedReactorRod));
+
+        CustomPrefab.Register();
     }
 }

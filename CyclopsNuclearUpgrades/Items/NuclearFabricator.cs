@@ -3,54 +3,30 @@
 using System.IO;
 using System.Reflection;
 using Nautilus.Assets;
+using Nautilus.Assets.Gadgets;
+using Nautilus.Assets.PrefabTemplates;
 using Nautilus.Crafting;
+using Nautilus.Handlers;
 using Nautilus.Utility;
 using UnityEngine;
+using static CraftData;
+using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
 
-internal class NuclearFabricator : CustomFabricator
+internal class NuclearFabricator
 {
-    private readonly CyclopsNuclearModule nuclearModule;
+    public static PrefabInfo Info { get; private set; }
+    public static CustomPrefab CustomPrefab { get; private set; }
+    public static FabricatorGadget Fabricator { get; private set; }
 
-    public override TechGroup GroupForPDA => TechGroup.InteriorModules;
+    public const string ClassId = "NuclearFabricator";
+    public const string DisplayName = "Nuclear Fabricator";
+    public const string Description = "A specialized fabricator for safe handling of radioactive energy sources.";
 
-    public override TechCategory CategoryForPDA => TechCategory.InteriorModule;
+    public static Texture2D customTexture;
+    private static CraftTree.Type _craftTreeType;
 
-    public override TechType RequiredForUnlock => TechType.BaseNuclearReactor;
-
-    public override Models Model => Models.Custom; // Using Custom so the texture can be altered
-
-    private static Texture2D customTexture;
-    private static Atlas.Sprite sprite;
-
-    internal NuclearFabricator(CyclopsNuclearModule module)
-        : base("NuclearFabricator",
-               "Nuclear Fabricator",
-               "A specialized fabricator for safe handling of radioactive energy sources.")
+    private static void ModifyPrefab(GameObject gObj)
     {
-        nuclearModule = module;
-
-        OnStartedPatching += () =>
-        {
-            if (!nuclearModule.IsPatched)
-                nuclearModule.Patch();
-
-            // Load the custom texture
-            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string folderPath = Path.Combine(executingLocation, "Assets");
-
-            string textureLocation = Path.Combine(folderPath, "NuclearFabricatorT.png");
-            customTexture = ImageUtils.LoadTextureFromFile(textureLocation);
-
-            string spriteLocation = Path.Combine(folderPath, "NuclearFabricator.png");
-            sprite = ImageUtils.LoadSpriteFromFile(spriteLocation) ?? SpriteManager.Get(TechType.Fabricator);
-        };
-    }
-
-    protected override GameObject GetCustomCrafterPreFab()
-    {
-        // Instantiate Fabricator object
-        var gObj = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
-
         // Set the custom texture
         if (customTexture != null)
         {
@@ -62,18 +38,11 @@ internal class NuclearFabricator : CustomFabricator
         Vector3 scale = gObj.transform.localScale;
         const float factor = 0.90f;
         gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
-
-        return gObj;
     }
 
-    protected override Atlas.Sprite GetItemSprite()
+    private static RecipeData GetBlueprintRecipe()
     {
-        return sprite;
-    }
-
-    protected override TechData GetBlueprintRecipe()
-    {
-        return new TechData()
+        return new RecipeData()
         {
             craftAmount = 1,
             Ingredients =
@@ -84,5 +53,50 @@ internal class NuclearFabricator : CustomFabricator
                 new Ingredient(TechType.Lead, 2),
             }
         };
+    }
+
+    internal static void CreateAndRegister()
+    {
+        Info = PrefabInfo.WithTechType(ClassId, DisplayName, Description, "English", false);
+
+        CraftDataHandler.SetRecipeData(Info.TechType, GetBlueprintRecipe());
+
+        // Load the custom texture
+        string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        string folderPath = Path.Combine(executingLocation, "Assets");
+
+        string textureLocation = Path.Combine(folderPath, "NuclearFabricatorT.png");
+        if (File.Exists(textureLocation))
+        customTexture = ImageUtils.LoadTextureFromFile(textureLocation);
+
+        // Create the prefab
+        CustomPrefab = new CustomPrefab(Info);
+        var scanningGadget = CustomPrefab.SetUnlock(TechType.BaseNuclearReactor)
+            .WithPdaGroupCategory(TechGroup.InteriorModules, TechCategory.InteriorModule);
+
+        string spriteLocation = Path.Combine(folderPath, "NuclearFabricator.png");
+        if (File.Exists(spriteLocation))
+        {
+            var spriteTexture = ImageUtils.LoadTextureFromFile(spriteLocation);
+            Info.WithIcon(ImageUtils.LoadSpriteFromTexture(spriteTexture));
+            scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), unlockMessage: Description);
+        }
+        else
+        {
+            var sprite = SpriteManager.Get(TechType.Fabricator);
+            Info.WithIcon(sprite);
+            scanningGadget.WithAnalysisTech(null, unlockMessage: Description);
+        }
+
+        Fabricator = CustomPrefab.CreateFabricator(out _craftTreeType);
+
+        // Set the prefab's GameObject
+        CustomPrefab.SetGameObject(new FabricatorTemplate(Info, _craftTreeType)
+        {
+            FabricatorModel = Model.Fabricator,
+            ModifyPrefab = ModifyPrefab,
+        });
+
+        CustomPrefab.Register();
     }
 }

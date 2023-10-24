@@ -10,40 +10,46 @@ using MoreCyclopsUpgrades.API;
 [BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.HardDependency)]
 public class Plugin : BaseUnityPlugin
 {
-    public void Patch()
+    internal CyclopsNuclearModule NuclearModule { get; private set; }
+
+    public void Awake()
     {
         QuickLogger.Info("Started patching v" + QuickLogger.GetAssemblyVersion());
 
-        var nuclearModule = new CyclopsNuclearModule();
-        var depletedModule = new DepletedNuclearModule(nuclearModule);
+        NuclearModule = new CyclopsNuclearModule();
+        NuclearModule.Patch();
 
-        nuclearModule.Patch();
-        depletedModule.Patch();
-
-        var nuclearFabricator = new NuclearFabricator(nuclearModule);
-        nuclearFabricator.AddCraftNode(TechType.ReactorRod);
-        nuclearFabricator.AddCraftNode(nuclearModule.TechType);
-        nuclearFabricator.AddCraftNode("RReactorRodDUMMY"); // Optional - Refill nuclear reactor rod (old)
-        nuclearFabricator.AddCraftNode("ReplenishReactorRod"); // Optional - Refill nuclear reactor rod (new)
-        nuclearFabricator.AddCraftNode("CyNukeUpgrade1"); // Optional - Cyclops Nuclear Reactor Enhancer Mk1
-        nuclearFabricator.AddCraftNode("CyNukeUpgrade2"); // Optional - Cyclops Nuclear Reactor Enhancer Mk2
-        nuclearFabricator.Patch();
+        DepletedNuclearModule.CreateAndRegister();
+        NuclearFabricator.CreateAndRegister();
 
         MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
         {
-            return new NuclearUpgradeHandler(nuclearModule.TechType, cyclops);
+            return new NuclearUpgradeHandler(NuclearModule.TechType, cyclops);
         });
 
         MCUServices.Register.CyclopsCharger<NuclearChargeHandler>((SubRoot cyclops) =>
         {
-            return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
+            return new NuclearChargeHandler(cyclops, NuclearModule.TechType);
         });
 
-        MCUServices.Register.PdaIconOverlay(nuclearModule.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+        MCUServices.Register.PdaIconOverlay(NuclearModule.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
         {
             return new NuclearIconOverlay(icon, upgradeModule);
         });
 
         QuickLogger.Info("Finished patching");
+    }
+
+    public void Start()
+    {
+        NuclearFabricator.Fabricator?.Root
+            .AddCraftNode(TechType.ReactorRod)
+            .AddCraftNode(NuclearModule.Info.TechType)
+            .AddCraftNode("RReactorRodDUMMY") // Optional - Refill nuclear reactor rod (old)
+            .AddCraftNode("ReplenishReactorRod") // Optional - Refill nuclear reactor rod (new)
+            .AddCraftNode("CyNukeUpgrade1") // Optional - Cyclops Nuclear Reactor Enhancer Mk1
+            .AddCraftNode("CyNukeUpgrade2"); // Optional - Cyclops Nuclear Reactor Enhancer Mk2
+
+        QuickLogger.Info("Added Nuclear Fabricator crafting nodes");
     }
 }
