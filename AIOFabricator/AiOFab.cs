@@ -69,6 +69,8 @@ internal static class AiOFab
         };
 
         prefab.SetGameObject(aioFabTemplate);
+
+        CraftDataHandler.SetRecipeData(Info.TechType, GetBlueprintRecipe());
         prefab.Register();
     }
 
