@@ -30,7 +30,7 @@ internal static class DepletedNuclearModule
             Info.WithIcon(SpriteManager.Get(depletedReactorRod));
 
         CustomPrefab = new CustomPrefab(Info);
-        CustomPrefab.SetGameObject(new CloneTemplate(Info, depletedReactorRod));
+        CustomPrefab.SetGameObject(new CloneTemplate(Info, depletedReactorRod) { ModifyPrefab = (go) => go.SetActive(false) });
 
         CustomPrefab.Register();
     }

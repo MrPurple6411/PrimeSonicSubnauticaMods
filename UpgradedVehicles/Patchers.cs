@@ -4,8 +4,7 @@ using Common;
 using HarmonyLib;
 using UnityEngine;
 
-[HarmonyPatch(typeof(DamageSystem))]
-[HarmonyPatch(nameof(DamageSystem.CalculateDamage))]
+[HarmonyPatch(typeof(DamageSystem), nameof(DamageSystem.CalculateDamage), new[] { typeof(float), typeof(DamageType), typeof(GameObject), typeof(GameObject) })]
 internal class DamageSystem_CalculateDamage_Patch
 {
     [HarmonyPostfix]

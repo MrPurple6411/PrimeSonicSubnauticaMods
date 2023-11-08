@@ -38,6 +38,7 @@ internal class NuclearFabricator
         Vector3 scale = gObj.transform.localScale;
         const float factor = 0.90f;
         gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
+        gObj.SetActive(false);
     }
 
     private static RecipeData GetBlueprintRecipe()
@@ -79,13 +80,12 @@ internal class NuclearFabricator
         {
             var spriteTexture = ImageUtils.LoadTextureFromFile(spriteLocation);
             Info.WithIcon(ImageUtils.LoadSpriteFromTexture(spriteTexture));
-            scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), unlockMessage: Description);
+            scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), null, Description);
         }
         else
         {
-            var sprite = SpriteManager.Get(TechType.Fabricator);
-            Info.WithIcon(sprite);
-            scanningGadget.WithAnalysisTech(null, unlockMessage: Description);
+            Info.WithIcon(SpriteManager.Get(TechType.Fabricator));
+            scanningGadget.WithAnalysisTech(null, null, Description);
         }
 
         Fabricator = CustomPrefab.CreateFabricator(out _craftTreeType);

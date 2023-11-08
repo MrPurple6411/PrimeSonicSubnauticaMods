@@ -12,7 +12,6 @@ using Nautilus.Crafting;
 using Nautilus.Handlers;
 using Nautilus.Utility;
 using UnityEngine;
-using Valve.VR;
 using static CraftData;
 
 internal static class AiOFab
@@ -51,9 +50,14 @@ internal static class AiOFab
         if(GetBuilderIndex(TechType.Fabricator, out var group, out var category, out _))
         {
             var scanGadget = prefab.SetPdaGroupCategoryBefore(group, category, TechType.Fabricator)
-                .WithAnalysisTech(spriteTexture == null ? null : Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)));
+                .WithAnalysisTech(spriteTexture == null ? null : Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), null, null);
 
-            scanGadget.RequiredForUnlock = TechType.Cyclops;
+            scanGadget.RequiredForUnlock =
+#if SUBNAUTICA
+                TechType.Cyclops;
+#else
+                TechType.SeaTruck;
+#endif
         }
         var fabGadget = prefab.CreateFabricator(out var treeType);
         TreeTypeID = treeType;

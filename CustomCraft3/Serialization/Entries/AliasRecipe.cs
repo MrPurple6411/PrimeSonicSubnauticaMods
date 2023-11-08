@@ -206,7 +206,7 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
         if (this.FunctionalCloneID != TechType.None)
         {
             CustomPrefab = new CustomPrefab(Info);
-            var foodPrefab = new CloneTemplate(Info, FunctionalCloneID);
+            var foodPrefab = new CloneTemplate(Info, FunctionalCloneID) { ModifyPrefab = (go) => go.SetActive(false) };
             CustomPrefab.SetGameObject(foodPrefab);
             CustomPrefab.Register();
 

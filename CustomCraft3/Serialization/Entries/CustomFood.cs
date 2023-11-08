@@ -316,6 +316,7 @@ internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
             eatable.waterValue = WaterValue;
             eatable.decomposes = Decomposes;
             eatable.kDecayRate = DecayRateMod * 0.015f;
+            obj.SetActive(false);
         };
 
         CustomPrefab.SetGameObject(foodPrefab);

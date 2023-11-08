@@ -28,14 +28,14 @@ public abstract class VehicleUpgradeModule
             CustomPrefab = new CustomPrefab(Info);
 
         if (RequiredForUnlock != TechType.None)
-            CustomPrefab.SetUnlock(RequiredForUnlock).WithAnalysisTech(null);
+            CustomPrefab.SetUnlock(RequiredForUnlock).WithAnalysisTech(null, null, null);
         
         CustomPrefab.SetPdaGroupCategory(GroupForPDA, CategoryForPDA);
         CustomPrefab.SetRecipe(GetBlueprintRecipe()).WithFabricatorType(FabricatorType).WithStepsToFabricatorTab(StepsToFabricatorTab);
         CustomPrefab.SetEquipment(EquipmentType.VehicleModule).WithQuickSlotType(QuickSlotType);
 
         if (PrefabTemplate == null)
-            PrefabTemplate = new CloneTemplate(Info, PrefabTemplateType);
+            PrefabTemplate = new CloneTemplate(Info, PrefabTemplateType) { ModifyPrefab = (go) => go.SetActive(false) };
 
         CustomPrefab.SetGameObject(PrefabTemplate);
     }
