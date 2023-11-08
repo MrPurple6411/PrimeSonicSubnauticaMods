@@ -38,7 +38,7 @@ internal static class AuxCyUpgradeConsole
         var customPrefab = new CustomPrefab(Info);
 
         customPrefab.SetPdaGroupCategory(GroupForPDA, CategoryForPDA)
-                .WithAnalysisTech(null)
+                .WithAnalysisTech(null, null, null)
                 .RequiredForUnlock = RequiredForUnlock;
 
         customPrefab.SetRecipe(GetBlueprintRecipe());
