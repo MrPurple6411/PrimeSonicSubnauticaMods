@@ -8,7 +8,8 @@ using BepInEx.Logging;
 using HarmonyLib;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-[BepInDependency("com.snmodding.nautilus", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
+[BepInIncompatibility("com.ahk1221.smlhelper")]
 public class Plugin: BaseUnityPlugin
 {
     public static new SeaTruckConfig Config { get; } = new();

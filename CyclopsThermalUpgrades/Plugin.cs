@@ -9,7 +9,8 @@ using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.PDA;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-[BepInDependency("com.snmodding.nautilus", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
+[BepInIncompatibility("com.ahk1221.smlhelper")]
 [BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.HardDependency)]
 public class Plugin: BaseUnityPlugin
 {
