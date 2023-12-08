@@ -24,7 +24,7 @@ internal class CyclopsSolarChargerMk2 : CyclopsUpgrade
     public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
     public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
     public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
-    public override TechType RequiredForUnlock => TechType.Workbench;
+    public override TechType RequiredForUnlock => TechType.SeamothSolarCharge;
 
     protected override RecipeData GetBlueprintRecipe()
     {

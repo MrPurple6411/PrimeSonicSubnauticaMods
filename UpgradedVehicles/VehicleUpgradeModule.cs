@@ -45,9 +45,23 @@ public abstract class VehicleUpgradeModule
     protected TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
     protected virtual TechType PrefabTemplateType => TechType.SeamothSonarModule;
     protected virtual TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
-    protected virtual CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
     protected virtual QuickSlotType QuickSlotType => QuickSlotType.Passive;
-    protected virtual string[] StepsToFabricatorTab { get; } = new[] { "CommonModules" };
+
+    protected virtual CraftTree.Type FabricatorType =>
+#if SUBNAUTICA
+        CraftTree.Type.SeamothUpgrades;
+#else
+        CraftTree.Type.Fabricator;
+#endif
+        
+    protected virtual string[] StepsToFabricatorTab { get; } = new[] {
+#if SUBNAUTICA
+        "CommonModules"
+#else
+        "Upgrades", "ExosuitUpgrades"
+#endif
+    };
+
     protected virtual string AssetsFolder { get; } = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
     protected virtual RecipeData GetBlueprintRecipe()

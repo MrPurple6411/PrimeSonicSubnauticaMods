@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades.Craftables;
 
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using MoreCyclopsUpgrades.API;
@@ -21,6 +22,11 @@ internal class CyclopsSolarCharger : CyclopsUpgrade
                "Cyclops Solar Charger",
                "Recharges the Cyclops power cells while in sunlight.\nStacks with other solar chargers.")
     {
+        OnStartedPatching += () =>
+        {
+            KnownTechHandler.SetAnalysisTechEntry(TechType.SeamothSolarCharge, new List<TechType>() { this.Info.TechType });
+        };
+
         OnFinishedPatching += () =>
         {
             LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");

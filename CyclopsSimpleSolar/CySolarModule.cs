@@ -1,10 +1,12 @@
 ﻿namespace CyclopsSimpleSolar;
 
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Upgrades;
 using Nautilus.Crafting;
+using Nautilus.Handlers;
 using static CraftData;
 
 internal class CySolarModule : CyclopsUpgrade
@@ -14,7 +16,10 @@ internal class CySolarModule : CyclopsUpgrade
                "Recharges the Cyclops power cells while in sunlight.\n" +
                "DOES NOT STACK with other solar chargers.")
     {
-
+        OnStartedPatching += () =>
+        {
+            KnownTechHandler.SetAnalysisTechEntry(TechType.SeamothSolarCharge, new List<TechType>() { this.Info.TechType });
+        };
     }
 
     public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;

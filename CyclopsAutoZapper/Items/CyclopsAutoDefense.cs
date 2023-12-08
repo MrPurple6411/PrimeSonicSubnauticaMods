@@ -1,11 +1,13 @@
 ﻿namespace CyclopsAutoZapper;
 
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using CyclopsAutoZapper.Managers;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Upgrades;
 using Nautilus.Crafting;
+using Nautilus.Handlers;
 using static CraftData;
 
 internal class CyclopsAutoDefense : CyclopsUpgrade
@@ -15,6 +17,11 @@ internal class CyclopsAutoDefense : CyclopsUpgrade
                "Cyclops Auto Defense System Mk1",
                "Extends and automates the Perimeter Defense System of a docked Seamoth to protect the Cyclops from aggressive fauna.")
     {
+        OnStartedPatching += () =>
+        {
+            KnownTechHandler.SetAnalysisTechEntry(TechType.SeamothElectricalDefense, new List<TechType>() { this.Info.TechType });
+        };
+
         OnFinishedPatching += () =>
         {
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>

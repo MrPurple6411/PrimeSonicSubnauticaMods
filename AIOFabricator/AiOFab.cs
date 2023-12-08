@@ -104,8 +104,6 @@ internal static class AiOFab
         RegisterTopLevelVanillaTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
 #if SUBNAUTICA
         RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
-#elif BELOWZERO
-        RegisterTopLevelVanillaTab(SeaTruckFabScheme, "SeaTruck Fabricator", TechType.SeaTruck);
 #endif
 
         Root.CraftTreeCreation = CreateCraftingTree;
@@ -136,10 +134,6 @@ internal static class AiOFab
             CraftNode cy = CraftTree.CyclopsFabricatorScheme();
             CloneTabDetails(CyclopsFabScheme, cy);
             craftNodes.Add(cy);
-#elif BELOWZERO
-            CraftNode st = CraftTree.SeaTruckFabricatorScheme();
-            CloneTabDetails(SeaTruckFabScheme, st);
-            craftNodes.Add(st);
 #endif
 
             CraftNode aioRoot = new CraftNode("Root").AddNode(craftNodes.ToArray());
