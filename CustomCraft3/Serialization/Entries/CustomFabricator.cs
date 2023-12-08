@@ -152,7 +152,12 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return ItemIDisUnique() & InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
+        PassedPreValidation = ItemIDisUnique() & InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues();
+
+        if (PassedPreValidation)
+            ValidateInternalEntries();
+
+        return PassedPreValidation;
     }
 
     private bool ValidFabricatorValues()
@@ -166,7 +171,8 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 #endif
                 break;
             default:
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}"
+                if (!PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}"
 #if SUBNAUTICA
                     +$"|{Model.MoonPool}"
 #endif
@@ -176,7 +182,8 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
         if (!this.AllowedInBase && this.AllowedInCyclops)
         {
-            QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} is denied from being built anywhere as both {AllowedInBaseKey} and {AllowedInCyclopsKey} are set to NO. Entry will be removed.");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} is denied from being built anywhere as both {AllowedInBaseKey} and {AllowedInCyclopsKey} are set to NO. Entry will be removed.");
             return false;
         }
 
@@ -185,6 +192,7 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
     private bool ValidateInternalEntries()
     {
+        StartCustomCraftingTree();
         ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
         ValidateUniqueEntries(this.AddedRecipes, this.UniqueAddedRecipes);
         ValidateUniqueEntries(this.AliasRecipes, this.UniqueAliasRecipes);
@@ -199,7 +207,8 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         if (!string.IsNullOrEmpty(this.FunctionalID))
         {
             this.FunctionalID = string.Empty;
-            QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}' from {this.Origin}. Please remove and try again.");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}' from {this.Origin}. Please remove and try again.");
             return false;
         }
 
@@ -208,9 +217,11 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
 
     internal void StartCustomCraftingTree()
     {
+        if (this.TreeTypeID != CraftTree.Type.None)
+            return;
+
         this.TreeTypeID = EnumHandler.AddEntry<CraftTree.Type>(ItemID).CreateCraftTreeRoot(out var root);
         this.RootNode = root;
-        CraftTreePath.CraftTreeLookup[this.ItemID] = this.TreeTypeID;
     }
 
     internal void FinishCustomCraftingTree()
@@ -295,8 +306,6 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
     {
         if (this.TechType == TechType.None)
             throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
-
-        StartCustomCraftingTree();
 
         CustomPrefab = new CustomPrefab(Info);
 

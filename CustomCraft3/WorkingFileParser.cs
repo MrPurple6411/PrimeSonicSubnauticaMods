@@ -51,6 +51,18 @@ internal static class WorkingFileParser
         // Handle sub-folders
         foreach (var workingDirectory in Directory.GetDirectories(FileLocations.WorkingFolder))
             ParseAndPatchFiles(Directory.GetFiles(workingDirectory), $"WorkingFiles/{Path.GetDirectoryName(workingDirectory)}");
+
+        foreach (IParsingPackage package in OrderedPackages)
+            package.PrePassValidation();
+
+        foreach (IParsingPackage package in OrderedPackages)
+            package.SecondPassValidation();
+
+        MasterUniquenessValidation();
+
+        QuickLogger.Debug($"Sending requests to Nautilus");
+        foreach (IParsingPackage package in OrderedPackages)
+            package.SendToNautilus();
     }
 
     private static void ParseAndPatchFiles(string[] workingFiles, string directory)
@@ -62,17 +74,6 @@ internal static class WorkingFileParser
             rollingCount += DeserializeFile(file);
 
         QuickLogger.Info($"{rollingCount} entries successfully discovered across files in {directory}");
-
-        QuickLogger.Debug($"Validating entries - First Pass");
-        foreach (IParsingPackage package in OrderedPackages)
-            package.PrePassValidation();
-
-        QuickLogger.Debug($"Validating entries - Second Pass");
-        MasterUniquenessValidation();
-
-        QuickLogger.Debug($"Sending requests to Nautilus");
-        foreach (IParsingPackage package in OrderedPackages)
-            package.SendToNautilus();
     }
 
     private static int DeserializeFile(string workingFilePath)

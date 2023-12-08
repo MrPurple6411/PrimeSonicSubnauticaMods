@@ -122,7 +122,6 @@ internal static partial class HelpFilesWriter
             "",
             "# Vehicle Upgrade Console #",
             "SeamothUpgrades",
-            "SeamothUpgrades/CommonModules",
             "SeamothUpgrades/SeamothModules",
             "SeamothUpgrades/ExosuitModules",
             "SeamothUpgrades/CommonModules",

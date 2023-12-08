@@ -115,6 +115,7 @@ internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCr
 
     public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
+    public bool PassedPreValidation { get; set; } = true;
     public bool PassedSecondValidation { get; set; } = true;
 
     internal override EmProperty Copy()
@@ -123,18 +124,12 @@ internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCr
     }
 
     public bool PassesPreValidation(OriginFile originFile)
-    {
-        return this.CraftingPath != null & ValidFabricator();
+    {        
+        return (PassedPreValidation = this.CraftingPath != null & ValidFabricator());
     }
 
     protected virtual bool ValidFabricator()
     {
-        if (this.CraftingPath.Scheme > CraftTree.Type.Rocket)
-        {
-            QuickLogger.Error($"Error on crafting tab '{this.TabID}'. This API in intended only for use with standard, non-modded CraftTree.Types.");
-            return false;
-        }
-
         if (this.CraftingPath.Scheme == CraftTree.Type.None)
         {
             QuickLogger.Error($"Error on crafting tab '{this.TabID}'. {ParentTabPathKey} must identify a fabricator for the custom tab.");

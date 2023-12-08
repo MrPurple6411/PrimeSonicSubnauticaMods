@@ -108,23 +108,38 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return ItemIDisUnique() & // Confirm that no other item is currently using this ID.                                 
-            InnerItemsAreValid() &
-            FunctionalItemIsValid();
+        PassedPreValidation = (InnerItemsAreValid() & // Confirm that all inner items are valid.
+            FunctionalItemIsValid()) & // Confirm that the functional item is valid.
+            ItemIDisUnique(); // Confirm that the item ID is unique.
+        return PassedPreValidation;
     }
 
     protected bool ItemIDisUnique()
     {
-        // Alias Recipes must request their techtype be added during the validation step
-        Info = PrefabInfo.WithTechType(this.ItemID, this.DisplayName, this.Tooltip, "English", this.ForceUnlockAtStart);
-
-        if (Info.TechType == TechType.None)
+        if (this.TechType != TechType.None)
         {
-            QuickLogger.Warning($"Unable to create new TechType with {ItemIdKey} value '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey}. Entry will be discarded.");
+            // If the item ID is already a valid TechType, then it's already been registered.
+            return true;
+        }
+
+        if (Enum.TryParse<TechType>(this.ItemID, out _))
+        {
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"Duplicate {ItemIdKey} value '{this.ItemID}' found in {this.Key} entry from {this.Origin}.");
             return false;
         }
 
-        this.TechType = Info.TechType;
+        // Alias Recipes must request their techtype be added during the validation step
+        if (!EnumHandler.TryAddEntry<TechType>(this.ItemID, out var builder))
+        {
+            QuickLogger.Warning($"Unable to create new TechType with {ItemIdKey} value '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey}.");
+            return false;
+        }
+
+        this.TechType = builder;
+        builder.WithPdaInfo(this.DisplayName, this.Tooltip, "English", this.ForceUnlockAtStart);
+        Info = new PrefabInfo(this.ItemID, this.ItemID + "Prefab", this.TechType);
+
         return true;
     }
 
@@ -138,7 +153,8 @@ internal class AliasRecipe : AddedRecipe, IAliasRecipe
 
         if (this.FunctionalCloneID == TechType.None)
         {
-            QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
             return false;
         }
 

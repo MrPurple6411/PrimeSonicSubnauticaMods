@@ -154,7 +154,7 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return base.PassesPreValidation(originFile) & InnerItemsAreValid();
+        return InnerItemsAreValid() & base.PassesPreValidation(originFile);
     }
 
     protected bool InnerItemsAreValid()
@@ -177,12 +177,14 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
             if (unlockByItemID == TechType.None)
             {
-                QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {this.UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
+                if (!PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {this.UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
                 unlockedByValid = false;
                 continue;
             }
 
-            this.UnlockedByItems.Add(unlockByItemID);
+            if (!UnlockedByItems.Contains(unlockByItemID))
+                this.UnlockedByItems.Add(unlockByItemID);
         }
 
         return unlockedByValid;
@@ -198,12 +200,14 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
             if (unlockingItemID == TechType.None)
             {
-                QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlocksKey} '{unlockingItem}'. Entry will be discarded.");
+                if (!PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlocksKey} '{unlockingItem}'. Entry will be discarded.");
                 unlocksValid = false;
                 continue;
             }
 
-            this.UnlockingItems.Add(unlockingItemID);
+            if (!UnlockingItems.Contains(unlockingItemID))
+                this.UnlockingItems.Add(unlockingItemID);
         }
 
         return unlocksValid;
@@ -219,12 +223,14 @@ internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
 
             if (linkedItemID == TechType.None)
             {
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {LinkedItemsIdsKey} '{linkedItem}'. Entry will be discarded.");
+                if (!PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {LinkedItemsIdsKey} '{linkedItem}'. Entry will be discarded.");
                 linkedItemsValid = false;
                 continue;
             }
 
-            this.LinkedItems.Add(linkedItemID);
+            if (!LinkedItems.Contains(linkedItemID))
+                this.LinkedItems.Add(linkedItemID);
         }
 
         return linkedItemsValid;

@@ -231,26 +231,29 @@ internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return base.PassesPreValidation(originFile) & ValidateCustomFoodValues();
+        return  ValidateCustomFoodValues() & base.PassesPreValidation(originFile);
     }
 
     private bool ValidateCustomFoodValues()
     {
         if (this.FoodValue < MinValue || this.FoodValue > MaxValue)
         {
-            QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {FoodKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+            if (PassedPreValidation)
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {FoodKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
             return false;
         }
 
         if (this.WaterValue < MinValue || this.FoodValue > MaxValue)
         {
-            QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {WaterKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+            if (PassedPreValidation)
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {WaterKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
             return false;
         }
 
         if (this.WaterValue == 0 & this.FoodValue == 0)
         {
-            QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' must have at least one non-zero value for either {FoodKey} or {WaterKey}. Entry will be discarded.");
+            if (PassedPreValidation)
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' must have at least one non-zero value for either {FoodKey} or {WaterKey}. Entry will be discarded.");
             return false;
         }
 

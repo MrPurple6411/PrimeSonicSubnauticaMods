@@ -6,6 +6,7 @@ internal interface IParsingPackage
 {
     int ParseEntries(string serializedData, OriginFile file);
     void PrePassValidation();
+    void SecondPassValidation();
     void SendToNautilus();
     string ListKey { get; }
     string TypeName { get; }

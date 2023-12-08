@@ -83,14 +83,15 @@ internal class CustomSize : EmTechTyped, ICustomSize, ICustomCraft
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return base.PassesPreValidation(originFile) & ValidateSizes();
+        return  ValidateSizes() & base.PassesPreValidation(originFile);
     }
 
     private bool ValidateSizes()
     {
         if (this.Width < Min || this.Height < Min || this.Width > Max || this.Height > Max)
         {
-            QuickLogger.Error($"Error in {this.Key} for '{this.ItemID}' from {this.Origin}. Size values must be between between {Min} and {Max}.");
+            if (PassedPreValidation)
+                QuickLogger.Error($"Error in {this.Key} for '{this.ItemID}' from {this.Origin}. Size values must be between between {Min} and {Max}.");
             return false;
         }
 

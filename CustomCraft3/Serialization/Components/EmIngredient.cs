@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using Common;
 using EasyMarkup;
-using Nautilus.Crafting;
 using static CraftData;
 
 internal class EmIngredient : EmTechTyped
@@ -57,14 +56,15 @@ internal class EmIngredient : EmTechTyped
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return base.PassesPreValidation(originFile) && RequireValueInRange();
+        return  RequireValueInRange() & base.PassesPreValidation(originFile);
     }
 
     private bool RequireValueInRange()
     {
         if (this.Required > Max || this.Required < Min)
         {
-            QuickLogger.Error($"Error in {this.Key} {RequiredKey} for '{this.ItemID}'. Required values must be between between {Min} and {Max}.");
+            if (!PassedPreValidation)
+                QuickLogger.Error($"Error in {this.Key} {RequiredKey} for '{this.ItemID}'. Required values must be between between {Min} and {Max}.");
             return false;
         }
 

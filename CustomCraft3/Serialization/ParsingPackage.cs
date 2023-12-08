@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using Common;
 using CustomCraft3.Interfaces.InternalUse;
+using CustomCraft3.Serialization.Components;
+using CustomCraft3.Serialization.Entries;
 using EasyMarkup;
 
 internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
@@ -12,6 +14,9 @@ internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPac
     public string ListKey { get; }
 
     internal IList<CustomCraftEntry> ParsedEntries { get; } = new List<CustomCraftEntry>();
+
+    internal IList<CustomCraftEntry> SecondPassEntries { get; } = new List<CustomCraftEntry>();
+
     internal IDictionary<string, CustomCraftEntry> UniqueEntries { get; } = new Dictionary<string, CustomCraftEntry>();
 
     public string TypeName { get; } = typeof(CustomCraftEntry).Name;
@@ -47,12 +52,53 @@ internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPac
 
     public void PrePassValidation()
     {
-        //  Use the ToSet function as a copy constructor - this way we can iterate across the
-        //      temp structure, but change the permanent one in the case of duplicates
+        QuickLogger.Debug($"Prepass validation for {this.TypeName} entries");
+        int successCount = 0;
         foreach (CustomCraftEntry item in this.ParsedEntries)
         {
             if (!item.PassesPreValidation(item.Origin))
+            {
+                if (!SecondPassEntries.Contains(item))
+                    SecondPassEntries.Add(item);
+                else
+                    QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
                 continue;
+            }
+
+            if (this.UniqueEntries.ContainsKey(item.ID))
+            {
+                QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            }
+            else
+            {
+                // All checks passed
+                this.UniqueEntries.Add(item.ID, item);
+                successCount++;
+            }
+        }
+    }
+
+    /// <summary>
+    /// This is a second pass validation that is only run if the first pass validation fails due to files being loaded in the wrong order.
+    /// </summary>
+    public void SecondPassValidation()
+    {
+        if (this.SecondPassEntries.Count == 0)
+        {
+            if (ParsedEntries.Count > 0)
+                QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
+
+            return; // Nothing to do here
+        }
+
+        QuickLogger.Debug($"Second pass validation for {this.TypeName} entries");
+        foreach (CustomCraftEntry item in this.SecondPassEntries)
+        {
+            if (!item.PassesPreValidation(item.Origin))
+            {
+                QuickLogger.Debug($"Entry for '{item.ID}' from file '{item.Origin}' will be discarded.");
+                continue;
+            }
 
             if (this.UniqueEntries.ContainsKey(item.ID))
             {
@@ -65,12 +111,12 @@ internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPac
             }
         }
 
-        if (this.ParsedEntries.Count > 0)
-            QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
+        QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
     }
 
     public void SendToNautilus()
     {
+        QuickLogger.Debug($"Sending {this.TypeName} entries to Nautilus");
         int successCount = 0;
         foreach (CustomCraftEntry item in this.UniqueEntries.Values)
         {

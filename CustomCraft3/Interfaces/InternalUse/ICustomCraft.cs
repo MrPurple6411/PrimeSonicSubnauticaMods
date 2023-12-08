@@ -6,6 +6,7 @@ internal interface ICustomCraft
 {
     string ID { get; }
     bool PassesPreValidation(OriginFile originFile);
+    bool PassedPreValidation { get; }
     bool PassedSecondValidation { get; }
     bool SendToNautilus();
 

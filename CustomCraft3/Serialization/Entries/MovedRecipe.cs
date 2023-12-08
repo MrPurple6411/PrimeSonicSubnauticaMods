@@ -107,26 +107,29 @@ internal class MovedRecipe : EmTechTyped, IMovedRecipe, ICustomCraft
 
     public override bool PassesPreValidation(OriginFile originFile)
     {
-        return base.PassesPreValidation(originFile) & IsValidState();
+        return IsValidState() & base.PassesPreValidation(originFile);
     }
 
     private bool IsValidState()
     {
         if (!this.Copied && string.IsNullOrEmpty(this.OldPath))
         {
-            QuickLogger.Warning($"{OldPathKey} missing while {CopyKey} was not set to 'YES' in {this.Key} for '{this.ItemID}' from {this.Origin}");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"{OldPathKey} missing while {CopyKey} was not set to 'YES' in {this.Key} for '{this.ItemID}' from {this.Origin}");
             return false;
         }
 
         if (this.Copied && this.Hidden)
         {
-            QuickLogger.Warning($"Invalid request in {this.Key} for '{this.ItemID}' from {this.Origin}. {CopyKey} and {HiddenKey} cannot both be set to 'YES'");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"Invalid request in {this.Key} for '{this.ItemID}' from {this.Origin}. {CopyKey} and {HiddenKey} cannot both be set to 'YES'");
             return false;
         }
 
         if (string.IsNullOrEmpty(this.NewPath) && (this.Copied || !this.Hidden))
         {
-            QuickLogger.Warning($"{NewPathKey} value missing in {this.Key} for '{this.ItemID}' from {this.Origin}");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"{NewPathKey} value missing in {this.Key} for '{this.ItemID}' from {this.Origin}");
             return false;
         }
 

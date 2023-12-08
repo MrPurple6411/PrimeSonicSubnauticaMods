@@ -39,6 +39,8 @@ internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
 
     public TechType TechType { get; set; } = TechType.None;
 
+    public bool PassedPreValidation { get; set; } = true;
+
     public virtual bool PassesPreValidation(OriginFile originFile)
     {
         // Now we can safely do the prepass check in case we need to create a new modded TechType
@@ -46,7 +48,9 @@ internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
 
         if (this.TechType == TechType.None)
         {
-            QuickLogger.Warning($"Could not resolve {ItemIdKey} value of '{this.ItemID}' for '{this.Key}' from file '{originFile}'. Discarded entry.");
+            if (!PassedPreValidation)
+                QuickLogger.Warning($"Could not resolve {ItemIdKey} value of '{this.ItemID}' for '{this.Key}' from file '{originFile}'. Discarded entry.");
+            PassedPreValidation = false;
             return false;
         }
 

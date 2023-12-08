@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using Common;
+using Nautilus.Handlers;
 
 internal class CraftTreePath
 {
@@ -77,23 +79,14 @@ internal class CraftTreePath
         return copy.ToArray();
     }
 
-    internal static readonly Dictionary<string, CraftTree.Type> CraftTreeLookup = new Dictionary<string, CraftTree.Type>(StringComparer.InvariantCultureIgnoreCase)
-    {
-        { "Fabricator", CraftTree.Type.Fabricator },
-        { "Constructor", CraftTree.Type.Constructor },
-        { "MobileVehicleBay", CraftTree.Type.Constructor },
-        { "Workbench", CraftTree.Type.Workbench },
-        { "ModificationStation", CraftTree.Type.Workbench },
-        { "SeamothUpgrades", CraftTree.Type.SeamothUpgrades },
-        { "VehicleUpgradeConsole", CraftTree.Type.SeamothUpgrades },
-        { "MapRoom", CraftTree.Type.MapRoom },
-        { "ScannerRoom", CraftTree.Type.MapRoom },
-        { "CyclopsFabricator", CraftTree.Type.CyclopsFabricator },
-    };
-
     internal static CraftTree.Type GetCraftTreeType(string schemeString)
     {
-        if (CraftTreeLookup.TryGetValue(schemeString, out CraftTree.Type type))
+        if (Enum.TryParse(schemeString, out CraftTree.Type type))
+        {
+            return type;
+        }
+
+        if(EnumHandler.TryGetValue(schemeString, out type))
         {
             return type;
         }
