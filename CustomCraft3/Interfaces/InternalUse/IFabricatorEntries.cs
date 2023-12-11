@@ -1,18 +1,21 @@
-﻿namespace CustomCraft3.Interfaces.InternalUse;
-
-using System.Collections.Generic;
-
-internal interface IFabricatorEntries
+﻿namespace CustomCraft3.Interfaces.InternalUse
 {
-    ICollection<string> CustomTabIDs { get; }
-    ICollection<string> MovedRecipeIDs { get; }
-    ICollection<string> AddedRecipeIDs { get; }
-    ICollection<string> AliasRecipesIDs { get; }
-    ICollection<string> CustomFoodIDs { get; }
+    using System.Collections.Generic;
 
-    void DuplicateCustomTabDiscovered(string id);
-    void DuplicateMovedRecipeDiscovered(string id);
-    void DuplicateAddedRecipeDiscovered(string id);
-    void DuplicateAliasRecipesDiscovered(string id);
-    void DuplicateCustomFoodsDiscovered(string id);
+    internal interface IFabricatorEntries
+    {
+        ICollection<string> CustomTabIDs { get; }
+        ICollection<string> MovedRecipeIDs { get; }
+        ICollection<string> AddedRecipeIDs { get; }
+        ICollection<string> AliasRecipesIDs { get; }
+        ICollection<string> CustomFoodIDs { get; }
+
+#if !UNITY_EDITOR
+        void DuplicateCustomTabDiscovered(string id);
+        void DuplicateMovedRecipeDiscovered(string id);
+        void DuplicateAddedRecipeDiscovered(string id);
+        void DuplicateAliasRecipesDiscovered(string id);
+        void DuplicateCustomFoodsDiscovered(string id);
+#endif
+    }
 }

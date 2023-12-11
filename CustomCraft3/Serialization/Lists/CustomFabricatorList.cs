@@ -1,13 +1,14 @@
-﻿namespace CustomCraft3.Serialization.Lists;
-
-using CustomCraft3.Serialization.Entries;
-using EasyMarkup;
-
-internal class CustomFabricatorList : EmPropertyCollectionList<CustomFabricator>
+﻿namespace CustomCraft3.Serialization.Lists
 {
-    internal const string ListKey = "CustomFabricators";
+    using CustomCraft3.Serialization.Entries;
+    using EasyMarkup;
 
-    public CustomFabricatorList() : base(ListKey)
+    internal class CustomFabricatorList : EmPropertyCollectionList<CustomFabricator>
     {
+        internal const string ListKey = "CustomFabricators";
+
+        public CustomFabricatorList() : base(ListKey)
+        {
+        }
     }
 }

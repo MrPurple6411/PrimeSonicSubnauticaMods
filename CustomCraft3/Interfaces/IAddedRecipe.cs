@@ -1,8 +1,9 @@
-﻿namespace CustomCraft3.Interfaces;
-
-internal interface IAddedRecipe : IModifiedRecipe
+﻿namespace CustomCraft3.Interfaces
 {
-    string Path { get; }
-    TechGroup PdaGroup { get; }
-    TechCategory PdaCategory { get; }
+    internal interface IAddedRecipe : IModifiedRecipe
+    {
+        string Path { get; }
+        TechGroup PdaGroup { get; }
+        TechCategory PdaCategory { get; }
+    }
 }

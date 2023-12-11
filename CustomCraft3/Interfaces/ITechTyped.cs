@@ -1,8 +1,9 @@
-﻿namespace CustomCraft3.Interfaces;
-
-public interface ITechTyped
+﻿namespace CustomCraft3.Interfaces
 {
-    string ItemID { get; }
-    string Key { get; }
-    TechType TechType { get; set; }
+    public interface ITechTyped
+    {
+        string ItemID { get; }
+        string Key { get; }
+        TechType TechType { get; set; }
+    }
 }

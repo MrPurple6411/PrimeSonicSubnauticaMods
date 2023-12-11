@@ -1,7 +1,8 @@
-﻿namespace CustomCraft3.Interfaces;
-
-public interface ICustomSize : ITechTyped
+﻿namespace CustomCraft3.Interfaces
 {
-    short Height { get; }
-    short Width { get; }
+    public interface ICustomSize : ITechTyped
+    {
+        short Height { get; }
+        short Width { get; }
+    }
 }

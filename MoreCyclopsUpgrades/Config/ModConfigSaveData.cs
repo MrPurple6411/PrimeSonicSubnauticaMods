@@ -84,7 +84,7 @@ internal class ModConfigSaveData : EmPropertyCollection
         return (EmProperty<bool>)this[option.Id];
     }
 
-    internal override EmProperty Copy()
+    public override EmProperty Copy()
     {
         return new ModConfigSaveData(configOptions);
     }

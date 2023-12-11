@@ -1,13 +1,14 @@
-﻿namespace CustomCraft3.Serialization.Lists;
-
-using CustomCraft3.Serialization.Entries;
-using EasyMarkup;
-
-internal class AddedRecipeList : EmPropertyCollectionList<AddedRecipe>
+﻿namespace CustomCraft3.Serialization.Lists
 {
-    internal const string ListKey = "AddedRecipes";
+    using CustomCraft3.Serialization.Entries;
+    using EasyMarkup;
 
-    public AddedRecipeList() : base(ListKey)
+    internal class AddedRecipeList : EmPropertyCollectionList<AddedRecipe>
     {
+        internal const string ListKey = "AddedRecipes";
+
+        public AddedRecipeList() : base(ListKey)
+        {
+        }
     }
 }

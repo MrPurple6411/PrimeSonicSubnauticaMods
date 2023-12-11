@@ -1,6 +1,7 @@
-﻿namespace EasyMarkup;
-
-internal interface IValueConfirmation
+﻿namespace EasyMarkup
 {
-    bool HasValue { get; }
+    public interface IValueConfirmation
+    {
+        bool HasValue { get; }
+    }
 }

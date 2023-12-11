@@ -163,7 +163,7 @@ internal class EmTextPluginPack : EmPropertyCollection, IParsedPluginPack
 
     public string PluginPackFolder { get; set; }
 
-    internal override EmProperty Copy()
+    public override EmProperty Copy()
     {
         return new EmTextPluginPack(this);
     }

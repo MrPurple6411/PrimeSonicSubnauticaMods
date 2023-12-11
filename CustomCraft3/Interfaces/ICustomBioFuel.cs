@@ -1,6 +1,7 @@
-﻿namespace CustomCraft3.Interfaces;
-
-public interface ICustomBioFuel : ITechTyped
+﻿namespace CustomCraft3.Interfaces
 {
-    float Energy { get; }
+    public interface ICustomBioFuel : ITechTyped
+    {
+        float Energy { get; }
+    }
 }

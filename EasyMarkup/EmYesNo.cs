@@ -1,47 +1,48 @@
-﻿namespace EasyMarkup;
-
-internal class EmYesNo : EmProperty<bool>
+﻿namespace EasyMarkup
 {
-    public EmYesNo(string key, bool defaultValue = false) : base(key, defaultValue)
+    public class EmYesNo : EmProperty<bool>
     {
-    }
-
-    public override bool ConvertFromSerial(string value)
-    {
-        bool retValue;
-
-        switch (value.ToUpperInvariant())
+        public EmYesNo(string key, bool defaultValue = false) : base(key, defaultValue)
         {
-            case "YES":
-            case "TRUE":
-                retValue = true;
-                break;
-            case "NO":
-            case "FALSE":
-                retValue = false;
-                break;
-            default:
-                retValue = this.DefaultValue;
-                break;
         }
 
-        SerializedValue = retValue ? "YES" : "NO";
+        public override bool ConvertFromSerial(string value)
+        {
+            bool retValue;
 
-        return retValue;
-    }
+            switch (value.ToUpperInvariant())
+            {
+                case "YES":
+                case "TRUE":
+                    retValue = true;
+                    break;
+                case "NO":
+                case "FALSE":
+                    retValue = false;
+                    break;
+                default:
+                    retValue = this.DefaultValue;
+                    break;
+            }
 
-    public override string ToString()
-    {
-        SerializedValue = this.Value ? "YES" : "NO";
+            SerializedValue = retValue ? "YES" : "NO";
 
-        return base.ToString();
-    }
+            return retValue;
+        }
 
-    internal override EmProperty Copy()
-    {
-        if (this.HasValue)
-            return new EmYesNo(this.Key, this.Value) { Optional = this.Optional };
+        public override string ToString()
+        {
+            SerializedValue = this.Value ? "YES" : "NO";
 
-        return new EmYesNo(this.Key, this.DefaultValue) { Optional = this.Optional };
+            return base.ToString();
+        }
+
+        public override EmProperty Copy()
+        {
+            if (this.HasValue)
+                return new EmYesNo(this.Key, this.Value) { Optional = this.Optional };
+
+            return new EmYesNo(this.Key, this.DefaultValue) { Optional = this.Optional };
+        }
     }
 }

@@ -1,6 +1,7 @@
-﻿namespace CustomCraft3.Interfaces;
-
-public interface ICustomFragmentCount : ITechTyped
+﻿namespace CustomCraft3.Interfaces
 {
-    int FragmentsToScan { get; }
+    public interface ICustomFragmentCount : ITechTyped
+    {
+        int FragmentsToScan { get; }
+    }
 }

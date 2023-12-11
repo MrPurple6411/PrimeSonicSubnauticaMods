@@ -1,136 +1,164 @@
-﻿namespace CustomCraft3.Serialization;
-
-using System.Collections.Generic;
-using Common;
-using CustomCraft3.Interfaces.InternalUse;
-using CustomCraft3.Serialization.Components;
-using CustomCraft3.Serialization.Entries;
-using EasyMarkup;
-
-internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
-        where CustomCraftEntry : EmPropertyCollection, ICustomCraft, new()
-        where EmCollectionListT : EmPropertyCollectionList<CustomCraftEntry>, new()
+﻿#if !UNITY_EDITOR
+namespace CustomCraft3.Serialization
 {
-    public string ListKey { get; }
+    using System.Collections.Generic;
+    using Common;
+    using CustomCraft3.Interfaces.InternalUse;
+    using CustomCraft3.Serialization.Entries;
+    using EasyMarkup;
 
-    internal IList<CustomCraftEntry> ParsedEntries { get; } = new List<CustomCraftEntry>();
-
-    internal IList<CustomCraftEntry> SecondPassEntries { get; } = new List<CustomCraftEntry>();
-
-    internal IDictionary<string, CustomCraftEntry> UniqueEntries { get; } = new Dictionary<string, CustomCraftEntry>();
-
-    public string TypeName { get; } = typeof(CustomCraftEntry).Name;
-    public string[] TutorialText { get; } = (new CustomCraftEntry()).TutorialText;
-
-    public ParsingPackage(string listKey)
+    internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
+            where CustomCraftEntry : EmPropertyCollection, ICustomCraft, new()
+            where EmCollectionListT : EmPropertyCollectionList<CustomCraftEntry>, new()
     {
-        this.ListKey = listKey;
-    }
+        public string ListKey { get; }
 
-    public int ParseEntries(string serializedData, OriginFile file)
-    {
-        var list = new EmCollectionListT();
+        internal IList<CustomCraftEntry> ParsedEntries { get; } = new List<CustomCraftEntry>();
 
-        bool successfullyParsed = list.Deserialize(serializedData);
+        internal IList<CustomCraftEntry> SecondPassEntries { get; } = new List<CustomCraftEntry>();
 
-        if (!successfullyParsed)
-            return -1; // Error case
+        internal IDictionary<string, CustomCraftEntry> UniqueEntries { get; } = new Dictionary<string, CustomCraftEntry>();
 
-        if (list.Count == 0)
-            return 0; // No entries
+        public string TypeName { get; } = typeof(CustomCraftEntry).Name;
+        public string[] TutorialText { get; } = (new CustomCraftEntry()).TutorialText;
 
-        int count = 0;
-        foreach (CustomCraftEntry item in list)
+        public ParsingPackage(string listKey)
         {
-            item.Origin = file;
-            this.ParsedEntries.Add(item);
-            count++;
+            this.ListKey = listKey;
         }
 
-        return count; // Return the number of unique entries added in this list
-    }
-
-    public void PrePassValidation()
-    {
-        QuickLogger.Debug($"Prepass validation for {this.TypeName} entries");
-        int successCount = 0;
-        foreach (CustomCraftEntry item in this.ParsedEntries)
+        public int ParseEntries(string serializedData, OriginFile file)
         {
-            if (!item.PassesPreValidation(item.Origin))
+            var list = new EmCollectionListT();
+
+            bool successfullyParsed = list.Deserialize(serializedData);
+
+            if (!successfullyParsed)
+                return -1; // Error case
+
+            if (list.Count == 0)
+                return 0; // No entries
+
+            int count = 0;
+            foreach (CustomCraftEntry item in list)
             {
-                if (!SecondPassEntries.Contains(item))
-                    SecondPassEntries.Add(item);
+                item.Origin = file;
+                this.ParsedEntries.Add(item);
+                count++;
+            }
+
+            return count; // Return the number of unique entries added in this list
+        }
+
+        public void PrePassValidation()
+        {
+            QuickLogger.Debug($"Prepass validation for {this.TypeName} entries");
+            foreach (CustomCraftEntry item in this.ParsedEntries)
+            {
+                if (!item.PassesPreValidation(item.Origin))
+                {
+                    if (!SecondPassEntries.Contains(item))
+                        SecondPassEntries.Add(item);
+                    continue;
+                }
+
+                if (this.UniqueEntries.ContainsKey(item.ID))
+                {
+                    if (item is MovedRecipe movedRecipe && this.UniqueEntries[item.ID] is MovedRecipe existingMovedRecipe)
+                    {
+                        existingMovedRecipe.AlternatePaths.Add(movedRecipe.Origin, movedRecipe);
+                        QuickLogger.Debug($"Merged alternate path for {this.TypeName} '{item.ID}' in {item.Origin}");
+                    }
+                    else
+                    {
+                        QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+                    }
+                }
                 else
-                    QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-                continue;
-            }
-
-            if (this.UniqueEntries.ContainsKey(item.ID))
-            {
-                QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            }
-            else
-            {
-                // All checks passed
-                this.UniqueEntries.Add(item.ID, item);
-                successCount++;
+                {
+                    // All checks passed
+                    this.UniqueEntries.Add(item.ID, item);
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// This is a second pass validation that is only run if the first pass validation fails due to files being loaded in the wrong order.
-    /// </summary>
-    public void SecondPassValidation()
-    {
-        if (this.SecondPassEntries.Count == 0)
+        /// <summary>
+        /// This is a second pass validation that is only run if the first pass validation fails due to files being loaded in the wrong order.
+        /// </summary>
+        public void SecondPassValidation()
         {
-            if (ParsedEntries.Count > 0)
-                QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
+            if (this.SecondPassEntries.Count == 0)
+            {
+                if (ParsedEntries.Count > 0)
+                    QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
 
-            return; // Nothing to do here
+                return; // Nothing to do here
+            }
+
+            QuickLogger.Debug($"Second pass validation for {this.TypeName} entries");
+            foreach (CustomCraftEntry item in this.SecondPassEntries)
+            {
+                if (!item.PassesPreValidation(item.Origin))
+                {
+                    QuickLogger.Debug($"Entry for '{item.ID}' from file '{item.Origin}' will be discarded.");
+                    continue;
+                }
+
+                if (this.UniqueEntries.ContainsKey(item.ID))
+                {
+                    if (item is MovedRecipe movedRecipe && this.UniqueEntries[item.ID] is MovedRecipe existingMovedRecipe)
+                    {
+                        existingMovedRecipe.AlternatePaths.Add(movedRecipe.Origin, movedRecipe);
+                        QuickLogger.Debug($"Merged alternate path for {this.TypeName} '{item.ID}' in {item.Origin}");
+                    }
+                    else
+                    {
+                        QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+                    }
+                }
+                else
+                {
+                    // All checks passed
+                    this.UniqueEntries.Add(item.ID, item);
+                }
+            }
+
+            QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
         }
 
-        QuickLogger.Debug($"Second pass validation for {this.TypeName} entries");
-        foreach (CustomCraftEntry item in this.SecondPassEntries)
+        public void SendToNautilus()
         {
-            if (!item.PassesPreValidation(item.Origin))
+            QuickLogger.Debug($"Sending {this.TypeName} entries to Nautilus");
+            int successCount = 0;
+            foreach (CustomCraftEntry item in this.UniqueEntries.Values)
             {
-                QuickLogger.Debug($"Entry for '{item.ID}' from file '{item.Origin}' will be discarded.");
-                continue;
+                try
+                {
+                    if (!item.PassedSecondValidation)
+                    {
+                        QuickLogger.Warning($"Entry for '{item.ID}' from file '{item.Origin}' failed secondary checks for duplicate IDs. It will not be patched.");
+                    }
+                    else if (item.SendToNautilus())
+                    {
+                        successCount++;
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    QuickLogger.Error($"Failed to send {this.TypeName} entry '{item.ID}' to Nautilus with Exception:");
+                    do
+                    {
+                        QuickLogger.Error(e.Message);
+                        QuickLogger.Error(e.StackTrace);
+                        e = e.InnerException;
+                    }
+                    while (e != null);
+                }
             }
 
-            if (this.UniqueEntries.ContainsKey(item.ID))
-            {
-                QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            }
-            else
-            {
-                // All checks passed
-                this.UniqueEntries.Add(item.ID, item);
-            }
+            if (this.UniqueEntries.Count > 0)
+                QuickLogger.Info($"{successCount} of {this.UniqueEntries.Count} {this.TypeName} entries were patched");
         }
-
-        QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
-    }
-
-    public void SendToNautilus()
-    {
-        QuickLogger.Debug($"Sending {this.TypeName} entries to Nautilus");
-        int successCount = 0;
-        foreach (CustomCraftEntry item in this.UniqueEntries.Values)
-        {
-            if (!item.PassedSecondValidation)
-            {
-                QuickLogger.Warning($"Entry for '{item.ID}' from file '{item.Origin}' failed secondary checks for duplicate IDs. It will not be patched.");
-            }
-            else if (item.SendToNautilus())
-            {
-                successCount++;
-            }
-        }
-
-        if (this.UniqueEntries.Count > 0)
-            QuickLogger.Info($"{successCount} of {this.UniqueEntries.Count} {this.TypeName} entries were patched");
     }
 }
+#endif

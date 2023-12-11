@@ -1,0 +1,15 @@
+{
+    "name": "EasyMarkup",
+    "references": [
+        "GUID:f766f5ec4319ff04b95108f02ccca7a1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

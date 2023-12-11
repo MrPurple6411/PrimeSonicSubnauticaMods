@@ -1,13 +1,14 @@
-﻿namespace CustomCraft3.Serialization.Lists;
-
-using CustomCraft3.Serialization.Entries;
-using EasyMarkup;
-
-internal class CustomFragmentCountList : EmPropertyCollectionList<CustomFragmentCount>
+﻿namespace CustomCraft3.Serialization.Lists
 {
-    internal const string ListKey = "CustomFragmentCounts";
+    using CustomCraft3.Serialization.Entries;
+    using EasyMarkup;
 
-    public CustomFragmentCountList() : base(ListKey)
+    internal class CustomFragmentCountList : EmPropertyCollectionList<CustomFragmentCount>
     {
+        internal const string ListKey = "CustomFragmentCounts";
+
+        public CustomFragmentCountList() : base(ListKey)
+        {
+        }
     }
 }

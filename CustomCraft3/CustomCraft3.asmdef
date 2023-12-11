@@ -1,0 +1,19 @@
+{
+    "name": "CustomCraft3",
+    "references": [
+        "GUID:f766f5ec4319ff04b95108f02ccca7a1",
+        "GUID:12d139bfdf7603f42b25749c4d2e9cff"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Assembly-CSharp.dll",
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

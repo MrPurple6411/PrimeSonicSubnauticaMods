@@ -1,13 +1,14 @@
-﻿namespace CustomCraft3.Serialization.Lists;
-
-using CustomCraft3.Serialization.Entries;
-using EasyMarkup;
-
-internal class CustomCraftingTabList : EmPropertyCollectionList<CustomCraftingTab>
+﻿namespace CustomCraft3.Serialization.Lists
 {
-    internal const string ListKey = "CustomCraftingTabs";
+    using CustomCraft3.Serialization.Entries;
+    using EasyMarkup;
 
-    public CustomCraftingTabList() : base(ListKey)
+    internal class CustomCraftingTabList : EmPropertyCollectionList<CustomCraftingTab>
     {
+        internal const string ListKey = "CustomCraftingTabs";
+
+        public CustomCraftingTabList() : base(ListKey)
+        {
+        }
     }
 }

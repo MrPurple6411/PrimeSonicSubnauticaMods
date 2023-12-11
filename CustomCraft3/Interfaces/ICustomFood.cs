@@ -1,11 +1,12 @@
-﻿namespace CustomCraft3.Interfaces;
-
-internal interface ICustomFood : IAliasRecipe
+﻿namespace CustomCraft3.Interfaces
 {
-    FoodModel FoodType { get; }
+    internal interface ICustomFood : IAliasRecipe
+    {
+        FoodModel FoodType { get; }
 
-    short FoodValue { get; }
-    short WaterValue { get; }
-    float DecayRateMod { get; }
-    bool UseDrinkSound { get; }
+        short FoodValue { get; }
+        short WaterValue { get; }
+        float DecayRateMod { get; }
+        bool UseDrinkSound { get; }
+    }
 }

@@ -1,15 +1,16 @@
-﻿namespace CustomCraft3.Interfaces;
-
-using System.Collections.Generic;
-using CustomCraft3.Serialization.Components;
-
-internal interface IModifiedRecipe : ITechTyped
+﻿namespace CustomCraft3.Interfaces
 {
-    short? AmountCrafted { get; }
-    bool ForceUnlockAtStart { get; }
+    using System.Collections.Generic;
+    using CustomCraft3.Serialization.Components;
 
-    IList<EmIngredient> EmIngredients { get; }
-    IList<string> LinkedItemIDs { get; }
-    IList<string> Unlocks { get; }
-    IList<string> UnlockedBy { get; }
+    internal interface IModifiedRecipe : ITechTyped
+    {
+        short? AmountCrafted { get; }
+        bool ForceUnlockAtStart { get; }
+
+        IList<EmIngredient> EmIngredients { get; }
+        IList<string> LinkedItemIDs { get; }
+        IList<string> Unlocks { get; }
+        IList<string> UnlockedBy { get; }
+    }
 }

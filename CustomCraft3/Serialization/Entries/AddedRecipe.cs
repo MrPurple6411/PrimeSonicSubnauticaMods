@@ -1,145 +1,79 @@
-﻿namespace CustomCraft3.Serialization.Entries;
-
-using System;
-using System.Collections.Generic;
-using Common;
-using CustomCraft3.Interfaces;
-using CustomCraft3.Serialization;
-using CustomCraft3.Serialization.Components;
-using CustomCraft3.Serialization.Lists;
-using EasyMarkup;
-using Nautilus.Crafting;
-using Nautilus.Handlers;
-using static CraftData;
-
-internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
+﻿#if !UNITY_EDITOR
+namespace CustomCraft3.Serialization.Entries
 {
-    protected const string PathKey = "Path";
-    protected const string PdaGroupKey = "PdaGroup";
-    protected const string PdaCategoryKey = "PdaCategory";
+    using System;
+    using Common;
+    using CustomCraft3.Interfaces;
+    using CustomCraft3.Serialization;
+    using CustomCraft3.Serialization.Components;
+    using Nautilus.Crafting;
+    using Nautilus.Handlers;
+    using static CraftData;
 
-    public const string TypeName = "AddedRecipe";
-
-    public override string[] TutorialText => AddedRecipeTutorial;
-
-    internal static readonly string[] AddedRecipeTutorial = new[]
+    internal partial class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
-       $"{AddedRecipeList.ListKey}: Adding your own recipes into any of the existing fabricators.",
-       $"    {AddedRecipeList.ListKey} have all the same properties as {ModifiedRecipeList.ListKey}, with the following additions:",
-       $"    {PathKey}: Sets the fabricator and crafting tab where the new recipe will be added.",
-        "        Remember, this must be a valid path to an existing tab or to a custom tab you've created.",
-        "        You can find a full list of all original crafting paths for all the standard fabricators in the OriginalRecipes folder.",
-       $"    {PdaGroupKey}: Sets the main group for blueprint shown in the PDA.",
-       $"        This is optional. If {PdaGroupKey} is set, {PdaCategoryKey} must also be set.",
-       $"    {PdaCategoryKey}: Sets the category under the group for blueprint shown in the PDA.",
-       $"        This is optional. If {PdaCategoryKey} is set, {PdaGroupKey} must also be set.",
-    };
-
-    protected readonly EmProperty<string> path;
-    protected readonly EmProperty<TechGroup> techGroup;
-    protected readonly EmProperty<TechCategory> techCategory;
-
-    public string Path
-    {
-        get => path.Value;
-        set => path.Value = value;
-    }
-
-    protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
-    {
-        new EmProperty<string>(PathKey),
-        new EmProperty<TechGroup>(PdaGroupKey, TechGroup.Uncategorized) { Optional = true },
-        new EmProperty<TechCategory>(PdaCategoryKey, TechCategory.Misc) { Optional = true }
-    };
-
-    public TechGroup PdaGroup
-    {
-        get => techGroup.Value;
-        set => techGroup.Value = value;
-    }
-
-    public TechCategory PdaCategory
-    {
-        get => techCategory.Value;
-        set => techCategory.Value = value;
-    }
-
-    public AddedRecipe() : this(TypeName, AddedRecipeProperties)
-    {
-    }
-
-    protected AddedRecipe(string key) : this(key, AddedRecipeProperties)
-    {
-    }
-
-    protected AddedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
-    {
-        path = (EmProperty<string>)Properties[PathKey];
-        techGroup = (EmProperty<TechGroup>)Properties[PdaGroupKey];
-        techCategory = (EmProperty<TechCategory>)Properties[PdaCategoryKey];
-        DefaultForceUnlock = true;
-    }
-
-    internal override EmProperty Copy()
-    {
-        return new AddedRecipe(this.Key, this.CopyDefinitions);
-    }
-
-    public override bool SendToNautilus()
-    {
-        try
+        public override bool SendToNautilus()
         {
-            HandleAddedRecipe();
+            try
+            {
+                HandleAddedRecipe();
 
-            HandleCraftTreeAddition();
+                HandleCraftTreeAddition();
 
-            HandleUnlocks();
+                HandleUnlocks();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Added Recipe '{this.ItemID}' from  from {this.Origin}", ex);
+                return false;
+            }
         }
-        catch (Exception ex)
+
+        protected void HandleAddedRecipe(short defaultCraftAmount = 1)
         {
-            QuickLogger.Error($"Exception thrown while handling Added Recipe '{this.ItemID}' from  from {this.Origin}", ex);
-            return false;
+            if (CraftDataHandler.GetRecipeData(this.TechType) == null)
+                QuickLogger.Debug($"Adding new recipe for '{this.ItemID}' with recipe from {this.Origin}");
+            else
+                QuickLogger.Debug($"Replacing recipe for '{this.ItemID}' with recipe from {this.Origin}");
+
+            RecipeData replacement = CreateRecipeTechData(defaultCraftAmount);
+            CraftDataHandler.SetRecipeData(this.TechType, replacement);
+
+            if (this.PdaGroup != TechGroup.Uncategorized)
+            {
+                CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, this.TechType);
+                // Nautilus logs enough here
+            }
         }
-    }
 
-    protected void HandleAddedRecipe(short defaultCraftAmount = 1)
-    {
-        RecipeData replacement = CreateRecipeTechData(defaultCraftAmount);
-
-        CraftDataHandler.SetRecipeData(this.TechType, replacement);
-        QuickLogger.Debug($"Adding new recipe for '{this.ItemID}'");
-
-        if (this.PdaGroup != TechGroup.Uncategorized)
+        internal RecipeData CreateRecipeTechData(short defaultCraftAmount = 1)
         {
-            CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, this.TechType);
-            // Nautilus logs enough here
+            var replacement = new RecipeData
+            {
+                craftAmount = this.AmountCrafted ?? defaultCraftAmount
+            };
+
+            foreach (EmIngredient ingredient in this.EmIngredients)
+                replacement.Ingredients.Add(new Ingredient(ingredient.TechType, ingredient.Required));
+
+            foreach (TechType linkedItem in this.LinkedItems)
+                replacement.LinkedItems.Add(linkedItem);
+
+            return replacement;
         }
-    }
 
-    internal RecipeData CreateRecipeTechData(short defaultCraftAmount = 1)
-    {
-        var replacement = new RecipeData
+        protected virtual void HandleCraftTreeAddition()
         {
-            craftAmount = this.AmountCrafted ?? defaultCraftAmount
-        };
+            var craftPath = new CraftTreePath(this.Path, this.ItemID);
 
-        foreach (EmIngredient ingredient in this.EmIngredients)
-            replacement.Ingredients.Add(new Ingredient(ingredient.TechType, ingredient.Required));
+            if (craftPath.HasError)
+                QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftPath.Error}");
+            else
+                AddCraftNode(craftPath, this.TechType, this.Origin);
+        }
 
-        foreach (TechType linkedItem in this.LinkedItems)
-            replacement.LinkedItems.Add(linkedItem);
-        return replacement;
-    }
-
-    protected virtual void HandleCraftTreeAddition()
-    {
-        var craftPath = new CraftTreePath(this.Path, this.ItemID);
-
-        if (craftPath.HasError)
-            QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftPath.Error}");
-        else
-            AddCraftNode(craftPath, this.TechType);
     }
 }
+#endif

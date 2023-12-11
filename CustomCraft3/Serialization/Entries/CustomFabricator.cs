@@ -1,44 +1,37 @@
-﻿namespace CustomCraft3.Serialization.Entries;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Common;
-using CustomCraft3.Interfaces;
-using CustomCraft3.Interfaces.InternalUse;
-using CustomCraft3.Serialization.Components;
-using CustomCraft3.Serialization.Lists;
-using EasyMarkup;
-using Nautilus.Assets.PrefabTemplates;
-using Nautilus.Assets;
-using Nautilus.Crafting;
-using Nautilus.Handlers;
-using Nautilus.Utility;
-using UnityEngine;
-using IOPath = System.IO.Path;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-using UnityEngine.AddressableAssets;
-using Nautilus.Extensions;
-#endif
-using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
-
-internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
+﻿#if !UNITY_EDITOR
+namespace CustomCraft3.Serialization.Entries
 {
-    protected const string ModelKey = "Model";
-    protected const string ColorTintKey = "ColorTint";
-    protected const string AllowedInBaseKey = "AllowedInBase";
-    protected const string AllowedInCyclopsKey = "AllowedInCyclops";
-    protected const string CfCustomCraftingTabListKey = CustomCraftingTabList.ListKey;
-    protected const string CfAliasRecipeListKey = AliasRecipeList.ListKey;
-    protected const string CfAddedRecipeListKey = AddedRecipeList.ListKey;
-    protected const string CfMovedRecipeListKey = MovedRecipeList.ListKey;
-    protected const string CfCustomFoodListKey = CustomFoodList.ListKey;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using Common;
+    using CustomCraft3.Interfaces;
+    using CustomCraft3.Interfaces.InternalUse;
+    using CustomCraft3.Serialization.Lists;
+    using EasyMarkup;
+    using Nautilus.Assets.PrefabTemplates;
+    using Nautilus.Assets;
+    using Nautilus.Crafting;
+    using Nautilus.Handlers;
+    using Nautilus.Utility;
+    using IOPath = System.IO.Path;
+#if SUBNAUTICA
+    using Sprite = Atlas.Sprite;
+#endif
+    using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
 
-    public override string[] TutorialText => CustomFabricatorTutorial;
-
-    internal static readonly string[] CustomFabricatorTutorial = new[]
+    internal partial class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
     {
+
+        public Model Model
+        {
+            get => (Model)Enum.Parse(typeof(Model), model.Value, true);
+            set => model.Value = value.ToString();
+        }
+        public override string[] TutorialText => CustomFabricatorTutorial;
+
+        internal static readonly string[] CustomFabricatorTutorial = new[]
+        {
         $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
         $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
         $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
@@ -66,374 +59,313 @@ internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftin
         $"        {CfCustomFoodListKey}: List of custom foods for the custom fabricator.",
     };
 
-    protected readonly EmProperty<Model> model;
-    protected readonly EmColorRGB colortint;
-    protected readonly EmYesNo allowedInBase;
-    protected readonly EmYesNo allowedInCyclops;
+        public ModCraftTreeRoot RootNode { get; private set; }
 
-    protected static List<EmProperty> CustomFabricatorProperties => new List<EmProperty>(AliasRecipeProperties)
-    {
-        new EmProperty<Model>(ModelKey, Model.Fabricator),
-        new EmColorRGB(ColorTintKey) { Optional = true },
-        new EmYesNo(AllowedInBaseKey, true) { Optional = true },
-        new EmYesNo(AllowedInCyclopsKey, true) { Optional = true },
-        new EmPropertyCollectionList<CfCustomCraftingTab>(CfCustomCraftingTabListKey) { Optional = true },
-        new EmPropertyCollectionList<CfMovedRecipe>(CfMovedRecipeListKey) { Optional = true },
-        new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
-        new EmPropertyCollectionList<CfAliasRecipe>(CfAliasRecipeListKey) { Optional = true },
-        new EmPropertyCollectionList<CfCustomFood>(CfCustomFoodListKey) { Optional = true },
-    };
-
-    public CustomFabricator() : this("CustomFabricator", CustomFabricatorProperties)
-    {
-    }
-
-    protected CustomFabricator(string key, ICollection<EmProperty> definitions) : base(key, definitions)
-    {
-        model = (EmProperty<Model>)Properties[ModelKey];
-        colortint = (EmColorRGB)Properties[ColorTintKey];
-        allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
-        allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
-        this.CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
-        this.MovedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
-        this.AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
-        this.AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
-        this.CustomFoods = (EmPropertyCollectionList<CfCustomFood>)Properties[CfCustomFoodListKey];
-
-        path.Optional = true;
-    }
-
-    public Model Model
-    {
-        get => model.Value;
-        set => model.Value = value;
-    }
-
-    public Color ColorTint => colortint.GetColor();
-
-    internal bool HasColorValue => colortint.HasValue;
-
-    public bool AllowedInBase
-    {
-        get => allowedInBase.Value;
-        set => allowedInBase.Value = value;
-    }
-
-    public bool AllowedInCyclops
-    {
-        get => allowedInCyclops.Value;
-        set => allowedInCyclops.Value = value;
-    }
-
-    // Set in constructor
-    public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; }
-    public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; }
-    public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; }
-    public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; }
-    public EmPropertyCollectionList<CfCustomFood> CustomFoods { get; }
-
-    private IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
-    private IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
-    private IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
-    private IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
-    private IDictionary<string, CfCustomFood> UniqueCustomFoods { get; } = new Dictionary<string, CfCustomFood>();
-
-    public string ListKey { get; }
-
-    public CraftTree.Type TreeTypeID { get; private set; }
-
-    public ModCraftTreeRoot RootNode { get; private set; }
-
-    public ICollection<string> CustomTabIDs => this.UniqueCustomTabs.Keys;
-    public ICollection<string> MovedRecipeIDs => this.UniqueMovedRecipes.Keys;
-    public ICollection<string> AddedRecipeIDs => this.UniqueAddedRecipes.Keys;
-    public ICollection<string> AliasRecipesIDs => this.UniqueAliasRecipes.Keys;
-    public ICollection<string> CustomFoodIDs => this.UniqueCustomFoods.Keys;
-
-    public override bool PassesPreValidation(OriginFile originFile)
-    {
-        PassedPreValidation = ItemIDisUnique() & InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues();
-
-        if (PassedPreValidation)
-            ValidateInternalEntries();
-
-        return PassedPreValidation;
-    }
-
-    private bool ValidFabricatorValues()
-    {
-        switch (this.Model)
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            case Model.Fabricator:
-            case Model.Workbench:
-#if SUBNAUTICA
-            case Model.MoonPool:
-#endif
-                break;
-            default:
-                if (!PassedPreValidation)
-                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}"
-#if SUBNAUTICA
-                    +$"|{Model.MoonPool}"
-#endif
-                    );
-                return false;
+            PassedPreValidation = ItemIDisUnique() & InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues();
+
+            if (PassedPreValidation)
+                ValidateInternalEntries();
+
+            return PassedPreValidation;
         }
 
-        if (!this.AllowedInBase && this.AllowedInCyclops)
+        private bool ValidFabricatorValues()
         {
-            if (!PassedPreValidation)
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} is denied from being built anywhere as both {AllowedInBaseKey} and {AllowedInCyclopsKey} are set to NO. Entry will be removed.");
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool ValidateInternalEntries()
-    {
-        StartCustomCraftingTree();
-        ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
-        ValidateUniqueEntries(this.AddedRecipes, this.UniqueAddedRecipes);
-        ValidateUniqueEntries(this.AliasRecipes, this.UniqueAliasRecipes);
-        ValidateUniqueEntries(this.MovedRecipes, this.UniqueMovedRecipes);
-        ValidateUniqueEntries(this.CustomFoods, this.UniqueCustomFoods);
-
-        return true;
-    }
-
-    protected override bool FunctionalItemIsValid()
-    {
-        if (!string.IsNullOrEmpty(this.FunctionalID))
-        {
-            this.FunctionalID = string.Empty;
-            if (!PassedPreValidation)
-                QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}' from {this.Origin}. Please remove and try again.");
-            return false;
-        }
-
-        return true;
-    }
-
-    internal void StartCustomCraftingTree()
-    {
-        if (this.TreeTypeID != CraftTree.Type.None)
-            return;
-
-        this.TreeTypeID = EnumHandler.AddEntry<CraftTree.Type>(ItemID).CreateCraftTreeRoot(out var root);
-        this.RootNode = root;
-    }
-
-    internal void FinishCustomCraftingTree()
-    {
-        SendToNautilus(this.UniqueCustomTabs);
-        SendToNautilus(this.UniqueAddedRecipes);
-        SendToNautilus(this.UniqueAliasRecipes);
-        SendToNautilus(this.UniqueMovedRecipes);
-        SendToNautilus(this.UniqueCustomFoods);
-    }
-
-    internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
-        where CraftingNode : ICustomFabricatorEntry, ITechTyped
-    {
-        try
-        {
-            CraftTreePath craftingNodePath = entry.GetCraftTreePath();
-            if (craftingNodePath.HasError)
-            {
-                QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftingNodePath.Error}");
-                return;
-            }
-
-            QuickLogger.Debug($"Sending {entry.Key} '{entry.ItemID}' to be added to the crafting tree at '{craftingNodePath.RawPath}'");
-            if (entry.IsAtRoot)
-            {
-                this.RootNode.AddCraftingNode(entry.TechType);
-            }
-            else
-            {
-                ModCraftTreeTab otherTab = this.RootNode.GetTabNode(craftingNodePath.StepsToParentTab);
-                otherTab.AddCraftingNode(entry.TechType);
-            }
-        }
-        catch (Exception ex)
-        {
-            QuickLogger.Error($"Exception thrown while handling {entry.Key} '{entry.ItemID}' from {this.Origin}", ex);
-
-        }
-    }
-
-    internal void ValidateUniqueEntries<CustomCraftEntry>(EmPropertyCollectionList<CustomCraftEntry> collectionList, IDictionary<string, CustomCraftEntry> uniqueEntries)
-        where CustomCraftEntry : EmPropertyCollection, ICustomCraft, ICustomFabricatorEntry, new()
-    {
-        foreach (CustomCraftEntry entry in collectionList)
-        {
-            entry.ParentFabricator = this;
-            entry.Origin = this.Origin;
-            if (!entry.PassesPreValidation(entry.Origin))
-                continue;
-
-            if (uniqueEntries.ContainsKey(entry.ID))
-            {
-                QuickLogger.Warning($"Duplicate entry for {entry.Key} '{entry.ID}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            }
-            else
-            {
-                // All checks passed
-                uniqueEntries.Add(entry.ID, entry);
-            }
-        }
-
-        if (collectionList.Count > 0)
-            QuickLogger.Info($"{uniqueEntries.Count} of {collectionList.Count} {this.Key}:{typeof(CustomCraftEntry).Name} entries for {this.Key} staged for patching");
-    }
-
-    internal void SendToNautilus<CustomCraftEntry>(IDictionary<string, CustomCraftEntry> uniqueEntries)
-        where CustomCraftEntry : ICustomCraft
-    {
-        int successCount = 0;
-        foreach (CustomCraftEntry item in uniqueEntries.Values)
-        {
-            if (item.SendToNautilus())
-                successCount++;
-        }
-
-        if (uniqueEntries.Count > 0)
-            QuickLogger.Info($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
-    }
-
-    protected override void HandleCustomPrefab()
-    {
-        if (this.TechType == TechType.None)
-            throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
-
-        CustomPrefab = new CustomPrefab(Info);
-
-        FabricatorTemplate prefab = new FabricatorTemplate(Info, TreeTypeID) 
-        {
-            FabricatorModel = Model,
-            ColorTint = ColorTint,
-        };
-
-        prefab.ModifyPrefab += (obj) => {
-
-            Constructable constructible = obj.GetComponent<Constructable>();
-            constructible.allowedInBase = AllowedInBase;
-            constructible.allowedInSub = AllowedInCyclops;
-            constructible.allowedOutside = false;
-            constructible.allowedOnCeiling = false;
-            constructible.allowedOnGround = Model == Model.Workbench;
-            constructible.allowedOnWall = Model != Model.Workbench;
-            constructible.allowedOnConstructables = false;
-            constructible.controlModelState = true;
-            constructible.rotationEnabled = false;
-        };
-
-        CustomPrefab.SetGameObject(prefab);
-        CustomPrefab.Register();
-
-        FinishCustomCraftingTree();
-    }
-
-    protected override void HandleCustomSprite()
-    {
-        Sprite sprite;
-
-        string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
-        if (File.Exists(imagePath))
-        {
-            QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
-            sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-        }
-        else
-        {
-            QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");
             switch (this.Model)
             {
                 case Model.Fabricator:
-                    sprite = SpriteManager.Get(TechType.Fabricator);
-                    break;
                 case Model.Workbench:
-                    sprite = SpriteManager.Get(TechType.Workbench);
-                    break;
 #if SUBNAUTICA
                 case Model.MoonPool:
-                    imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
-                    sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                    break;
 #endif
+                    break;
                 default:
-                    throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
+
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {Model.Fabricator}|{Model.Workbench}"
+#if SUBNAUTICA
+                        + $"|{Model.MoonPool}"
+#endif
+                    );
+                    return false;
             }
 
+            if (!this.AllowedInBase && this.AllowedInCyclops)
+            {
+
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} is denied from being built anywhere as both {AllowedInBaseKey} and {AllowedInCyclopsKey} are set to NO. Entry will be removed.");
+                return false;
+            }
+
+            return true;
         }
 
-        SpriteHandler.RegisterSprite(this.TechType, sprite);
-    }
-
-    protected override void HandleCraftTreeAddition()
-    {
-        return; // Buildables aren't part of a crafting tree
-    }
-
-    public void DuplicateCustomTabDiscovered(string id)
-    {
-        QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-        if (this.UniqueCustomTabs.TryGetValue(id, out CfCustomCraftingTab tab))
+        private bool ValidateInternalEntries()
         {
-            tab.PassedSecondValidation = false;
-            this.PassedSecondValidation = false;
-            this.UniqueCustomTabs.Remove(id);
+            StartCustomCraftingTree();
+            ValidateEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
+            ValidateEntries(this.AddedRecipes, this.UniqueAddedRecipes);
+            ValidateEntries(this.AliasRecipes, this.UniqueAliasRecipes);
+            ValidateEntries(this.MovedRecipes, this.UniqueMovedRecipes);
+            ValidateEntries(this.CustomFoods, this.UniqueCustomFoods);
+
+            // Secondary validation for entried that failed due to being incorrecltly ordered in the files.
+            ValidateEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
+            ValidateEntries(this.AddedRecipes, this.UniqueAddedRecipes);
+            ValidateEntries(this.AliasRecipes, this.UniqueAliasRecipes);
+            ValidateEntries(this.MovedRecipes, this.UniqueMovedRecipes);
+            ValidateEntries(this.CustomFoods, this.UniqueCustomFoods);
+
+            return true;
         }
-    }
 
-    public void DuplicateMovedRecipeDiscovered(string id)
-    {
-        QuickLogger.Warning($"Duplicate entry for {MovedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-        if (this.UniqueMovedRecipes.TryGetValue(id, out CfMovedRecipe moved))
+        protected override bool FunctionalItemIsValid()
         {
-            moved.PassedSecondValidation = false;
-            this.PassedSecondValidation = false;
-            this.UniqueMovedRecipes.Remove(id);
+            if (!string.IsNullOrEmpty(this.FunctionalID))
+            {
+                this.FunctionalID = string.Empty;
+
+                QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}' from {this.Origin}. Please remove and try again.");
+                return false;
+            }
+
+            return true;
         }
-    }
 
-    public void DuplicateAddedRecipeDiscovered(string id)
-    {
-        QuickLogger.Warning($"Duplicate entry for {AddedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-        if (this.UniqueAddedRecipes.TryGetValue(id, out CfAddedRecipe added))
+        internal void StartCustomCraftingTree()
         {
-            added.PassedSecondValidation = false;
-            this.PassedSecondValidation = false;
-            this.UniqueAddedRecipes.Remove(id);
+            if (this.TreeTypeID != CraftTree.Type.None)
+                return;
+
+            if (EnumHandler.TryAddEntry<CraftTree.Type>(ItemID, out var builder))
+            {
+                this.TreeTypeID = builder;
+                builder.CreateCraftTreeRoot(out var root);
+                this.RootNode = root;
+            }
         }
-    }
 
-    public void DuplicateAliasRecipesDiscovered(string id)
-    {
-        QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-        if (this.UniqueAliasRecipes.TryGetValue(id, out CfAliasRecipe alias))
+        internal void FinishCustomCraftingTree()
         {
-            alias.PassedSecondValidation = false;
-            this.PassedSecondValidation = false;
-            this.UniqueAliasRecipes.Remove(id);
+            SendToNautilus(this.UniqueCustomTabs);
+            SendToNautilus(this.UniqueAddedRecipes);
+            SendToNautilus(this.UniqueAliasRecipes);
+            SendToNautilus(this.UniqueMovedRecipes);
+            SendToNautilus(this.UniqueCustomFoods);
         }
-    }
 
-    public void DuplicateCustomFoodsDiscovered(string id)
-    {
-        QuickLogger.Warning($"Duplicate entry for {CustomFoodList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-        this.UniqueCustomFoods.Remove(id);
-        if (this.UniqueCustomFoods.TryGetValue(id, out CfCustomFood food))
+        internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
+            where CraftingNode : ICustomFabricatorEntry, ITechTyped
         {
-            food.PassedSecondValidation = false;
-            this.PassedSecondValidation = false;
+            try
+            {
+                CraftTreePath craftingNodePath = entry.GetCraftTreePath();
+                if (craftingNodePath.HasError)
+                {
+                    QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftingNodePath.Error}");
+                    return;
+                }
+
+                QuickLogger.Debug($"Sending {entry.Key} '{entry.ItemID}' to be added to the crafting tree at '{craftingNodePath.RawPath}'");
+                if (entry.IsAtRoot)
+                {
+                    this.RootNode.AddCraftingNode(entry.TechType);
+                }
+                else
+                {
+                    ModCraftTreeTab otherTab = this.RootNode.GetTabNode(craftingNodePath.StepsToParentTab);
+                    otherTab.AddCraftingNode(entry.TechType);
+                }
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling {entry.Key} '{entry.ItemID}' from {this.Origin}", ex);
+
+            }
+        }
+
+        internal void ValidateEntries<CustomCraftEntry>(EmPropertyCollectionList<CustomCraftEntry> collectionList, IDictionary<string, CustomCraftEntry> uniqueEntries)
+            where CustomCraftEntry : EmPropertyCollection, ICustomCraft, ICustomFabricatorEntry, new()
+        {
+            var originalCount = collectionList.Count;
+            var successCount = 0;
+            var removals = new List<CustomCraftEntry>();
+            foreach (CustomCraftEntry entry in collectionList)
+            {
+                entry.ParentFabricator = this;
+                entry.Origin = this.Origin;
+                if (!entry.PassesPreValidation(entry.Origin))
+                    continue;
+
+                if (!uniqueEntries.ContainsKey(entry.ID))
+                {
+                    // All checks passed
+                    uniqueEntries.Add(entry.ID, entry);
+                    removals.Add(entry);
+                    successCount++;
+                    continue;
+                }
+
+                if (entry is CfMovedRecipe movedRecipe && uniqueEntries[entry.ID] is CfMovedRecipe existingMovedRecipe)
+                {
+                    existingMovedRecipe.AlternatePaths.Add(movedRecipe.Origin, movedRecipe);
+                    continue;
+                }
+                QuickLogger.Warning($"Duplicate entry for {entry.Key} '{entry.ID}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            }
+
+            foreach (CustomCraftEntry entry in removals)
+                collectionList.Remove(entry);
+
+            if (originalCount > 0)
+                QuickLogger.Info($"{successCount} of {originalCount} {this.Key}:{typeof(CustomCraftEntry).Name} entries for {this.Key} staged for patching");
+        }
+
+        internal void SendToNautilus<CustomCraftEntry>(IDictionary<string, CustomCraftEntry> uniqueEntries)
+            where CustomCraftEntry : ICustomCraft
+        {
+            int successCount = 0;
+            foreach (CustomCraftEntry item in uniqueEntries.Values)
+            {
+                if (item.SendToNautilus())
+                    successCount++;
+            }
+
+            if (uniqueEntries.Count > 0)
+                QuickLogger.Info($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
+        }
+
+        protected override void HandleCustomPrefab()
+        {
+            if (this.TechType == TechType.None)
+                throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
+
+            CustomPrefab = new CustomPrefab(Info);
+
+            FabricatorTemplate prefab = new FabricatorTemplate(Info, TreeTypeID)
+            {
+                FabricatorModel = Model,
+                ColorTint = ColorTint,
+            };
+
+            prefab.ModifyPrefab += (obj) =>
+            {
+
+                Constructable constructible = obj.GetComponent<Constructable>();
+                constructible.allowedInBase = AllowedInBase;
+                constructible.allowedInSub = AllowedInCyclops;
+                constructible.allowedOutside = false;
+                constructible.allowedOnCeiling = false;
+                constructible.allowedOnGround = Model == Model.Workbench;
+                constructible.allowedOnWall = Model != Model.Workbench;
+                constructible.allowedOnConstructables = false;
+                constructible.controlModelState = true;
+                constructible.rotationEnabled = false;
+            };
+
+            CustomPrefab.SetGameObject(prefab);
+            CustomPrefab.Register();
+
+            FinishCustomCraftingTree();
+        }
+
+        protected override void HandleCustomSprite()
+        {
+            Sprite sprite;
+
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
+                sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+            }
+            else
+            {
+                QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");
+                switch (this.Model)
+                {
+                    case Model.Fabricator:
+                        sprite = SpriteManager.Get(TechType.Fabricator);
+                        break;
+                    case Model.Workbench:
+                        sprite = SpriteManager.Get(TechType.Workbench);
+                        break;
+#if SUBNAUTICA
+                    case Model.MoonPool:
+                        imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
+                        sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                        break;
+#endif
+                    default:
+                        throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
+                }
+
+            }
+
+            SpriteHandler.RegisterSprite(this.TechType, sprite);
+        }
+
+        protected override void HandleCraftTreeAddition()
+        {
+            return; // Buildables aren't part of a crafting tree
+        }
+
+        public void DuplicateCustomTabDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            if (this.UniqueCustomTabs.TryGetValue(id, out CfCustomCraftingTab tab))
+            {
+                tab.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+                this.UniqueCustomTabs.Remove(id);
+            }
+        }
+
+        public void DuplicateMovedRecipeDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {MovedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            if (this.UniqueMovedRecipes.TryGetValue(id, out CfMovedRecipe moved))
+            {
+                moved.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+                this.UniqueMovedRecipes.Remove(id);
+            }
+        }
+
+        public void DuplicateAddedRecipeDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {AddedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            if (this.UniqueAddedRecipes.TryGetValue(id, out CfAddedRecipe added))
+            {
+                added.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+                this.UniqueAddedRecipes.Remove(id);
+            }
+        }
+
+        public void DuplicateAliasRecipesDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            if (this.UniqueAliasRecipes.TryGetValue(id, out CfAliasRecipe alias))
+            {
+                alias.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+                this.UniqueAliasRecipes.Remove(id);
+            }
+        }
+
+        public void DuplicateCustomFoodsDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {CustomFoodList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueCustomFoods.Remove(id);
+            if (this.UniqueCustomFoods.TryGetValue(id, out CfCustomFood food))
+            {
+                food.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+                this.UniqueCustomFoods.Remove(id);
+            }
         }
-    }
-
-    internal override EmProperty Copy()
-    {
-        return new CustomFabricator(this.Key, this.CopyDefinitions);
     }
 }
+#endif

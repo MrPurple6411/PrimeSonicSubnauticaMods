@@ -100,7 +100,7 @@ internal class ConfigSaveData : EmPropertyCollection
         }
     }
 
-    internal override EmProperty Copy()
+    public override EmProperty Copy()
     {
         return new ConfigSaveData(this.SeamothBonusSpeedSetting, this.ExosuitBonusSpeedSetting);
     }

@@ -3,7 +3,7 @@
 		<AssemblyName>CustomCraft3</AssemblyName>
 		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
 		<BepInExPluginName>Custom Craft 3 (Purple Edition)</BepInExPluginName>
-		<Version>1.0.0.1</Version>
+		<Version>1.0.0.3</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
   <ItemGroup>
@@ -65,6 +65,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Assets\MoonPool.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\GallonWater.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />

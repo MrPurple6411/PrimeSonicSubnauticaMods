@@ -1,31 +1,32 @@
-﻿namespace CustomCraft3.Serialization;
-
-using System.Collections.Generic;
-
-internal class OriginFile
+﻿namespace CustomCraft3.Serialization
 {
-    private static readonly Dictionary<string, OriginFile> KnownFiles = new Dictionary<string, OriginFile>();
+    using System.Collections.Generic;
 
-    internal static OriginFile GetOriginFile(string fileName)
+    internal class OriginFile
     {
-        if (KnownFiles.TryGetValue(fileName, out OriginFile file))
+        private static readonly Dictionary<string, OriginFile> KnownFiles = new Dictionary<string, OriginFile>();
+
+        internal static OriginFile GetOriginFile(string fileName)
         {
-            return file;
+            if (KnownFiles.TryGetValue(fileName, out OriginFile file))
+            {
+                return file;
+            }
+            else
+            {
+                var newEntry = new OriginFile(fileName);
+                KnownFiles.Add(fileName, newEntry);
+                return newEntry;
+            }
         }
-        else
+
+        public readonly string FileName;
+
+        public OriginFile(string fileName)
         {
-            var newEntry = new OriginFile(fileName);
-            KnownFiles.Add(fileName, newEntry);
-            return newEntry;
+            FileName = fileName;
         }
+
+        public override string ToString() => $"WorkingFiles:{FileName}";
     }
-
-    public readonly string FileName;
-
-    public OriginFile(string fileName)
-    {
-        FileName = fileName;
-    }
-
-    public override string ToString() => $"WorkingFiles:{FileName}";
 }
