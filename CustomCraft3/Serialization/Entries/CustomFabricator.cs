@@ -17,6 +17,8 @@ namespace CustomCraft3.Serialization.Entries
     using IOPath = System.IO.Path;
 #if SUBNAUTICA
     using Sprite = Atlas.Sprite;
+#elif BELOWZERO
+    using Sprite = UnityEngine.Sprite;
 #endif
     using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
 
@@ -35,11 +37,7 @@ namespace CustomCraft3.Serialization.Entries
         $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
         $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
         $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
-        $"        Valid options are: {Model.Fabricator}|+" +
-#if SUBNAUTICA
-        $"{Model.MoonPool}|"+
-#endif
-        $"{Model.Workbench}",
+        $"        Valid options are: {Model.Fabricator}|+{Model.MoonPool}|{Model.Workbench}",
         $"        This property is optional. Defaults to {Model.Fabricator}.",
         $"    {ColorTintKey}: This optional property lets you apply a color tint over your fabricator.",
         $"        This value is a list of floating point numbers.",

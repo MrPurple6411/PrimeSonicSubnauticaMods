@@ -17,6 +17,14 @@
         $"            Must be between {MinValue} and {MaxValue}.",
         $"        {WaterKey}: Defines how much water the user will gain on consumption.",
         $"            Must be between {MinValue} and {MaxValue}.",
+        $"        {OxygenKey}: Defines how much oxygen the user will gain on consumption.",
+        $"            Must be between {MinValue} and {MaxValue}.",
+        $"        {HealthKey}: Defines how much health the user will gain on consumption.",
+        $"            Must be between {MinValue} and {MaxValue}.",
+#if BELOWZERO
+        $"        {HeatKey}: Defines how much water the user will gain on consumption.",
+        $"            Must be between {MinValue} and {MaxValue}.",
+#endif
         $"        {DecayRateKey}: An optional property that defines the speed at which food will decompose.",
         "            If set to 1 it will decompose as fast as any cooked fish." +
         "            If set to 2 it will decay twice as fast.",
@@ -83,20 +91,26 @@
             }
         }
 
-        internal const short MaxValue = 100;
-        internal const short MinValue = -99;
+        internal const short MaxValue = 200;
+        internal const short MinValue = -199;
 
         public new const string TypeName = "CustomFood";
 
         protected const string FoodModelKey = "FoodType";
         protected const string FoodKey = "FoodValue";
         protected const string WaterKey = "WaterValue";
+        protected const string OxygenKey = "OxygenValue";
+        protected const string HealthKey = "HealthValue";
+        protected const string HeatKey = "HeatValue";
         protected const string DecayRateKey = "DecayRateMod";
         protected const string UseDrinkSoundKey = "UseDrinkSound";
 
         protected readonly EmProperty<FoodModel> foodModel;
         protected readonly EmProperty<short> foodValue;
         protected readonly EmProperty<short> waterValue;
+        protected readonly EmProperty<short> oxygenValue;
+        protected readonly EmProperty<short> healthValue;
+        protected readonly EmProperty<short> heatValue;
         protected readonly EmProperty<float> decayrate;
         protected readonly EmYesNo useDrinkSound;
 
@@ -116,6 +130,24 @@
         {
             get => waterValue.Value;
             set => waterValue.Value = value;
+        }
+
+        public short OxygenValue
+        {
+            get => oxygenValue.Value;
+            set => oxygenValue.Value = value;
+        }
+
+        public short HealthValue
+        {
+            get => healthValue.Value;
+            set => healthValue.Value = value;
+        }
+
+        public short HeatValue
+        {
+            get => heatValue.Value;
+            set => heatValue.Value = value;
         }
 
         public float DecayRateMod
@@ -144,6 +176,9 @@
         new EmProperty<TechType>(SpriteItemIdKey, TechType.None) { Optional = true },
         new EmProperty<short>(FoodKey, 0) { Optional = false },
         new EmProperty<short>(WaterKey, 0) { Optional = false },
+        new EmProperty<short>(OxygenKey, 0) { Optional = true },
+        new EmProperty<short>(HealthKey, 0) { Optional = true },
+        new EmProperty<short>(HeatKey, 0) { Optional = true },
         new EmProperty<float>(DecayRateKey, 0) { Optional = true },
         new EmYesNo(UseDrinkSoundKey, false) { Optional = true },
     };
@@ -200,6 +235,9 @@
         {
             foodValue = (EmProperty<short>)Properties[FoodKey];
             waterValue = (EmProperty<short>)Properties[WaterKey];
+            oxygenValue = (EmProperty<short>)Properties[OxygenKey];
+            healthValue = (EmProperty<short>)Properties[HealthKey];
+            heatValue = (EmProperty<short>)Properties[HeatKey];
             decayrate = (EmProperty<float>)Properties[DecayRateKey];
             useDrinkSound = (EmYesNo)Properties[UseDrinkSoundKey];
 
@@ -207,7 +245,7 @@
 #if SUBNAUTICA
             techCategory.DefaultValue = TechCategory.CookedFood;
 #elif BELOWZERO
-        techCategory.DefaultValue = TechCategory.FoodAndDrinks;
+            techCategory.DefaultValue = TechCategory.FoodAndDrinks;
 #endif
             foodModel = (EmProperty<FoodModel>)Properties[FoodModelKey];
 

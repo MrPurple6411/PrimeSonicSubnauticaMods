@@ -42,6 +42,27 @@ namespace CustomCraft3.Serialization.Entries
                 return false;
             }
 
+            if (this.OxygenValue < MinValue || this.OxygenValue > MaxValue)
+            {
+                if (PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {OxygenKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+                return false;
+            }
+
+            if (this.HealthValue < MinValue || this.HealthValue > MaxValue)
+            {
+                if (PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {HealthKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+                return false;
+            }
+
+            if (this.HeatValue < MinValue || this.HeatValue > MaxValue)
+            {
+                if (PassedPreValidation)
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {HeatKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+                return false;
+            }
+
             return true;
         }
 
@@ -99,13 +120,21 @@ namespace CustomCraft3.Serialization.Entries
             var foodPrefab = new CloneTemplate(Info, FoodPrefab);
             foodPrefab.ModifyPrefab += (obj) =>
             {
+                obj.SetActive(false);
                 Eatable eatable = obj.EnsureComponent<Eatable>();
 
                 eatable.foodValue = FoodValue;
                 eatable.waterValue = WaterValue;
+                SurvivalHandler.GiveOxygenOnConsume(TechType, this.OxygenValue, true);
+#if SUBNAUTICA
+                SurvivalHandler.GiveHealthOnConsume(TechType, HealthValue, true);
+#else
+                eatable.healthValue = HealthValue;
+                eatable.coldMeterValue = HeatValue;
+#endif
                 eatable.decomposes = Decomposes;
                 eatable.kDecayRate = DecayRateMod * 0.015f;
-                obj.SetActive(false);
+
             };
 
             CustomPrefab.SetGameObject(foodPrefab);
@@ -115,6 +144,15 @@ namespace CustomCraft3.Serialization.Entries
             if (this.UseDrinkSound)
             {
                 CraftDataHandler.SetEatingSound(this.TechType, "event:/player/drink");
+            }
+#else
+            if (this.UseDrinkSound)
+            {
+                CraftDataHandler.SetSoundType(this.TechType, TechData.SoundType.BigWaterBottle);
+            }
+            else
+            {
+                CraftDataHandler.SetSoundType(this.TechType, TechData.SoundType.Meat);
             }
 #endif
         }
