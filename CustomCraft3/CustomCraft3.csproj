@@ -3,7 +3,7 @@
 		<AssemblyName>CustomCraft3</AssemblyName>
 		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
 		<BepInExPluginName>Custom Craft 3 (Purple Edition)</BepInExPluginName>
-		<Version>1.0.0.3</Version>
+		<Version>1.0.0.4</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
   <ItemGroup>

@@ -130,7 +130,7 @@ namespace CustomCraft3.Serialization.Entries
                 SurvivalHandler.GiveHealthOnConsume(TechType, HealthValue, true);
 #else
                 eatable.healthValue = HealthValue;
-                eatable.coldMeterValue = HeatValue;
+                eatable.coldMeterValue = -HeatValue;
 #endif
                 eatable.decomposes = Decomposes;
                 eatable.kDecayRate = DecayRateMod * 0.015f;

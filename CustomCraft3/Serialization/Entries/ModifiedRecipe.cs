@@ -21,12 +21,12 @@ namespace CustomCraft3.Serialization.Entries
 
             for (int i = 0; i < origRecipe.ingredientCount; i++)
             {
-                Ingredient origIngredient = (Ingredient)origRecipe.GetIngredient(i);
+                Ingredient origIngredient = origRecipe.GetIngredient(i);
                 this.EmIngredients.Add(new EmIngredient(origIngredient.techType, (short)origIngredient.amount));
             }
 
             for (int i = 0; i < origRecipe.linkedItemCount; i++)
-                linkedItems.Add(origRecipe.GetLinkedItem(i).ToString());
+                linkedItems.Add(origRecipe.GetLinkedItem(i).AsString());
         }
 
         public override bool PassesPreValidation(OriginFile originFile)
@@ -93,7 +93,8 @@ namespace CustomCraft3.Serialization.Entries
         protected bool ValidateLinkedItems()
         {
             bool linkedItemsValid = true;
-
+            
+            LinkedItems.Clear();
             foreach (string linkedItem in this.LinkedItemIDs)
             {
                 TechType linkedItemID = GetTechType(linkedItem);
@@ -106,8 +107,7 @@ namespace CustomCraft3.Serialization.Entries
                     continue;
                 }
 
-                if (!LinkedItems.Contains(linkedItemID))
-                    this.LinkedItems.Add(linkedItemID);
+                this.LinkedItems.Add(linkedItemID);
             }
 
             return linkedItemsValid;

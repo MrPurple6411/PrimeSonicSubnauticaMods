@@ -92,7 +92,7 @@
         }
 
         internal const short MaxValue = 200;
-        internal const short MinValue = -199;
+        internal const short MinValue = -200;
 
         public new const string TypeName = "CustomFood";
 
