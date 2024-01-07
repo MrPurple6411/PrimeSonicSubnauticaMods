@@ -16,5 +16,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
 </Project>

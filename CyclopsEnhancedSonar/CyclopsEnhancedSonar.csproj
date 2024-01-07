@@ -11,5 +11,4 @@
 			<Private>False</Private>
 		</ProjectReference>
 	</ItemGroup>
-  <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
 </Project>

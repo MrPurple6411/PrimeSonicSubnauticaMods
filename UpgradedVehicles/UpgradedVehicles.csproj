@@ -31,6 +31,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
+  <Import Project="..\..\UnifiedVSSolution\Common\Common.projitems" Label="Shared" />
 </Project>
