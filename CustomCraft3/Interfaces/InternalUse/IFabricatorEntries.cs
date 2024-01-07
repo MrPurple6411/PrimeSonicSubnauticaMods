@@ -10,7 +10,7 @@
         ICollection<string> AliasRecipesIDs { get; }
         ICollection<string> CustomFoodIDs { get; }
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
         void DuplicateCustomTabDiscovered(string id);
         void DuplicateMovedRecipeDiscovered(string id);
         void DuplicateAddedRecipeDiscovered(string id);

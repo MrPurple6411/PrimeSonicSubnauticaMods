@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Common;
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
     using Nautilus.Handlers;
 #endif
 
@@ -117,7 +117,7 @@
             {
                 return type;
             }
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
             if (EnumHandler.TryGetValue(schemeString, out type))
             {
                 return type;

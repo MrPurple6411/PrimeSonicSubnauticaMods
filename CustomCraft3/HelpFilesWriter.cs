@@ -1,4 +1,4 @@
-﻿#if !UNITY_EDITOR
+﻿#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
 namespace CustomCraft3
 {
     using System;
@@ -74,8 +74,6 @@ namespace CustomCraft3
             printyPrints.Add(bioFuelList.PrettyPrint());
 
             File.WriteAllLines(path, printyPrints.ToArray(), Encoding.UTF8);
-
-            QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
 
         private static void GenerateOriginalCraftingTabPaths()
@@ -216,7 +214,6 @@ namespace CustomCraft3
 
             File.WriteAllLines(path, strings, Encoding.UTF8);
 
-            QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
 
         private static void HandleReadMeFile()
@@ -224,7 +221,6 @@ namespace CustomCraft3
             if (!File.Exists(FileLocations.HowToFile))
             {
                 File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines(), Encoding.UTF8);
-                QuickLogger.Debug($"{FileLocations.HowToFile} file not found. File created.");
             }
             else
             {
@@ -382,8 +378,6 @@ namespace CustomCraft3
             printyPrints.Add(originals.PrettyPrint());
 
             File.WriteAllLines(Path.Combine(FileLocations.OriginalsFolder, fileName), printyPrints.ToArray(), Encoding.UTF8);
-
-            QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
     }
 }

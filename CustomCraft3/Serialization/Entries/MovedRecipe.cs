@@ -1,4 +1,4 @@
-﻿#if !UNITY_EDITOR
+﻿#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
 namespace CustomCraft3.Serialization.Entries
 {
     using System.Collections.Generic;

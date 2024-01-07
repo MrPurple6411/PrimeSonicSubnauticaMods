@@ -2,7 +2,7 @@
 {
     using EasyMarkup;
     using UnityEngine;
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
     using static Nautilus.Assets.PrefabTemplates.FabricatorTemplate;
 #endif
 
@@ -13,7 +13,7 @@
         where Alias : EmPropertyCollection, IAliasRecipe, new()
         where Food : EmPropertyCollection, ICustomFood, new()
     {
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
         Model Model { get; }
 #endif
         Color ColorTint { get; }

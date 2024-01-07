@@ -1,4 +1,4 @@
-﻿#if !UNITY_EDITOR
+﻿#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
 namespace CustomCraft3
 {
     using System.Collections;
@@ -9,6 +9,7 @@ namespace CustomCraft3
     using BepInEx;
     using Common;
     using CustomCraft3.Serialization;
+    using UnityEngine;
 
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
@@ -56,14 +57,13 @@ namespace CustomCraft3
                 yield return null;
             }
 
-            QuickLogger.Info($"Started patching. Version {version}");
+            yield return new WaitForEndOfFrame();
 
+            QuickLogger.Info($"Started patching. Version {version}");
             try
             {
                 WorkingFileParser.HandleWorkingFiles();
-                HelpFilesWriter.HandleHelpFiles();
-
-                QuickLogger.Info("Finished patching.");
+                QuickLogger.Info($"Patching complete. Version {version}");
             }
             catch
             {
@@ -71,6 +71,7 @@ namespace CustomCraft3
                 throw;
             }
 
+            HelpFilesWriter.HandleHelpFiles();
             yield break;
         }
 

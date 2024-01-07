@@ -7,7 +7,7 @@
         string ListKey { get; }
         string TypeName { get; }
         string[] TutorialText { get; }
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
         int ParseEntries(string serializedData, OriginFile file);
         void PrePassValidation();
         void SecondPassValidation();

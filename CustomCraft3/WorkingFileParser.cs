@@ -1,4 +1,4 @@
-﻿#if !UNITY_EDITOR
+﻿#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
 namespace CustomCraft3
 {
     using System;
@@ -46,12 +46,19 @@ namespace CustomCraft3
             foreach (IParsingPackage package in OrderedPackages)
                 PackagesLookup.Add(package.ListKey, package);
 
+            int rollingCount = 0;
             // Handle loose files
-            ParseAndPatchFiles(Directory.GetFiles(FileLocations.WorkingFolder), "WorkingFiles");
+            rollingCount += ParseAndPatchFiles(Directory.GetFiles(FileLocations.WorkingFolder), "WorkingFiles");
 
             // Handle sub-folders
             foreach (var workingDirectory in Directory.GetDirectories(FileLocations.WorkingFolder))
-                ParseAndPatchFiles(Directory.GetFiles(workingDirectory), $"WorkingFiles/{Path.GetDirectoryName(workingDirectory)}");
+                rollingCount += ParseAndPatchFiles(Directory.GetFiles(workingDirectory), $"WorkingFiles/{Path.GetDirectoryName(workingDirectory)}");
+
+            if (rollingCount == 0)
+            {
+                QuickLogger.Info($"No files with valid Entries found in {FileLocations.WorkingFolder}");
+                return;
+            }
 
             foreach (IParsingPackage package in OrderedPackages)
                 package.PrePassValidation();
@@ -76,7 +83,7 @@ namespace CustomCraft3
             }
         }
 
-        private static void ParseAndPatchFiles(string[] workingFiles, string directory)
+        private static int ParseAndPatchFiles(string[] workingFiles, string directory)
         {
             QuickLogger.Info($"{workingFiles.Length} files found in the {directory} folder");
 
@@ -85,6 +92,7 @@ namespace CustomCraft3
                 rollingCount += DeserializeFile(file);
 
             QuickLogger.Info($"{rollingCount} entries successfully discovered across files in {directory}");
+            return rollingCount;
         }
 
         private static int DeserializeFile(string workingFilePath)

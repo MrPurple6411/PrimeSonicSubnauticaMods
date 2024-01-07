@@ -10,7 +10,7 @@
         OriginFile Origin { get; set; }
         string[] TutorialText { get; }
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
         bool PassesPreValidation(OriginFile originFile);
         bool SendToNautilus();
 #endif

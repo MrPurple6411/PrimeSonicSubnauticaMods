@@ -9,7 +9,7 @@
         CraftTree.Type TreeTypeID { get; }
         bool IsAtRoot { get; }
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
         CraftTreePath GetCraftTreePath();
 #endif
     }

@@ -6,7 +6,7 @@
     using CustomCraft3.Serialization;
     using EasyMarkup;
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
     using Nautilus.Handlers;
 #endif
 
@@ -72,7 +72,7 @@
                 return tType;
             }
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
             //  Not one of the known TechTypes - is it registered with Nautilus?
             if (EnumHandler.TryGetValue(value, out TechType custom))
             {
@@ -86,7 +86,7 @@
         protected void AddCraftNode(CraftTreePath newPath, TechType techType, OriginFile origin)
         {
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && (SUBNAUTICA || BELOWZERO)
             if (newPath.IsAtRoot)
             {
                 QuickLogger.Debug($"New crafting node for {this.Key} '{newPath.FinalNodeID}' from {origin} added at root");
