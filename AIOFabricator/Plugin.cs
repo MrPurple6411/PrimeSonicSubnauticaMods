@@ -3,6 +3,7 @@
 using System.Collections;
 using BepInEx;
 using Common;
+using UnityEngine;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
@@ -19,6 +20,8 @@ public class Plugin: BaseUnityPlugin
         {
             yield return null;
         }
+
+        yield return new WaitForSecondsRealtime(5f);
 
         QuickLogger.Info($"Started patching v: {MyPluginInfo.PLUGIN_VERSION}");         
 

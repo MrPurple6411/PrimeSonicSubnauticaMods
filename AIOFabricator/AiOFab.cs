@@ -20,20 +20,19 @@ internal static class AiOFab
     private const string TabSpriteFormat = "{0}_{1}";
 
     private const string AioFabScheme = "AiOFab";
-    private const string FabricatorScheme = "Fabricator";
-    private const string WorkBenchScheme = "Workbench";
-    private const string SeamothUpgradesScheme = "SeamothUpgrades";
-    private const string MapRoomScheme = "MapRoom";
+
+    internal static Dictionary<CraftTree.Type, TechType> SpriteMap = new()
+    {
+        { CraftTree.Type.SeamothUpgrades, TechType.BaseUpgradeConsole },
+        { CraftTree.Type.MapRoom, TechType.BaseMapRoom },
 #if SUBNAUTICA
-    private const string CyclopsFabScheme = "CyclopsFabricator";
-#elif BELOWZERO
-    private const string SeaTruckFabScheme = "SeaTruckFabricator";
+        { CraftTree.Type.CyclopsFabricator, TechType.Cyclops },
 #endif
+    };
 
     public static CraftTree.Type TreeTypeID { get; private set; }
     public static ModCraftTreeRoot Root { get; private set; }
 
-    private static CraftTree craftTree;
     private static Texture2D texture;
     private static Texture2D spriteTexture;
 
@@ -47,7 +46,7 @@ internal static class AiOFab
 
         var prefab = new CustomPrefab(Info);
 
-        if(GetBuilderIndex(TechType.Fabricator, out var group, out var category, out _))
+        if (GetBuilderIndex(TechType.Fabricator, out var group, out var category, out _))
         {
             var scanGadget = prefab.SetPdaGroupCategoryBefore(group, category, TechType.Fabricator)
                 .WithAnalysisTech(spriteTexture == null ? null : Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), null, null);
@@ -59,12 +58,13 @@ internal static class AiOFab
                 TechType.SeaTruck;
 #endif
         }
+
         var fabGadget = prefab.CreateFabricator(out var treeType);
         TreeTypeID = treeType;
         Root = fabGadget.Root;
-        prefab.AddOnRegister(RegisterCraftTreeBasics);
+        Root.CraftTreeCreation = CreateCraftingTree;
 
-        var aioFabTemplate = new FabricatorTemplate(Info, TreeTypeID) 
+        var aioFabTemplate = new FabricatorTemplate(Info, TreeTypeID)
         {
             ModifyPrefab = ModifyGameObject,
             FabricatorModel = FabricatorTemplate.Model.Fabricator,
@@ -96,132 +96,87 @@ internal static class AiOFab
         }
     }
 
-    private static void RegisterCraftTreeBasics()
-    {
-        RegisterTopLevelVanillaTab(FabricatorScheme, "Fabricator", TechType.Fabricator);
-        RegisterTopLevelVanillaTab(WorkBenchScheme, "Modification Station", TechType.Workbench);
-        RegisterTopLevelVanillaTab(SeamothUpgradesScheme, "Vehicle Upgrades", TechType.BaseUpgradeConsole);
-        RegisterTopLevelVanillaTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
-#if SUBNAUTICA
-        RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
-#endif
-
-        Root.CraftTreeCreation = CreateCraftingTree;
-    }
-
     private static CraftTree CreateCraftingTree()
     {
-        if (craftTree == null)
+        CraftNode aioRoot = new CraftNode("Root");
+
+        foreach (CraftTree.Type entry in Enum.GetValues(typeof(CraftTree.Type)))
         {
-            List<CraftNode> craftNodes = new List<CraftNode>();
+            // Skip the AIOFab tree and the Mobile vehicle bay
+            if (entry == TreeTypeID || entry == CraftTree.Type.Constructor)
+                continue;
 
-            CraftNode fab = CraftTree.FabricatorScheme();
-            CloneTabDetails(FabricatorScheme, fab);
-            craftNodes.Add(fab);
-
-            CraftNode wb = CraftTree.WorkbenchScheme();
-            CloneTabDetails(WorkBenchScheme, wb);
-            craftNodes.Add(wb);
-
-            CraftNode su = CraftTree.SeamothUpgradesScheme();
-            CloneTabDetails(SeamothUpgradesScheme, su);
-            craftNodes.Add(su);
-
-            CraftNode map = CraftTree.MapRoomSheme();
-            CloneTabDetails(MapRoomScheme, map);
-            craftNodes.Add(map);
-#if SUBNAUTICA
-            CraftNode cy = CraftTree.CyclopsFabricatorScheme();
-            CloneTabDetails(CyclopsFabScheme, cy);
-            craftNodes.Add(cy);
+#if BELOWZERO
+            // Skip the SeaTruck and Cyclops fabricators
+            if (entry == CraftTree.Type.SeaTruckFabricator || entry == CraftTree.Type.CyclopsFabricator)
+                continue;
 #endif
-
-            CraftNode aioRoot = new CraftNode("Root").AddNode(craftNodes.ToArray());
-
-            Type smlCTPatcher = typeof(CraftTreeHandler).Assembly.GetType("Nautilus.Patchers.CraftTreePatcher");
-            var customTrees = (Dictionary<CraftTree.Type, ModCraftTreeRoot>)smlCTPatcher.GetField("CustomTrees", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            foreach (KeyValuePair<CraftTree.Type, ModCraftTreeRoot> entry in customTrees)
+            try
             {
-                if (entry.Key == TreeTypeID)
+                CraftTree tree = CraftTree.GetTree(entry);
+
+                // Skip the tree if it's null
+                if (tree == null)
                     continue;
 
-                CraftTree tree = entry.Value.CraftTreeCreation.Invoke();
+                string scheme = tree.id;
+                if (!CloneTopLevelTab(entry, scheme))
+                    continue;
+
                 CraftNode root = tree.nodes;
-                string scheme = entry.Key.ToString();
 
                 CloneTabDetails(scheme, root);
-                CloneTopLevelModTab(scheme);
                 aioRoot.AddNode(root);
             }
-
-            craftTree = new CraftTree(AioFabScheme, aioRoot);
-        }
-
-        return craftTree;
-    }
-
-    public static void ModifyGameObject(GameObject gObj)
-    {
-        if (texture != null)
-        {
-            // Set the custom texture
-            SkinnedMeshRenderer skinnedMeshRenderer = gObj.GetComponentInChildren<SkinnedMeshRenderer>();
-            skinnedMeshRenderer.material.mainTexture = texture;
-        }
-
-        // Change size
-        Vector3 scale = gObj.transform.localScale;
-        const float factor = 1.25f;
-        gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
-    }
-
-    public static RecipeData GetBlueprintRecipe()
-    {
-        return new RecipeData
-        {
-            craftAmount = 1,
-            Ingredients =
+            catch (Exception ex)
             {
-                new Ingredient(TechType.Titanium, 3),
-                new Ingredient(TechType.ComputerChip, 2),
-                new Ingredient(TechType.WiringKit, 1),
-                new Ingredient(TechType.Diamond, 1),
-                new Ingredient(TechType.AluminumOxide, 1),
-                new Ingredient(TechType.Magnetite, 1)
+                QuickLogger.Error($"Error cloning crafttree '{entry}'{Environment.NewLine}{ex.Message}");
             }
-        };
+        }
+
+        return new CraftTree(AioFabScheme, aioRoot);
     }
 
-    private static void RegisterTopLevelVanillaTab(string scheme, string tabDisplayName, TechType tabIconId)
+    private static bool CloneTopLevelTab(CraftTree.Type entry, string scheme)
     {
-        SpriteHandler.RegisterSprite(SpriteManager.Group.Category, string.Format(TabSpriteFormat, AioFabScheme, scheme), SpriteManager.Get(tabIconId));
-        LanguageHandler.SetLanguageLine(string.Format(DisplayNameFormat, AioFabScheme, scheme), tabDisplayName);
-    }
-
-    private static void CloneTopLevelModTab(string scheme)
-    {
-        string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, scheme);
-
-        if (Language.main.TryGet(scheme, out string origString))
+        string lineId = string.Format(DisplayNameFormat, AioFabScheme, scheme);
+        if (Language.main.TryGet(lineId, out _))
         {
-            LanguageHandler.SetLanguageLine(clonedLangKey, origString);
-        }
-        else
-        {
-            QuickLogger.Warning($"Problem cloning language line for '{scheme}:root'{Environment.NewLine}Language resource not found");
+            return true;
         }
 
-        string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, scheme);
+        if (!SpriteMap.TryGetValue(entry, out TechType tabIconId) && !TechTypeExtensions.FromString(scheme, out tabIconId, true))
+        {
+            QuickLogger.Warning($"Problem cloning top level tab for '{scheme}', Unable to identify techtype from {scheme}");
+            return false;
+        }
 
-        if (TechTypeExtensions.FromString(scheme, out TechType techType, true))
+        var sprite = SpriteManager.Get(tabIconId);
+
+        if (sprite == SpriteManager.defaultSprite)
         {
-            var rootSprite = SpriteManager.Get(techType);
-            SpriteHandler.RegisterSprite(SpriteManager.Group.Category, clonedSpriteKey, rootSprite);
+            QuickLogger.Warning($"Problem cloning top level tab for '{scheme}', Sprite resource not found.");
+            return false;
         }
-        else
+
+        QuickLogger.Debug($"Cloning top level tab for '{scheme}'");
+        string displayText = Language.main.GetOrFallback(scheme, scheme);
+        switch (displayText)
         {
-            QuickLogger.Warning($"Problem cloning sprite for '{scheme}:root'{Environment.NewLine}Sprite resource not found");
+            case "MapRoom":
+                displayText = "Scanner Upgrades";
+                break;
+            case "Fabricator" when entry == CraftTree.Type.CyclopsFabricator:
+                displayText = "Cyclops Fabricator";
+                break;
+            case "SeamothUpgrades":
+                displayText = "Vehicle Upgrade Console";
+                break;
         }
+
+        LanguageHandler.SetLanguageLine(lineId, displayText);
+        SpriteHandler.RegisterSprite(SpriteManager.Group.Category, string.Format(TabSpriteFormat, AioFabScheme, scheme), sprite);
+        return true;
     }
 
     private static void CloneTabDetails(string scheme, CraftNode node)
@@ -241,6 +196,13 @@ internal static class AiOFab
             case TreeAction.Expand:
             {
                 string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, node.id);
+
+                if (Language.main.TryGet(clonedLangKey, out _))
+                {
+                    QuickLogger.Debug($"Skipping cloning language line for '{scheme}:{node.id}' as its already registered.");
+                    break;
+                }
+
                 string origLangKey = string.Format(DisplayNameFormat, scheme, node.id);
 
                 try
@@ -284,4 +246,37 @@ internal static class AiOFab
         foreach (CraftNode innerNode in node)
             CloneTabDetails(scheme, innerNode);
     }
+
+    public static void ModifyGameObject(GameObject gObj)
+    {
+        if (texture != null)
+        {
+            // Set the custom texture
+            SkinnedMeshRenderer skinnedMeshRenderer = gObj.GetComponentInChildren<SkinnedMeshRenderer>();
+            skinnedMeshRenderer.material.mainTexture = texture;
+        }
+
+        // Change size
+        Vector3 scale = gObj.transform.localScale;
+        const float factor = 1.25f;
+        gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
+    }
+
+    public static RecipeData GetBlueprintRecipe()
+    {
+        return new RecipeData
+        {
+            craftAmount = 1,
+            Ingredients =
+            {
+                new Ingredient(TechType.Titanium, 3),
+                new Ingredient(TechType.ComputerChip, 2),
+                new Ingredient(TechType.WiringKit, 1),
+                new Ingredient(TechType.Diamond, 1),
+                new Ingredient(TechType.AluminumOxide, 1),
+                new Ingredient(TechType.Magnetite, 1)
+            }
+        };
+    }
+
 }

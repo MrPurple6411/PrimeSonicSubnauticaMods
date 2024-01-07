@@ -3,7 +3,7 @@
 		<AssemblyName>AIOFabricator</AssemblyName>
 		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
 		<BepInExPluginName>All In One Fabricator (Purple Edition)</BepInExPluginName>
-		<Version>1.0.0.0</Version>
+		<Version>1.0.0.1</Version>
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
@@ -14,5 +14,5 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-	<Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+	<Import Project="..\..\UnifiedVSSolution\Common\Common.projitems" Label="Shared" />
 </Project>
