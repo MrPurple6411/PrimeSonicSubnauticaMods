@@ -9,6 +9,7 @@ using MoreCyclopsUpgrades.Managers;
 using Nautilus.Utility;
 using HarmonyLib;
 using BepInEx;
+using Nautilus.Handlers;
 
 /// <summary>
 /// Entry point class for patching. For use by Bepinex only.
@@ -42,7 +43,8 @@ public class Plugin : BaseUnityPlugin
             QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
-
+        CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, "CyclopsMenu", "More Cyclops Upgrades", SpriteManager.Get(TechType.Cyclops));
+        CraftTreeHandler.AddTabNode(CraftTree.Type.CyclopsFabricator, "CyclopsMenu", "More Cyclops Upgrades", SpriteManager.Get(TechType.Cyclops));
         QuickLogger.Info("Finished Patching");
     }
 }

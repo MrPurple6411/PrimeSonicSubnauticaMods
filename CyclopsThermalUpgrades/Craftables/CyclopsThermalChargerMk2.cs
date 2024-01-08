@@ -20,7 +20,7 @@ internal class CyclopsThermalChargerMk2 : CyclopsUpgrade
     }
 
     public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
-    public override string[] StepsToFabricatorTab { get; } = new[] { "Vanilla" };
+    public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
     public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
     public override TechType RequiredForUnlock { get; } = TechType.Workbench;
     public override TechType SortAfter { get; } = TechType.CyclopsThermalReactorModule;

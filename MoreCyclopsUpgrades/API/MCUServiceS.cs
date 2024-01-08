@@ -46,7 +46,7 @@ public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch
     /// <value>
     /// The steps to the Cyclops Fabricator's "CyclopsModules" crafting tab if it exists.
     /// </value>
-    public string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops") ? new[] { "CyclopsModules" } : null;
+    public string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; } = new string[] { "CyclopsMenu" };
 
     /// <summary>
     /// Gets the <see cref="IPowerRatingManager" /> manging the specified Cyclops sub;

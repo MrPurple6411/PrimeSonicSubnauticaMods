@@ -56,7 +56,7 @@ public abstract class CyclopsUpgrade
     public virtual TechType SortAfter => TechType.None;
 
     public virtual CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
-    public virtual string[] StepsToFabricatorTab { get; } = new[] { "Vanilla" };
+    public virtual string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
     public virtual float CraftingTime => 0f;
 
