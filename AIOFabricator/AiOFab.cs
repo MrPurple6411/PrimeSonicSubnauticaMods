@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Common;
+using HarmonyLib;
 using Nautilus.Assets;
 using Nautilus.Assets.Gadgets;
 using Nautilus.Assets.PrefabTemplates;
@@ -62,7 +63,6 @@ internal static class AiOFab
         var fabGadget = prefab.CreateFabricator(out var treeType);
         TreeTypeID = treeType;
         Root = fabGadget.Root;
-        Root.CraftTreeCreation = CreateCraftingTree;
 
         var aioFabTemplate = new FabricatorTemplate(Info, TreeTypeID)
         {
@@ -76,6 +76,8 @@ internal static class AiOFab
 
         CraftDataHandler.SetRecipeData(Info.TechType, GetBlueprintRecipe());
         prefab.Register();
+
+        Harmony.CreateAndPatchAll(typeof(AiOFab), MyPluginInfo.PLUGIN_GUID);
     }
 
     private static void LoadImageFiles()
@@ -96,8 +98,12 @@ internal static class AiOFab
         }
     }
 
-    private static CraftTree CreateCraftingTree()
+    [HarmonyPatch(typeof(CraftTree), nameof(CraftTree.GetTree)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+    private static void CreateCraftingTree(CraftTree.Type treeType, ref CraftTree __result)
     {
+        if (treeType != TreeTypeID)
+            return;
+
         CraftNode aioRoot = new CraftNode("Root");
 
         foreach (CraftTree.Type entry in Enum.GetValues(typeof(CraftTree.Type)))
@@ -134,7 +140,7 @@ internal static class AiOFab
             }
         }
 
-        return new CraftTree(AioFabScheme, aioRoot);
+        __result = new CraftTree(AioFabScheme, aioRoot);
     }
 
     private static bool CloneTopLevelTab(CraftTree.Type entry, string scheme)
