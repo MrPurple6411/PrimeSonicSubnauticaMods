@@ -1,9 +1,8 @@
-namespace UpgradedVehicles;
+namespace UpgradedVehicles.Modules.Armor;
 
-using System;
-using System.Collections.Generic;
 using Nautilus.Crafting;
-using static CraftData;
+using UpgradedVehicles.Handlers;
+using UpgradedVehicles.Modules;
 
 internal class HullArmorMk2 : VehicleUpgradeModule
 {
@@ -15,8 +14,7 @@ internal class HullArmorMk2 : VehicleUpgradeModule
     {
         CustomPrefab.AddOnRegister(() =>
         {
-            VehicleUpgrader.CommonUpgradeModules.Add(Info.TechType);
-            VehicleUpgrader.ArmorPlatingModules.Add(Info.TechType, ArmorCount);
+            VehicleUpgradeHandler.RegisterArmorPlatingModule(Info.TechType, ArmorCount);
         });
     }
 
@@ -28,12 +26,12 @@ internal class HullArmorMk2 : VehicleUpgradeModule
         return new RecipeData()
         {
             craftAmount = 1,
-            Ingredients = new List<Ingredient>
+            Ingredients = new ()
             {
-                new Ingredient(TechType.VehicleArmorPlating, 1),
-                new Ingredient(TechType.Titanium, 2),
-                new Ingredient(TechType.Lead, 1),
-                new Ingredient(TechType.ComputerChip, 1)
+                new (TechType.VehicleArmorPlating, 1),
+                new (TechType.Titanium, 2),
+                new (TechType.Lead, 1),
+                new (TechType.ComputerChip, 1)
             }
         };
     }

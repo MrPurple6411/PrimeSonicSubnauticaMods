@@ -1,8 +1,8 @@
-﻿namespace UpgradedVehicles;
+﻿namespace UpgradedVehicles.Modules.Speed;
 
-using System.Collections.Generic;
 using Nautilus.Crafting;
-using static CraftData;
+using UpgradedVehicles.Handlers;
+using UpgradedVehicles.Modules;
 
 internal class SpeedBoosterMK4 : VehicleUpgradeModule
 {
@@ -13,8 +13,7 @@ internal class SpeedBoosterMK4 : VehicleUpgradeModule
     {
         CustomPrefab.AddOnRegister(() =>
         {
-            VehicleUpgrader.CommonUpgradeModules.Add(Info.TechType);
-            VehicleUpgrader.SpeedBoostingModules.Add(Info.TechType, 4);
+            VehicleUpgradeHandler.RegisterSpeedModule(Info.TechType, 4);
         });
     }
 
@@ -26,11 +25,11 @@ internal class SpeedBoosterMK4 : VehicleUpgradeModule
         return new RecipeData()
         {
             craftAmount = 1,
-            Ingredients = new List<Ingredient>
+            Ingredients = new ()
             {
-                new Ingredient(Plugin.SpeedBoosterMK3.CustomPrefab.Info.TechType, 1),
-                new Ingredient(TechType.Nickel, 1),
-                new Ingredient(TechType.PrecursorIonCrystal, 2),
+                new (Plugin.SpeedBoosterMK3.Info.TechType, 1),
+                new (TechType.Nickel, 1),
+                new (TechType.PrecursorIonCrystal, 2),
             }
         };
     }

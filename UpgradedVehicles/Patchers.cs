@@ -1,46 +1,39 @@
 ﻿namespace UpgradedVehicles;
 
+using System.Collections;
+using System.Collections.Generic;
 using Common;
 using HarmonyLib;
 using UnityEngine;
+using UpgradedVehicles.Handlers;
 
-[HarmonyPatch(typeof(DamageSystem), nameof(DamageSystem.CalculateDamage), new[] { typeof(float), typeof(DamageType), typeof(GameObject), typeof(GameObject) })]
-internal class DamageSystem_CalculateDamage_Patch
+[HarmonyPatch]
+internal static class Patchers
 {
-    [HarmonyPostfix]
-    internal static void Postfix(ref float __result, GameObject target)
+    [HarmonyPatch(typeof(DamageSystem), nameof(DamageSystem.CalculateDamage), new[] { typeof(float), typeof(DamageType), typeof(GameObject), typeof(GameObject) }), HarmonyPostfix]
+    internal static void CalculateDamagePostfix(ref float __result, GameObject target)
     {
         Vehicle vehicle = target.GetComponent<Vehicle>();
 
         if (vehicle != null) // Target is vehicle
         {
-            VehicleUpgrader vehicleUpgrader = vehicle.gameObject.GetComponent<VehicleUpgrader>();
-            if(vehicleUpgrader != null)
+            VehicleUpgradeHandler vehicleUpgrader = vehicle.gameObject.GetComponent<VehicleUpgradeHandler>();
+            if (vehicleUpgrader != null)
+            {
+                // debug log before and after
+                QuickLogger.Debug($"DamageSystem.CalculateDamage: {__result} => {vehicleUpgrader.GeneralDamageReduction * __result}", true);
                 __result = vehicleUpgrader.GeneralDamageReduction * __result;
+            }
         }
     }
-}
 
-[HarmonyPatch(typeof(Vehicle))]
-[HarmonyPatch(nameof(Vehicle.LazyInitialize))]
-internal class Vehicle_LazyInitialize_Patcher
-{
-
-    private static bool Initialized = false;
-
-    [HarmonyPrefix]
-    internal static void Prefix(ref Vehicle __instance)
+    [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.LazyInitialize)), HarmonyPostfix]
+    internal static void LazyInitializePostfix(ref Vehicle __instance)
     {
-        Initialized = __instance.isInitialized;
-    }
-
-    [HarmonyPostfix]
-    internal static void Postfix(ref Vehicle __instance)
-    {
-        if(!Initialized)
+        if (__instance.gameObject.GetComponent<VehicleUpgradeHandler>() == null)
         {
-            QuickLogger.Debug(nameof(Vehicle_LazyInitialize_Patcher));
-            __instance.gameObject.EnsureComponent<VehicleUpgrader>()?.Initialize(ref __instance);
+            QuickLogger.Debug(nameof(Vehicle.LazyInitialize));
+            __instance.gameObject.AddComponent<VehicleUpgradeHandler>()?.Initialize(ref __instance);
         }
     }
 }

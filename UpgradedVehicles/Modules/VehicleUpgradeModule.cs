@@ -1,7 +1,8 @@
-namespace UpgradedVehicles;
+namespace UpgradedVehicles.Modules;
 
 using System.IO;
 using System.Reflection;
+using Common;
 using Nautilus.Assets;
 using Nautilus.Assets.Gadgets;
 using Nautilus.Assets.PrefabTemplates;
@@ -17,6 +18,12 @@ public abstract class VehicleUpgradeModule
 
     protected VehicleUpgradeModule(string classId, string friendlyName, string description)
     {
+        if (TechTypeExtensions.FromString(classId, out _, true))
+        {
+            QuickLogger.Error($"TechType '{classId}' already exists, skipping");
+            return;
+        }
+
         Info = PrefabInfo.WithTechType(classId, friendlyName, description, "English", RequiredForUnlock == TechType.None)
             .WithSizeInInventory(SizeInInventory);
 
@@ -24,12 +31,11 @@ public abstract class VehicleUpgradeModule
         if (File.Exists(iconPath))
             Info.WithIcon(ImageUtils.LoadSpriteFromFile(iconPath));
 
-        if (CustomPrefab == null)
-            CustomPrefab = new CustomPrefab(Info);
+        CustomPrefab = new CustomPrefab(Info);
 
         if (RequiredForUnlock != TechType.None)
             CustomPrefab.SetUnlock(RequiredForUnlock).WithAnalysisTech(null, null, null);
-        
+
         CustomPrefab.SetPdaGroupCategory(GroupForPDA, CategoryForPDA);
         CustomPrefab.SetRecipe(GetBlueprintRecipe()).WithFabricatorType(FabricatorType).WithStepsToFabricatorTab(StepsToFabricatorTab);
         CustomPrefab.SetEquipment(EquipmentType.VehicleModule).WithQuickSlotType(QuickSlotType);
@@ -53,7 +59,7 @@ public abstract class VehicleUpgradeModule
 #else
         CraftTree.Type.Fabricator;
 #endif
-        
+
     protected virtual string[] StepsToFabricatorTab { get; } = new[] {
 #if SUBNAUTICA
         "CommonModules"

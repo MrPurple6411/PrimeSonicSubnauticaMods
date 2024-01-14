@@ -1,12 +1,8 @@
-﻿namespace UpgradedVehicles;
+﻿namespace UpgradedVehicles.Modules.Speed;
 
-using System;
-using System.Collections.Generic;
 using Nautilus.Crafting;
-using static CraftData;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
+using UpgradedVehicles.Handlers;
+using UpgradedVehicles.Modules;
 
 internal class SpeedBooster : VehicleUpgradeModule
 {
@@ -19,8 +15,7 @@ internal class SpeedBooster : VehicleUpgradeModule
     {
         CustomPrefab.AddOnRegister(() =>
         {
-            VehicleUpgrader.CommonUpgradeModules.Add(Info.TechType);
-            VehicleUpgrader.SpeedBoostingModules.Add(Info.TechType, 1);
+            VehicleUpgradeHandler.RegisterSpeedModule(Info.TechType, 1);
         });
     }
 
@@ -29,11 +24,11 @@ internal class SpeedBooster : VehicleUpgradeModule
         return new RecipeData()
         {
             craftAmount = 1,
-            Ingredients = new List<Ingredient>
+            Ingredients = new ()
             {
-                new Ingredient(TechType.Titanium, 2),
-                new Ingredient(TechType.WiringKit, 1),
-                new Ingredient(TechType.ComputerChip, 1),
+                new (TechType.Titanium, 2),
+                new (TechType.WiringKit, 1),
+                new (TechType.ComputerChip, 1),
             }
         };
     }

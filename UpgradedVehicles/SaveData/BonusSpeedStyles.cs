@@ -1,6 +1,6 @@
 ﻿namespace UpgradedVehicles.SaveData;
 
-internal enum BonusSpeedStyles : int
+internal enum BonusSpeedStyles 
 {
     Disabled = 0,
     Slower = 1,

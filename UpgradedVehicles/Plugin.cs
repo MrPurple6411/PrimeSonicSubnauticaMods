@@ -1,11 +1,17 @@
 ﻿namespace UpgradedVehicles;
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Logging;
 using Common;
 using HarmonyLib;
 using Nautilus.Handlers;
+using UpgradedVehicles.Handlers;
+using UpgradedVehicles.Modules.Armor;
+using UpgradedVehicles.Modules.Power;
+using UpgradedVehicles.Modules.Speed;
 using UpgradedVehicles.SaveData;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
@@ -17,6 +23,10 @@ public class Plugin : BaseUnityPlugin
 {
     internal const string WorkBenchArmorTab = "HullArmor";
     internal const string WorkBenchSpeedTab = "SpeedModules";
+    internal const string WorkBenchPowerTab = "PowerModules";
+
+    internal static UpgradeOptions Options { get; } = new UpgradeOptions();
+    internal static ConfigSaveData SaveData { get; } = new ConfigSaveData();
 
     internal static SpeedBooster SpeedBooster { get; private set; }
     internal static SpeedBoosterMK2 SpeedBoosterMK2 { get; private set; }
@@ -25,30 +35,27 @@ public class Plugin : BaseUnityPlugin
     internal static HullArmorMk2 HullArmorMk2 { get; private set; }
     internal static HullArmorMk3 HullArmorMk3 { get; private set; }
     internal static HullArmorMk4 HullArmorMk4 { get; private set; }
+    internal static PowerEfficiencyMK2 PowerEfficiencyMK2 { get; private set; }
+    internal static PowerEfficiencyMK3 PowerEfficiencyMK3 { get; private set; }
+    internal static PowerEfficiencyMK4 PowerEfficiencyMK4 { get; private set; }
+
+    public Plugin()
+    {
+        OptionsPanelHandler.RegisterModOptions(Options);
+    }
 
     public void Awake()
     {
         try
         {
             QuickLogger.Info("Started patching - " + QuickLogger.GetAssemblyVersion());
-
-            //Handle Config Options
-            var configOptions = new UpgradeOptions();
-            configOptions.Initialize();
-
-            QuickLogger.DebugLogsEnabled = configOptions.DebugLogsEnabled;
-            QuickLogger.Debug("Debug logs enabled");
-
             CrossModUpdates();
-
-            
-            
 
             //Handle SpeedBooster
             SpeedBooster = new SpeedBooster();
-            SpeedBooster.CustomPrefab.Register();
             CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchSpeedTab, "Speed Modules", SpriteManager.Get(SpeedBooster.Info.TechType));
-            
+            SpeedBooster.CustomPrefab.Register();
+
             SpeedBoosterMK2 = new SpeedBoosterMK2();
             SpeedBoosterMK2.CustomPrefab.Register();
             SpeedBoosterMK3 = new SpeedBoosterMK3();
@@ -56,8 +63,11 @@ public class Plugin : BaseUnityPlugin
             SpeedBoosterMK4 = new SpeedBoosterMK4();
             SpeedBoosterMK4.CustomPrefab.Register();
 
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchArmorTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
             //Handle HullArmorUpgrades
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchArmorTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
+#if BELOWZERO
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, TechType.VehicleArmorPlating, WorkBenchArmorTab);
+#endif
             HullArmorMk2 = new HullArmorMk2();
             HullArmorMk2.CustomPrefab.Register();
             HullArmorMk3 = new HullArmorMk3();
@@ -65,7 +75,17 @@ public class Plugin : BaseUnityPlugin
             HullArmorMk4 = new HullArmorMk4();
             HullArmorMk4.CustomPrefab.Register();
 
-            VehicleUpgrader.SetBonusSpeedMultipliers(configOptions);
+            //Handle PowerUpgrades
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchPowerTab, "Power Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
+
+            PowerEfficiencyMK2 = new PowerEfficiencyMK2();
+            PowerEfficiencyMK2.CustomPrefab.Register();
+
+            PowerEfficiencyMK3 = new PowerEfficiencyMK3();
+            PowerEfficiencyMK3.CustomPrefab.Register();
+
+            PowerEfficiencyMK4 = new PowerEfficiencyMK4();
+            PowerEfficiencyMK4.CustomPrefab.Register();
 
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
             QuickLogger.Info("Finished patching");
@@ -83,17 +103,14 @@ public class Plugin : BaseUnityPlugin
         if (EnumHandler.TryGetValue("SeamothHullModule4", out TechType vehicleHullModule4))
         {
             QuickLogger.Info("Detected Seamoth Depth Module Mk4");
-            VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
-            VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
-            VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule4);
+            
+            VehicleUpgradeHandler.RegisterDepthModule(vehicleHullModule4, 4);
         }
 
         if (EnumHandler.TryGetValue("SeamothHullModule5", out TechType vehicleHullModule5))
         {
             QuickLogger.Info("Detected Seamoth Depth Module Mk5");
-            VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
-            VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
-            VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule5);
+            VehicleUpgradeHandler.RegisterDepthModule(vehicleHullModule5, 5);
         }
     }
 }

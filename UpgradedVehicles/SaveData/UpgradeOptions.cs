@@ -1,103 +1,47 @@
 ﻿namespace UpgradedVehicles.SaveData;
 
-using Common;
-using Nautilus.Handlers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using Nautilus.Options;
+using UpgradedVehicles.Handlers;
 
-internal class UpgradeOptions : ModOptions, IUpgradeOptions
+internal class UpgradeOptions : ModOptions
 {
-    private readonly ConfigSaveData SaveData = new ConfigSaveData();
-
-    public bool DebugLogsEnabled => SaveData.DebugLogsEnabled;
-
-    public float SeamothBonusSpeedMultiplier
+    public UpgradeOptions() : base(MyPluginInfo.PLUGIN_NAME)
     {
-        get
+    }
+
+    public override void BuildModOptions(uGUI_TabbedControlsPanel panel, int modsTabIndex, IReadOnlyCollection<OptionItem> options)
+    {
+        Plugin.SaveData.InitializeSaveFile();
+
+        var optionsToAdd = new List<OptionItem>();
+        foreach (var kvp in Plugin.SaveData.GetBonusSpeedStyles().OrderBy(o => o.Key))
         {
-            switch (SaveData.SeamothBonusSpeedSetting)
+            bool exists = false;
+            foreach (var option in options)
             {
-                case BonusSpeedStyles.Disabled:
-                    return 0f;
-                case BonusSpeedStyles.Slower:
-                    return 0.05f;
-                case BonusSpeedStyles.Normal:
-                    return 0.15f;
-                case BonusSpeedStyles.Faster:
-                    return 0.25f;
-                default: // Error
-                    return 0.125f;
+                if (option.Id == kvp.Key)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists && TechTypeExtensions.FromString(kvp.Key.Replace(ConfigSaveData.BonusSpeedSuffix, string.Empty).Trim() , out var techType, true))
+            {
+                var prettyName = Language.main.GetOrFallback(techType, techType.AsString()) + " Bonus Speed";
+                var option = ModChoiceOption<BonusSpeedStyles>.Create(kvp.Key, prettyName, (BonusSpeedStyles[])Enum.GetValues(typeof(BonusSpeedStyles)), (Plugin.SaveData.GetBonusSpeedStyle(techType) ?? BonusSpeedStyles.Normal));
+                option.OnChanged += VehicleUpgradeHandler.OnBonusSpeedStyleChanged;
+                optionsToAdd.Add(option);
             }
         }
-    }
+        if (optionsToAdd.Count > 0)
+            optionsToAdd.Do(o => AddItem(o));
 
-    public float ExosuitBonusSpeedMultiplier
-    {
-        get
-        {
-            switch (SaveData.ExosuitBonusSpeedSetting)
-            {
-                case BonusSpeedStyles.Disabled:
-                    return 0f;
-                case BonusSpeedStyles.Slower:
-                    return 0.10f;
-                case BonusSpeedStyles.Normal:
-                    return 0.20f;
-                case BonusSpeedStyles.Faster:
-                    return 0.30f;
-                default: // Error
-                    return 0.15f;
-            }
-        }
-    }
-
-    internal int SeamothBonusSpeedIndex
-    {
-        get => (int)SaveData.SeamothBonusSpeedSetting;
-        set => SaveData.SeamothBonusSpeedSetting = (BonusSpeedStyles)value;
-    }
-
-    internal int ExosuitBonusSpeedIndex
-    {
-        get => (int)SaveData.ExosuitBonusSpeedSetting;
-        set => SaveData.ExosuitBonusSpeedSetting = (BonusSpeedStyles)value;
-    }
-
-    public UpgradeOptions() : base("Upgraded Vehicles Options")
-    {
-        var seamothBonusSpeed = ModChoiceOption<string>.Create(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.SeamothBonusSpeedIndex);
-        seamothBonusSpeed.OnChanged += this.OnBonusSpeedStyleChanged;
-        var exosuitBonusSpeed = ModChoiceOption<string>.Create(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.ExosuitBonusSpeedIndex);
-        exosuitBonusSpeed.OnChanged += this.OnBonusSpeedStyleChanged;
-
-        AddItem(seamothBonusSpeed);
-        AddItem(exosuitBonusSpeed);
-
-    }
-
-    public void Initialize()
-    {
-        QuickLogger.Info("Initializing save data and options");
-        SaveData.InitializeSaveFile();
-        OptionsPanelHandler.RegisterModOptions(this);
-    }
-
-    private void OnBonusSpeedStyleChanged(object sender, ChoiceChangedEventArgs<string> args)
-    {
-        switch (args.Id)
-        {
-            case ConfigSaveData.SeamothBonusSpeedID:
-                this.SeamothBonusSpeedIndex = args.Index;
-                break;
-
-            case ConfigSaveData.ExosuitBonusSpeedID:
-                this.ExosuitBonusSpeedIndex = args.Index;
-                break;
-
-            default:
-                return;
-        }
-
-        VehicleUpgrader.SetBonusSpeedMultipliers(this);
-        SaveData.Save();
+        if (this.Options.Count > 0)
+            base.BuildModOptions(panel, modsTabIndex, this.Options);
     }
 }
