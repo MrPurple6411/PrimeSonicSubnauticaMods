@@ -1,5 +1,6 @@
 ﻿namespace CyclopsAutoZapper;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -32,6 +33,8 @@ internal class CyclopsAutoDefense : CyclopsUpgrade
 
             MCUServices.Register.AuxCyclopsManager<AutoDefenser>((SubRoot cyclops) =>
             { return new AutoDefenser(this.TechType, cyclops); });
+
+            CyclopsAutoDefenseMk2.CreateAndRegister(this.TechType);
         };
     }
 
@@ -39,6 +42,11 @@ internal class CyclopsAutoDefense : CyclopsUpgrade
     public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
     public override TechType RequiredForUnlock { get; } = TechType.SeamothElectricalDefense;
     public override string[] StepsToFabricatorTab { get; } = MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
+
+    internal static void CreateAndRegister()
+    {
+        new CyclopsAutoDefense().Patch();
+    }
 
     protected override RecipeData GetBlueprintRecipe()
     {

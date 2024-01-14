@@ -48,7 +48,7 @@ internal abstract class Zapper : CooldownManager
         if(seamothElectricalDefensePrefab != null)
             return;
 
-        new AssetReferenceGameObject("WorldEntities/Tools/SeaMoth.prefab").ForceValid().InstantiateAsync().Completed += (task) =>
+        new AssetReferenceGameObject("WorldEntities/Tools/SeaMoth.prefab").ForceValid().LoadAssetAsync().Completed += (task) =>
         {
             seamothElectricalDefensePrefab = task.Result.GetComponent<SeaMoth>().seamothElectricalDefensePrefab;
         };

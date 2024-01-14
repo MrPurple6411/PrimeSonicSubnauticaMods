@@ -15,14 +15,10 @@ public class Plugin : BaseUnityPlugin
     {
         QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-        var defenseSystem = new CyclopsAutoDefense();
-        defenseSystem.Patch();
+        CyclopsAutoDefense.CreateAndRegister();
 
         var antiParasites = new CyclopsParasiteRemover();
         antiParasites.Patch();
-
-        var defenseSystemMk2 = new CyclopsAutoDefenseMk2(defenseSystem);
-        defenseSystemMk2.Patch();
 
         DisplayTexts.Main.Patch();
 
