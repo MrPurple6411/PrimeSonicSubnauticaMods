@@ -10,6 +10,7 @@ using CustomBatteries.Patches;
 using HarmonyLib;
 using CustomBatteries.Patchers;
 using Nautilus.Handlers;
+using BepInEx.Bootstrap;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
@@ -49,6 +50,20 @@ public class Plugin : BaseUnityPlugin
         CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PrecursorIonBattery.ToString());
         CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PowerCell.ToString());
         CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
+        if (Chainloader.PluginInfos.ContainsKey("com.github.tinyhoot.DeathrunRemade"))
+        {
+            if (EnumHandler.TryGetValue("deathrunremade_acidbattery", out TechType acidBattery))
+            {
+                CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, acidBattery.ToString());
+                CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, acidBattery, CbDatabase.BatteryCraftPath);
+            }
+
+            if (EnumHandler.TryGetValue("deathrunremade_acidpowercell", out TechType acidPowerCell))
+            {
+                CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, acidPowerCell.ToString());
+                CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, acidPowerCell, CbDatabase.PowCellCraftPath);
+            }
+        }
 
         // Add a new set of tab nodes for batteries and power cells
         CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbDatabase.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbDatabase.ResCraftTab);
