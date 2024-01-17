@@ -14,5 +14,5 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-	<Import Project="..\..\UnifiedVSSolution\Common\Common.projitems" Label="Shared" />
+	<Import Project="..\..\Common\Common.projitems" Label="Shared" />
 </Project>

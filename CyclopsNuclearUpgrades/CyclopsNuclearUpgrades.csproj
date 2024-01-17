@@ -25,5 +25,5 @@
 			<Private>False</Private>
 		</ProjectReference>
 	</ItemGroup>
-	<Import Project="..\..\UnifiedVSSolution\Common\Common.projitems" Label="Shared" />
+	<Import Project="..\..\Common\Common.projitems" Label="Shared" />
 </Project>
