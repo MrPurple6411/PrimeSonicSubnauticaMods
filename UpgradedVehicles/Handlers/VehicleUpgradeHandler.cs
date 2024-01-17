@@ -202,6 +202,8 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
 
     internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : Vehicle
     {
+        Plugin.SaveData.InitializeSaveFile();
+
         QuickLogger.Debug("Initializing vehicle", true);
         ParentVehicle = vehicle;
 
@@ -231,8 +233,6 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
 
         TechType techType = CraftData.GetTechType(vehicle.gameObject);
 
-        Plugin.SaveData.InitializeSaveFile();
-
         if (Plugin.SaveData.GetBonusSpeedStyle(techType) is BonusSpeedStyles bonusSpeedStyle)
         {
             QuickLogger.Debug($"Initialize Vehicle - {techType} - {bonusSpeedStyle}", true);
@@ -240,8 +240,8 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         }
         else
         {
-            QuickLogger.Debug($"Initialize Vehicle - {techType} - Default", true);
-            Plugin.SaveData.SetBonusSpeedStyle(techType, BonusSpeedStyles.Normal);
+            QuickLogger.Warning($"Initialize Vehicle - {techType} - Unable to find bonus speed style - Creating options based on Seamoth", true);
+            RegisterVehicleSpeedOptions(techType, VehicleBonusSpeedMultipliers[TechType.Seamoth]);
             this.BonusSpeedStyle = BonusSpeedStyles.Normal;
         }
         
@@ -285,11 +285,8 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     /// <summary>
     /// Calculates the current depth index based on the highest depth module installed.
     /// </summary>
-    private int CalculateDepthModuleIndex()
+    private void RecalculateDepthModuleIndex()
     {
-        if (this.UpgradeModules == null)
-            return -1; // Missing UpgradeModules, cannot calculate
-
         int maxDepthIndex = 0;
         foreach (var kvp in DepthUpgradeModules)
         {
@@ -298,7 +295,7 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
                 maxDepthIndex = Math.Max(maxDepthIndex, kvp.Value);
         }
 
-        return 0;
+        this.DepthIndex = maxDepthIndex;
     }
 
     /// <summary>
@@ -311,11 +308,11 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
             // Not an upgrade module we handle here
             return;
 
-        bool updateAll = DepthUpgradeModules.ContainsKey(upgradeModule);
-        bool updateArmor = updateAll || ArmorPlatingModules.ContainsKey(upgradeModule);
-        bool updateSpeed = updateAll || SpeedBoostingModules.ContainsKey(upgradeModule);
-        bool updateEfficiency = updateAll || updateSpeed || PowerRatingModules.ContainsKey(upgradeModule);
-        QuickLogger.Debug($"updateAll:{updateAll} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}");
+        bool updateDepth = DepthUpgradeModules.ContainsKey(upgradeModule);
+        bool updateArmor = updateDepth || ArmorPlatingModules.ContainsKey(upgradeModule);
+        bool updateSpeed = updateDepth || SpeedBoostingModules.ContainsKey(upgradeModule);
+        bool updateEfficiency = updateDepth || updateSpeed || PowerRatingModules.ContainsKey(upgradeModule);
+        QuickLogger.Debug($"updateDepth:{updateDepth} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}");
         ProcessChanges(updateArmor, updateSpeed, updateEfficiency);
     }
 
@@ -327,15 +324,14 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     /// <param name="updateEfficiency"> if true, the efficiency rating will be updated</param>
     private void ProcessChanges(bool updateArmor, bool updateSpeed, bool updateEfficiency)
     {
-        int newIndex = CalculateDepthModuleIndex();
 
-        if (newIndex < 0)
+        if (this.UpgradeModules == null)
         {
             QuickLogger.Error("UpgradeVehicle - UpgradeModules missing - Unable to upgrade", true);
             return;
         }
 
-        this.DepthIndex = newIndex;
+        RecalculateDepthModuleIndex();
 
         if (updateArmor) // Armor
         {
@@ -377,12 +373,12 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     private void UpdateSpeedRating(float speedBoosterCount)
     {
         QuickLogger.Debug($"UpdateSpeedRating - speedBoosterCount:{speedBoosterCount}", true);
-        accelerationMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
+        this.accelerationMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
 
         if (!Initialized)
             return;
 
-        QuickLogger.Info($"Speed Boost: ({accelerationMultiplier * 100f:00}%)", true);
+        QuickLogger.Info($"Speed Boost: ({this.accelerationMultiplier * 100f:00}%)", true);
     }
 
     /// <summary>
@@ -428,6 +424,12 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     public static void RegisterVehicleSpeedOptions(TechType techType, float[] bonusSpeedsPerModule)
     {
         VehicleBonusSpeedMultipliers[techType] = bonusSpeedsPerModule;
+
+        if (Plugin.SaveData.Initialized)
+        {
+            Plugin.SaveData.SetBonusSpeedStyle(techType, BonusSpeedStyles.Normal);
+            Plugin.SaveData.Save();
+        }
     }
 
     /// <summary>

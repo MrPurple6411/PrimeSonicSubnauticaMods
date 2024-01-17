@@ -159,6 +159,7 @@ internal class ConfigSaveData : EmPropertyCollection
         try
         {
             Load();
+            QuickLogger.DebugLogsEnabled = DebugLogsEnabled;
         }
         catch (Exception ex)
         {

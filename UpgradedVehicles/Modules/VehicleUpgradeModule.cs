@@ -30,6 +30,8 @@ public abstract class VehicleUpgradeModule
         var iconPath = Path.Combine(AssetsFolder, $"{classId}.png");
         if (File.Exists(iconPath))
             Info.WithIcon(ImageUtils.LoadSpriteFromFile(iconPath));
+        else
+            Info.WithIcon(SpriteManager.Get(PrefabTemplateType));
 
         CustomPrefab = new CustomPrefab(Info);
 

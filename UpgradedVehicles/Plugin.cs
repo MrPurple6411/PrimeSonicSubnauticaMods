@@ -7,7 +7,10 @@ using BepInEx;
 using BepInEx.Logging;
 using Common;
 using HarmonyLib;
+using Nautilus.Assets;
+using Nautilus.Assets.Gadgets;
 using Nautilus.Handlers;
+using UnityEngine;
 using UpgradedVehicles.Handlers;
 using UpgradedVehicles.Modules.Armor;
 using UpgradedVehicles.Modules.Power;
@@ -67,6 +70,8 @@ public class Plugin : BaseUnityPlugin
             CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchArmorTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
 #if BELOWZERO
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, TechType.VehicleArmorPlating, WorkBenchArmorTab);
+            LanguageHandler.SetTechTypeName(TechType.VehicleArmorPlating, "Hull Reinforcement Module");
+            LanguageHandler.SetTechTypeTooltip(TechType.VehicleArmorPlating, "An upgrade containing nanites improving and maintaining the inner structure of the hull.");
 #endif
             HullArmorMk2 = new HullArmorMk2();
             HullArmorMk2.CustomPrefab.Register();
@@ -77,6 +82,11 @@ public class Plugin : BaseUnityPlugin
 
             //Handle PowerUpgrades
             CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchPowerTab, "Power Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
+#if BELOWZERO
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, TechType.VehiclePowerUpgradeModule, WorkBenchPowerTab);
+            LanguageHandler.SetTechTypeName(TechType.VehiclePowerUpgradeModule, "Engine Efficiency Module");
+            LanguageHandler.SetTechTypeTooltip(TechType.VehiclePowerUpgradeModule, "Increases the efficiency of the engine.");
+#endif
 
             PowerEfficiencyMK2 = new PowerEfficiencyMK2();
             PowerEfficiencyMK2.CustomPrefab.Register();
@@ -100,17 +110,34 @@ public class Plugin : BaseUnityPlugin
     {
         QuickLogger.Info("Checking if MoreSeamothDepth mod is present");
 
-        if (EnumHandler.TryGetValue("SeamothHullModule4", out TechType vehicleHullModule4))
+        if (TechTypeExtensions.FromString("SeamothHullModule4", out TechType vehicleHullModule4, true))
         {
-            QuickLogger.Info("Detected Seamoth Depth Module Mk4");
-            
+            QuickLogger.Info("Detected Seamoth Depth Module Mk4");            
             VehicleUpgradeHandler.RegisterDepthModule(vehicleHullModule4, 4);
         }
 
-        if (EnumHandler.TryGetValue("SeamothHullModule5", out TechType vehicleHullModule5))
+        if (TechTypeExtensions.FromString("SeamothHullModule5", out TechType vehicleHullModule5, true))
         {
             QuickLogger.Info("Detected Seamoth Depth Module Mk5");
             VehicleUpgradeHandler.RegisterDepthModule(vehicleHullModule5, 5);
+        }
+
+        if (TechTypeExtensions.FromString("ModVehicleDepthModule1" , out TechType modVehicleDepthModule1, true))
+        {
+            QuickLogger.Info("Detected Vehicle Framework Depth Module Mk1");
+            VehicleUpgradeHandler.RegisterDepthModule(modVehicleDepthModule1, 1);
+        }
+
+        if (TechTypeExtensions.FromString("ModVehicleDepthModule2", out TechType modVehicleDepthModule2, true))
+        {
+            QuickLogger.Info("Detected Vehicle Framework Depth Module Mk2");
+            VehicleUpgradeHandler.RegisterDepthModule(modVehicleDepthModule2, 2);
+        }
+
+        if (TechTypeExtensions.FromString("ModVehicleDepthModule3", out TechType modVehicleDepthModule3, true))
+        {
+            QuickLogger.Info("Detected Vehicle Framework Depth Module Mk3");
+            VehicleUpgradeHandler.RegisterDepthModule(modVehicleDepthModule3, 3);
         }
     }
 }

@@ -1,9 +1,5 @@
 ﻿namespace UpgradedVehicles.Modules.Power;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Nautilus.Crafting;
 using UpgradedVehicles.Handlers;
 
@@ -24,6 +20,7 @@ internal class PowerEfficiencyMK2 : VehicleUpgradeModule
 
     protected override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
     protected override string[] StepsToFabricatorTab => new[] { Plugin.WorkBenchPowerTab };
+    protected override TechType PrefabTemplateType => TechType.VehiclePowerUpgradeModule;
 
     protected override RecipeData GetBlueprintRecipe()
     {

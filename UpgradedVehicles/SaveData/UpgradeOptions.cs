@@ -11,6 +11,9 @@ internal class UpgradeOptions : ModOptions
 {
     public UpgradeOptions() : base(MyPluginInfo.PLUGIN_NAME)
     {
+        var debugLogs = ModToggleOption.Create(nameof(ConfigSaveData.DebugLogsEnabled), "Enable Debug Logs", false);
+        debugLogs.OnChanged += (option, e) => Plugin.SaveData.DebugLogsEnabled = e.Value;
+        AddItem(debugLogs);
     }
 
     public override void BuildModOptions(uGUI_TabbedControlsPanel panel, int modsTabIndex, IReadOnlyCollection<OptionItem> options)

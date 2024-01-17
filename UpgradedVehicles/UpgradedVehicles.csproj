@@ -3,7 +3,7 @@
 		<AssemblyName>UpgradedVehicles</AssemblyName>
 		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
 		<BepInExPluginName>Upgraded Vehicles (Purple Edition)</BepInExPluginName>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
   <ItemGroup>

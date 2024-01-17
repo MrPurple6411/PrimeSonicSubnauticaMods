@@ -20,6 +20,7 @@ internal class PowerEfficiencyMK3 : VehicleUpgradeModule
 
     protected override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
     protected override string[] StepsToFabricatorTab => new[] { Plugin.WorkBenchPowerTab };
+    protected override TechType PrefabTemplateType => TechType.VehiclePowerUpgradeModule;
 
     protected override RecipeData GetBlueprintRecipe()
     {
