@@ -82,34 +82,6 @@ public abstract class CyclopsUpgrade
         
         CustomPrefab = new CustomPrefab(this.Info);
 
-        ScanningGadget scanningGadget;
-        if (this.SortAfter != TechType.None && CraftData.GetBuilderIndex(SortAfter, out var group, out var category, out _) && group == GroupForPDA && category == CategoryForPDA)
-            scanningGadget = CustomPrefab.SetPdaGroupCategoryAfter(this.GroupForPDA, this.CategoryForPDA, this.SortAfter);
-        else
-            scanningGadget = CustomPrefab.SetPdaGroupCategory(this.GroupForPDA, this.CategoryForPDA);
-
-        scanningGadget.RequiredForUnlock = this.RequiredForUnlock;
-
-        var iconPath = Path.Combine(this.AssetsFolder, $"{classId}.png");
-        if (File.Exists(iconPath))
-        {
-            Texture2D spriteTexture = ImageUtils.LoadTextureFromFile(iconPath);
-            this.Info = this.Info.WithIcon(ImageUtils.LoadSpriteFromTexture(spriteTexture));
-            scanningGadget = scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), null, null);
-        }
-        else
-        {
-            scanningGadget = scanningGadget.WithAnalysisTech(null, null, null);
-        }
-
-        var craftingGadget = CustomPrefab.SetRecipe(GetBlueprintRecipe())
-            .WithFabricatorType(FabricatorType)
-            .WithStepsToFabricatorTab(StepsToFabricatorTab)
-            .WithCraftingTime(CraftingTime);
-
-        var equipmentGadget = CustomPrefab.SetEquipment(EquipmentType);
-
-        CustomPrefab.SetGameObject(GetGameObjectAsync);
     }
 
     public void Patch()
@@ -118,6 +90,36 @@ public abstract class CyclopsUpgrade
             return;
 
         OnStartedPatching?.Invoke();
+
+        ScanningGadget scanningGadget;
+        if (this.SortAfter != TechType.None && CraftData.GetBuilderIndex(SortAfter, out var group, out var category, out _) && group == GroupForPDA && category == CategoryForPDA)
+            scanningGadget = CustomPrefab.SetPdaGroupCategoryAfter(this.GroupForPDA, this.CategoryForPDA, this.SortAfter);
+        else
+            scanningGadget = CustomPrefab.SetPdaGroupCategory(this.GroupForPDA, this.CategoryForPDA);
+
+        scanningGadget.RequiredForUnlock = this.RequiredForUnlock;
+
+        var iconPath = Path.Combine(this.AssetsFolder, $"{this.Info.ClassID}.png");
+        if (File.Exists(iconPath))
+        {
+            Texture2D spriteTexture = ImageUtils.LoadTextureFromFile(iconPath);
+            this.Info.WithIcon(ImageUtils.LoadSpriteFromTexture(spriteTexture));
+            scanningGadget.WithAnalysisTech(Sprite.Create(spriteTexture, new Rect(0f, 0f, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f)), null, null);
+        }
+        else
+        {
+            this.Info.WithIcon(SpriteManager.Get(PrefabTemplate));
+            scanningGadget.WithAnalysisTech(null, null, null);
+        }
+
+        CustomPrefab.SetRecipe(GetBlueprintRecipe())
+            .WithFabricatorType(FabricatorType)
+            .WithStepsToFabricatorTab(StepsToFabricatorTab)
+            .WithCraftingTime(CraftingTime);
+
+        CustomPrefab.SetEquipment(EquipmentType);
+        CustomPrefab.SetGameObject(GetGameObjectAsync);
+
         CustomPrefab.Register();
         OnFinishedPatching?.Invoke();
         IsPatched = true;
