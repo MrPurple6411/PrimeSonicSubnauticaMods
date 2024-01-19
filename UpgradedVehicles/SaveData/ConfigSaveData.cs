@@ -88,6 +88,7 @@ internal class ConfigSaveData : EmPropertyCollection
     {
         EmDebugLogs = (EmProperty<bool>)Properties[EnableDebugLogsID];
         OnValueExtractedEvent += IsReadDataValid;
+        InitializeSaveFile();
     }
 
     public ConfigSaveData(Dictionary<TechType, BonusSpeedStyles> currentValues) : this()
@@ -148,9 +149,6 @@ internal class ConfigSaveData : EmPropertyCollection
 
     internal void InitializeSaveFile()
     {
-        if (Initialized)
-            return;
-
         foreach (var techType in VehicleUpgradeHandler.GetVehicleTypes())
         {
             SetBonusSpeedStyle(techType, BonusSpeedStyles.Normal);
