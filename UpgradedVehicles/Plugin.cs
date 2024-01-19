@@ -70,6 +70,7 @@ public class Plugin : BaseUnityPlugin
             CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchArmorTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
 #if BELOWZERO
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, TechType.VehicleArmorPlating, WorkBenchArmorTab);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Workbench,new TechType[] { TechType.VehicleArmorPlating });
             LanguageHandler.SetTechTypeName(TechType.VehicleArmorPlating, "Hull Reinforcement Module");
             LanguageHandler.SetTechTypeTooltip(TechType.VehicleArmorPlating, "An upgrade containing nanites improving and maintaining the inner structure of the hull.");
 #endif
@@ -84,6 +85,7 @@ public class Plugin : BaseUnityPlugin
             CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchPowerTab, "Power Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
 #if BELOWZERO
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, TechType.VehiclePowerUpgradeModule, WorkBenchPowerTab);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Workbench, new TechType[] { TechType.VehiclePowerUpgradeModule });
             LanguageHandler.SetTechTypeName(TechType.VehiclePowerUpgradeModule, "Engine Efficiency Module");
             LanguageHandler.SetTechTypeTooltip(TechType.VehiclePowerUpgradeModule, "Increases the efficiency of the engine.");
 #endif
