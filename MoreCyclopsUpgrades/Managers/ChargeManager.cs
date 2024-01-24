@@ -169,7 +169,13 @@ internal class ChargeManager
         for (int i = 0; i < this.Chargers.Length; i++)
             producedPower += this.Chargers[i].Generate(powerDeficit);
 
-        if (GameModeUtils.RequiresPower() && powerDeficit > producedPower)
+        if (
+#if SUBNAUTICA
+            GameModeUtils.RequiresPower() 
+#elif BELOWZERO
+            GameModeManager.GetOption<bool>(GameOption.TechnologyRequiresPower)
+#endif
+            && powerDeficit > producedPower)
         {
             // Second, get non-renewable energy if there isn't enough renewable energy
             for (int i = 0; i < this.Chargers.Length; i++)

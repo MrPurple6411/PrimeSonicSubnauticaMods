@@ -5,6 +5,9 @@ using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Charging;
 using MoreCyclopsUpgrades.API.Upgrades;
 using UnityEngine;
+#if SUBNAUTICA
+using Sprite = Atlas.Sprite;
+#endif
 
 internal class VanillaThermalChargeManager : CyclopsCharger
 {
@@ -24,7 +27,7 @@ internal class VanillaThermalChargeManager : CyclopsCharger
     {
     }
 
-    public override Atlas.Sprite StatusSprite()
+    public override Sprite StatusSprite()
     {
         return SpriteManager.Get(TechType.CyclopsThermalReactorModule);
     }
@@ -66,7 +69,12 @@ internal class VanillaThermalChargeManager : CyclopsCharger
             return false;
         }
 
-        this.Temperature = base.Cyclops.GetTemperature();
+        this.Temperature =
+#if SUBNAUTICA
+                Cyclops.GetTemperature();
+#elif BELOWZERO
+                Cyclops.GetOutdoorTemperature();
+#endif
 
         return this.Temperature > MinTemperatureForCharge;
     }

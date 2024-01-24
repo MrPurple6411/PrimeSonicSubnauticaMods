@@ -2,6 +2,10 @@
 
 using UnityEngine;
 
+#if SUBNAUTICA
+using Sprite = Atlas.Sprite;
+#endif
+
 /// <summary>
 /// Defines all the behaviors for a cyclops charger that handles a particular type of energy recharging.<para/>
 /// Recharging may be part of an update module or it might be a new buidable.<para/>
@@ -104,7 +108,7 @@ public abstract class CyclopsCharger
     /// Gets the sprite to use for the power indicator. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
     /// </summary>
     /// <returns>A new <see cref="Atlas.Sprite"/> to be used in the Cyclops Helm and Holographic HUDs.</returns>
-    public abstract Atlas.Sprite StatusSprite();
+    public abstract Sprite StatusSprite();
 
     /// <summary>
     /// Gets the text to use under the power indicator icon. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.

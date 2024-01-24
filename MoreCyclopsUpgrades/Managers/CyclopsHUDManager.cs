@@ -7,10 +7,13 @@ using MoreCyclopsUpgrades.Config;
 using MoreCyclopsUpgrades.Config.ChoiceEnums;
 using UnityEngine;
 using UnityEngine.UI;
+#if SUBNAUTICA
+using Sprite = Atlas.Sprite;
+#endif
 
 internal class CyclopsHUDManager
 {
-    internal static Atlas.Sprite CyclopsThermometer;
+    internal static Sprite CyclopsThermometer;
 
     private PowerIndicatorIcon TemperatureReadout;
     private PowerIndicatorIcon[] HelmIndicatorsOdd;
@@ -125,7 +128,11 @@ internal class CyclopsHUDManager
         if (cyclopsHelmHUD.powerText.canvas == null)
             return;
 
+#if SUBNAUTICA
         cyclopsHelmHUD.powerText.enableAutoSizing = true;
+#elif BELOWZERO
+        cyclopsHelmHUD.powerText.resizeTextForBestFit = true;
+#endif
 
         QuickLogger.Debug($"CyclopsHUDManager Adding Power Info Icons for '{totalPowerInfoIcons}' CyclopsChargers");
         holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
@@ -224,7 +231,13 @@ internal class CyclopsHUDManager
         HidePowerIcons();
         if (settings.ShowThermometer)
         {
-            float temperature = Cyclops.GetTemperature();
+            float temperature =
+#if SUBNAUTICA
+                Cyclops.GetTemperature();
+#elif BELOWZERO
+                Cyclops.GetOutdoorTemperature();
+#endif
+
             TemperatureReadout.Text.text = NumberFormatter.FormatValue(temperature) + "°C";
             TemperatureReadout.Text.color = GetHeatColor(temperature);
             TemperatureReadout.SetEnabled(true);

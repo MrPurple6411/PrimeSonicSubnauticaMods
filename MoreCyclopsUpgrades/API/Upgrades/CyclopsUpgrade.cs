@@ -28,12 +28,22 @@ public abstract class CyclopsUpgrade
     /// <summary>
     /// Overriden to ensure this item appearas within the <see cref="TechGroup.Cyclops"/> group in the PDA blurprints menu.
     /// </summary>
-    public TechGroup GroupForPDA => TechGroup.Cyclops;
+    public TechGroup GroupForPDA =>
+#if SUBNAUTICA
+        TechGroup.Cyclops;
+#elif BELOWZERO
+        TechGroup.VehicleUpgrades;
+#endif
 
     /// <summary>
     /// Overrides to ensure this item appears within the <see cref="TechCategory.CyclopsUpgrades"/> category in the PDA blueprints menu.
     /// </summary>
-    public TechCategory CategoryForPDA => TechCategory.CyclopsUpgrades;
+    public TechCategory CategoryForPDA =>
+#if SUBNAUTICA
+        TechCategory.CyclopsUpgrades;
+#elif BELOWZERO
+        TechCategory.VehicleUpgrades;
+#endif
 
     /// <summary>
     /// Gets the prefab template used to clone new instances of this upgrade module.<para/>
@@ -79,14 +89,14 @@ public abstract class CyclopsUpgrade
     protected CyclopsUpgrade(string classId, string friendlyName, string description)
     {
         this.Info = PrefabInfo.WithTechType(classId: classId, displayName: friendlyName, description: description, language: "English", unlockAtStart: false);
-        
+
         CustomPrefab = new CustomPrefab(this.Info);
 
     }
 
     public void Patch()
     {
-        if(IsPatched)
+        if (IsPatched)
             return;
 
         OnStartedPatching?.Invoke();

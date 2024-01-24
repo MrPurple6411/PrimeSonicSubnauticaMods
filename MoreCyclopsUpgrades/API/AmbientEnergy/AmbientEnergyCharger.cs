@@ -4,6 +4,10 @@ using Common;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Charging;
 using UnityEngine;
+#if SUBNAUTICA
+using Sprite = Atlas.Sprite;
+#endif
+
 
 /// <summary>
 /// A generic <see cref="CyclopsCharger"/> for upgrade modules that draw in ambient energy like the solar or thermal.
@@ -57,8 +61,8 @@ public abstract class AmbientEnergyCharger<T> : CyclopsCharger
     /// </value>
     protected T AmbientEnergyUpgrade => energyUpgrade ?? (energyUpgrade = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(Cyclops, tier1Id, tier2Id2));
 
-    private readonly Atlas.Sprite tier1Sprite;
-    private readonly Atlas.Sprite tier2Sprite;
+    private readonly Sprite tier1Sprite;
+    private readonly Sprite tier2Sprite;
 
     private readonly TechType tier1Id;
     private readonly TechType tier2Id2;
@@ -99,9 +103,9 @@ public abstract class AmbientEnergyCharger<T> : CyclopsCharger
     /// Gets the sprite to use for the power indicator. This will only be called when <see cref="CyclopsCharger.ShowStatusIcon" /> returns <c>true</c>.
     /// </summary>
     /// <returns>
-    /// A new <see cref="Atlas.Sprite" /> to be used in the Cyclops Helm and Holographic HUDs.
+    /// A new <see cref="Sprite" /> to be used in the Cyclops Helm and Holographic HUDs.
     /// </returns>
-    public override Atlas.Sprite StatusSprite()
+    public override Sprite StatusSprite()
     {
         return ambientEnergyAvailable ? tier1Sprite : tier2Sprite;
     }
