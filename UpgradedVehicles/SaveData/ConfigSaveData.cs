@@ -74,7 +74,6 @@ internal class ConfigSaveData : EmPropertyCollection
             {
                 emProperty = new EmProperty<BonusSpeedStyles>(kvp.Key.AsString() + BonusSpeedSuffix, kvp.Value);
                 Properties[kvp.Key.AsString() + BonusSpeedSuffix] = emProperty;
-                Definitions.Add(emProperty);
             }
         }
     }
@@ -83,13 +82,24 @@ internal class ConfigSaveData : EmPropertyCollection
     {
         new EmProperty<bool>(EnableDebugLogsID, false){ Optional = true }
     };
+    private static ICollection<EmProperty> GetSaveDataDefinitions()
+    {
+        var definitions = new List<EmProperty>(SaveDataDefinitions);
+        foreach (var techType in VehicleUpgradeHandler.GetVehicleTypes())
+        {
+            definitions.Add(new EmProperty<BonusSpeedStyles>(techType.AsString() + BonusSpeedSuffix, BonusSpeedStyles.Normal) { Optional = true });
+        }
 
-    public ConfigSaveData() : base(ConfigKey, SaveDataDefinitions)
+        return definitions;
+    }
+
+    public ConfigSaveData() : base(ConfigKey, GetSaveDataDefinitions())
     {
         EmDebugLogs = (EmProperty<bool>)Properties[EnableDebugLogsID];
         OnValueExtractedEvent += IsReadDataValid;
         InitializeSaveFile();
     }
+
 
     public ConfigSaveData(Dictionary<TechType, BonusSpeedStyles> currentValues) : this()
     {

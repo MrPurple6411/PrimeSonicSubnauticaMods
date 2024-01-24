@@ -1,4 +1,6 @@
-﻿namespace UpgradedVehicles.Handlers;
+﻿using System.Linq;
+
+namespace UpgradedVehicles.Handlers;
 
 using System;
 using System.Collections.Generic;
@@ -29,20 +31,19 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
             Plugin.SaveData.SetBonusSpeedStyle(techType, newValue);
         }
 
-        if (vehicleUpgradeHandlers.TryGetValue(techType, out var handlers))
+        var handlers = VehicleUpgradeHandlers.Values.Where(h => h._techType == techType);
+
+        foreach (var handler in handlers)
         {
-            foreach (var handler in handlers)
-            {
-                handler.BonusSpeedStyle = newValue;
-                handler.ProcessChanges(true, true, true);
-            }
+            handler.BonusSpeedStyle = newValue;
+            handler.ProcessChanges(true, true, true);
         }
 
         Plugin.SaveData.Save();
     }
 
     // All upgrade modules that we handle
-    private static readonly HashSet<TechType> CommonUpgradeModules = new HashSet<TechType>()
+    internal static readonly HashSet<TechType> CommonUpgradeModules = new HashSet<TechType>()
     {
         TechType.ExoHullModule2,
         TechType.ExoHullModule1,
@@ -51,60 +52,110 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         TechType.VehicleHullModule1,
         TechType.VehiclePowerUpgradeModule,
         TechType.VehicleArmorPlating,
+        TechType.CyclopsHullModule1,
+        TechType.CyclopsHullModule2,
+        TechType.CyclopsHullModule3,
+        TechType.PowerUpgradeModule,
+#if BELOWZERO
+        TechType.SeaTruckUpgradeHull1,
+        TechType.SeaTruckUpgradeHull2,
+        TechType.SeaTruckUpgradeHull3,
+        TechType.SeaTruckUpgradeEnergyEfficiency,
+#endif
         // SpeedBooster added during patching
         // HullArmorUpgrades added during patching
         // Depth modules optionally added during patching
     };
 
     // All upgrade modules that affect armor
-    private static readonly IDictionary<TechType, int> ArmorPlatingModules = new Dictionary<TechType, int>()
+    internal static readonly IDictionary<TechType, int> ArmorPlatingModules = new Dictionary<TechType, int>()
     {
         { TechType.VehicleArmorPlating, 1 }
         // HullArmorUpgrades added during patching
     };
 
     // All upgrade modules that affect speed
-    private static readonly IDictionary<TechType, int> SpeedBoostingModules = new Dictionary<TechType, int>()
+    internal static readonly IDictionary<TechType, int> SpeedBoostingModules = new Dictionary<TechType, int>()
     {
         // SpeedUpgrades added during patching
     };
 
     // All upgrade modules that affect power
-    private static readonly IDictionary<TechType, int> PowerRatingModules = new Dictionary<TechType, int>()
+    internal static readonly IDictionary<TechType, int> PowerRatingModules = new Dictionary<TechType, int>()
     {
-        { TechType.VehiclePowerUpgradeModule, 1 }
+        { TechType.VehiclePowerUpgradeModule, 1 },
+        { TechType.PowerUpgradeModule, 1 },
+#if BELOWZERO
+        { TechType.SeaTruckUpgradeEnergyEfficiency, 2 },
+#endif
         // EngineEfficiencyUpgrades added during patching
     };
 
     // All upgrade modules that affect depth
-    private static readonly IDictionary<TechType, int> DepthUpgradeModules = new Dictionary<TechType, int>()
+    internal static readonly IDictionary<TechType, int> DepthUpgradeModules = new Dictionary<TechType, int>()
     {
-        { TechType.ExoHullModule2, 2 },
         { TechType.ExoHullModule1, 1 },
-        { TechType.VehicleHullModule3, 3 },
-        { TechType.VehicleHullModule2, 2 },
+        { TechType.ExoHullModule2, 2 },
         { TechType.VehicleHullModule1, 1 },
+        { TechType.VehicleHullModule2, 2 },
+        { TechType.VehicleHullModule3, 3 },
+        { TechType.CyclopsHullModule1, 4 },
+        { TechType.CyclopsHullModule2, 5 },
+        { TechType.CyclopsHullModule3, 6 },
+#if BELOWZERO
+        { TechType.SeaTruckUpgradeHull1, 1 },
+        { TechType.SeaTruckUpgradeHull2, 2 },
+        { TechType.SeaTruckUpgradeHull3, 3 },
+#endif
         // Depth Modules Mk4 and Mk5 optionaly added during patching
     };
 
     // Speed multiplier bonus per speed module.
     private static readonly IDictionary<TechType, float[]> VehicleBonusSpeedMultipliers = new Dictionary<TechType, float[]>()
     {
+        // Exosuit
         { TechType.Exosuit, new float[]{ 0f, 0.1f, 0.25f, 0.45f } },
+        // Seamoth
         { TechType.Seamoth, new float[]{ 0f, 0.05f, 0.15f, 0.3f } },
+#if SUBNAUTICA
+        // Cyclops
+        { TechType.Cyclops, new float[]{ 0f, 0.05f, 0.15f, 0.3f } },
+#elif BELOWZERO
+        // Hoverbike
+        { TechType.Hoverbike, new float[]{ 0f, 0.05f, 0.15f, 0.3f } },
+        // SeaTruck
+        { TechType.SeaTruck, new float[]{ 0f, 0.05f, 0.15f, 0.3f } },
+#endif
     };
 
-    private static readonly IDictionary<TechType, List<VehicleUpgradeHandler>> vehicleUpgradeHandlers = new Dictionary<TechType, List<VehicleUpgradeHandler>>();
+    internal static readonly Dictionary<string, VehicleUpgradeHandler> VehicleUpgradeHandlers = new Dictionary<string, VehicleUpgradeHandler>();
 
-    private Vehicle ParentVehicle = null;
-    private Equipment UpgradeModules => ParentVehicle.modules;
+    private TechType _techType;
+
+    private GameObject ParentGameObject { get; set; }
+
+    private Vehicle _parentVehicle;
+    private Vehicle ParentVehicle => _parentVehicle != null ? _parentVehicle : (_parentVehicle = ParentGameObject.GetComponent<Vehicle>());
+
+    private SubRoot _parentSubRoot;
+    private SubRoot ParentSubRoot => _parentSubRoot != null ? _parentSubRoot : (_parentSubRoot = ParentGameObject.GetComponent<SubRoot>());
+
+#if BELOWZERO
+    private SeaTruckMotor _parentSeaTruck;
+    private SeaTruckMotor ParentSeaTruck => _parentSeaTruck != null ? _parentSeaTruck : (_parentSeaTruck = ParentGameObject.GetComponent<SeaTruckMotor>());
+
+    private Hoverbike _parentHoverbike;
+    private Hoverbike ParentHoverbike => _parentHoverbike != null ? _parentHoverbike : (_parentHoverbike = ParentGameObject.GetComponent<Hoverbike>());
+#endif
+
+    private HashSet<Equipment> UpgradeModules { get; } = new HashSet<Equipment>();
 
     private DealDamageOnImpact _dmgOnImpact;
-    private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = ParentVehicle.GetComponent<DealDamageOnImpact>());
+    private DealDamageOnImpact DmgOnImpact => _dmgOnImpact != null ? _dmgOnImpact : (_dmgOnImpact = ParentGameObject.GetComponent<DealDamageOnImpact>());
 
     internal float GeneralDamageReduction { get; private set; } = 1f;
 
-    private bool Initialized;
+    public bool Initialized { get; private set; }
 
     public int DepthIndex { get; private set; } = -1;
     public float EfficiencyPenalty { get; private set; } = 1f;
@@ -112,7 +163,6 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     public float GeneralArmorFraction { get; private set; } = 1f;
     public float ImpactArmorFraction { get; private set; } = 1f;
     public float PowerRating { get; private set; } = 1f;
-    public LiveMixin LifeMix => ParentVehicle.liveMixin;
 
     public BonusSpeedStyles BonusSpeedStyle { get; private set; }
 
@@ -123,18 +173,18 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     {
         float speedBoosterRatio = 0.15f;
 
-        if (VehicleBonusSpeedMultipliers.TryGetValue(CraftData.GetTechType(ParentVehicle.gameObject), out float[] speedBoosterMultipliers))
+        if (VehicleBonusSpeedMultipliers.TryGetValue(_techType, out float[] speedBoosterMultipliers))
         {
             int multiplierIndex = (int)this.BonusSpeedStyle;
             speedBoosterRatio = speedBoosterMultipliers.Length > multiplierIndex ? speedBoosterMultipliers[multiplierIndex] : speedBoosterMultipliers[0];
         }
         else // Most likely a new modded vehicle. Use the default speed multiplier.
         {
-            QuickLogger.Warning($"GetSpeedMultiplierBonus - Unable to find speed multiplier for {ParentVehicle.gameObject.name} - Using default speed multiplier of 0.35f");
+            QuickLogger.Warning($"GetSpeedMultiplierBonus - Unable to find speed multiplier for {Language.main.Get(_techType)} - Using default speed multiplier of 0.35f");
         }
 
         return 1f + // Base 100%
-               ((speedBoosterRatio+0.2f) * speedBoosterCount) + // Bonus from Speed Boosters
+               ((speedBoosterRatio + 0.2f) * speedBoosterCount) + // Bonus from Speed Boosters
                this.DepthIndex * speedBoosterRatio; // Bonus from Depth Modules
     }
 
@@ -200,70 +250,131 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         return this.ImpactArmorFraction = Mathf.Pow(0.5f, armorModuleCount + this.DepthIndex * 0.2f);
     }
 
-    internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : Vehicle
+    internal void Initialize(GameObject vehicle)
     {
         Plugin.SaveData.InitializeSaveFile();
 
         QuickLogger.Debug("Initializing vehicle", true);
-        ParentVehicle = vehicle;
-
-        if (this.UpgradeModules == null)
+        string id = vehicle.GetComponent<UniqueIdentifier>().Id;
+        if (VehicleUpgradeHandlers.ContainsKey(id))
         {
-            QuickLogger.Warning("Initialize Vehicle - UpgradeModules missing", true);
-            DestroyImmediate(this);
+            QuickLogger.Warning($"Initialize Vehicle - {id} already registered");
+            Destroy(this);
+            return;
+        }
+        ParentGameObject = vehicle;
+        _techType = CraftData.GetTechType(vehicle);
+
+        if (_techType == TechType.None)
+        {
+            if (ParentSubRoot != null)
+            {
+                _techType = TechType.Cyclops;
+            }
+#if BELOWZERO
+            else if (ParentSeaTruck != null)
+            {
+                _techType = TechType.SeaTruck;
+            }
+#endif
+            else
+            {
+                QuickLogger.Warning("Initialize Vehicle - Unable to find TechType", true);
+                Destroy(this);
+                return;
+            }
+        }
+
+        if (ParentVehicle != null)
+        {
+            if (ParentVehicle.enginePowerRating > 0f)
+            {
+                this.PowerRating = ParentVehicle.enginePowerRating;
+            }
+
+            this.UpgradeModules.Add(ParentVehicle.modules);
+        }
+        else if (ParentSubRoot != null)
+        {
+            if (ParentSubRoot.currPowerRating > 0f)
+            {
+                this.PowerRating = ParentSubRoot.currPowerRating;
+            }
+
+            UpgradeConsole[] upgradeConsoles = ParentGameObject.GetComponentsInChildren<UpgradeConsole>();
+            foreach (UpgradeConsole upgradeConsole in upgradeConsoles)
+            {
+                if (this.UpgradeModules.Add(upgradeConsole.modules))
+                {
+                    QuickLogger.Debug($"Initialize Vehicle - Added UpgradeConsole {upgradeConsole.name}", true);
+                }
+            }
+        }
+#if BELOWZERO
+        else if (ParentSeaTruck != null)
+        {
+            if (ParentSeaTruck.powerEfficiencyFactor > 0f)
+            {
+                this.PowerRating = ParentSeaTruck.powerEfficiencyFactor;
+            }
+
+            this.UpgradeModules.Add(ParentSeaTruck.upgrades.modules);
+        }
+        else if (ParentHoverbike != null)
+        {
+            if (ParentHoverbike.enginePowerConsumption > 0f)
+            {
+                this.PowerRating = ParentHoverbike.enginePowerConsumption;
+            }
+
+            this.UpgradeModules.Add(ParentHoverbike.modules);
+        }
+#endif
+        else
+        {
+            QuickLogger.Warning("Initialize Vehicle - Unable to find Vehicle or SubRoot component", true);
+            Destroy(this);
             return;
         }
 
-        this.UpgradeModules.onEquip += OnEquipmentChange;
-        this.UpgradeModules.onUnequip += OnEquipmentChange;
+        if (this.UpgradeModules.Count == 0)
+        {
+            QuickLogger.Warning("Initialize Vehicle - UpgradeModules missing", true);
+            Destroy(this);
+            return;
+        }
 
         if (this.DmgOnImpact == null)
         {
             QuickLogger.Warning("Initialize Vehicle - DealDamageOnImpact missing", true);
-            DestroyImmediate(this);
+            Destroy(this);
             return;
         }
 
-        if (this.LifeMix == null)
+        if (Plugin.SaveData.GetBonusSpeedStyle(_techType) is BonusSpeedStyles bonusSpeedStyle)
         {
-            QuickLogger.Warning("Initialize Vehicle - LiveMixin missing", true);
-            DestroyImmediate(this);
-            return;
-        }
-
-        TechType techType = CraftData.GetTechType(vehicle.gameObject);
-
-        if (Plugin.SaveData.GetBonusSpeedStyle(techType) is BonusSpeedStyles bonusSpeedStyle)
-        {
-            QuickLogger.Debug($"Initialize Vehicle - {techType} - {bonusSpeedStyle}", true);
+            QuickLogger.Debug($"Initialize Vehicle - {_techType} - {bonusSpeedStyle}", true);
             this.BonusSpeedStyle = bonusSpeedStyle;
         }
         else
         {
-            QuickLogger.Warning($"Initialize Vehicle - {techType} - Unable to find bonus speed style - Creating options based on Seamoth", true);
-            RegisterVehicleSpeedOptions(techType, VehicleBonusSpeedMultipliers[TechType.Seamoth]);
+            QuickLogger.Debug($"Initialize Vehicle - {_techType} - Unable to find bonus speed style - Creating options based on Seamoth", true);
+            RegisterVehicleSpeedOptions(_techType, VehicleBonusSpeedMultipliers[TechType.Seamoth]);
             this.BonusSpeedStyle = BonusSpeedStyles.Normal;
         }
-        
-        Plugin.SaveData.Save();
-        
-        ProcessChanges(true, true, true);
 
+        Plugin.SaveData.Save();
         Initialized = true;
+
+        ProcessChanges(true, true, true);
     }
 
     private void OnDestroy()
     {
-        if (this.UpgradeModules != null)
+        if (VehicleUpgradeHandlers.ContainsKey(ParentGameObject.GetComponent<UniqueIdentifier>().ClassId))
         {
-            this.UpgradeModules.onEquip -= OnEquipmentChange;
-            this.UpgradeModules.onUnequip -= OnEquipmentChange;
+            VehicleUpgradeHandlers.Remove(ParentGameObject.GetComponent<UniqueIdentifier>().ClassId);
         }
-    }
-
-    private void OnEquipmentChange(string slot, InventoryItem item)
-    {
-        UpgradeVehicle(item._techType);
     }
 
     /// <summary>
@@ -275,7 +386,14 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         int armorModuleCount = 0;
         foreach (var kvp in ArmorPlatingModules)
         {
-            int moduleCount = this.UpgradeModules.GetCount(kvp.Key);
+            int moduleCount = 0;
+            foreach (Equipment equipment in this.UpgradeModules)
+            {
+                if (equipment == null)
+                    continue;
+
+                moduleCount += equipment.GetCount(kvp.Key);
+            }
             armorModuleCount += moduleCount * kvp.Value;
         }
 
@@ -290,7 +408,14 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         int maxDepthIndex = 0;
         foreach (var kvp in DepthUpgradeModules)
         {
-            int moduleCount = this.UpgradeModules.GetCount(kvp.Key);
+            int moduleCount = 0;
+            foreach (Equipment equipment in this.UpgradeModules)
+            {
+                if (equipment == null)
+                    continue;
+
+                moduleCount += equipment.GetCount(kvp.Key);
+            }
             if (moduleCount > 0)
                 maxDepthIndex = Math.Max(maxDepthIndex, kvp.Value);
         }
@@ -304,6 +429,7 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     /// <param name="upgradeModule">The module that has been added or removed</param>
     internal void UpgradeVehicle(TechType upgradeModule)
     {
+        ErrorMessage.AddDebug($"UpgradeVehicle - {Language.main.Get(upgradeModule)}");
         if (!CommonUpgradeModules.Contains(upgradeModule))
             // Not an upgrade module we handle here
             return;
@@ -312,7 +438,7 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         bool updateArmor = updateDepth || ArmorPlatingModules.ContainsKey(upgradeModule);
         bool updateSpeed = updateDepth || SpeedBoostingModules.ContainsKey(upgradeModule);
         bool updateEfficiency = updateDepth || updateSpeed || PowerRatingModules.ContainsKey(upgradeModule);
-        QuickLogger.Debug($"updateDepth:{updateDepth} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}");
+        QuickLogger.Debug($"updateDepth:{updateDepth} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}", true);
         ProcessChanges(updateArmor, updateSpeed, updateEfficiency);
     }
 
@@ -325,7 +451,7 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     private void ProcessChanges(bool updateArmor, bool updateSpeed, bool updateEfficiency)
     {
 
-        if (this.UpgradeModules == null)
+        if (this.UpgradeModules.Count == 0)
         {
             QuickLogger.Error("UpgradeVehicle - UpgradeModules missing - Unable to upgrade", true);
             return;
@@ -346,7 +472,14 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
             int speedBoosterModuleCount = 0;
             foreach (var kvp in SpeedBoostingModules)
             {
-                int moduleCount = this.UpgradeModules.GetCount(kvp.Key);
+                int moduleCount = 0;
+                foreach (Equipment equipment in this.UpgradeModules)
+                {
+                    if (equipment == null)
+                        continue;
+
+                    moduleCount += equipment.GetCount(kvp.Key);
+                }
                 speedBoostMultiplier += moduleCount * kvp.Value;
                 speedBoosterModuleCount += moduleCount;
 
@@ -355,7 +488,14 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
             int powerModuleCount = 0;
             foreach (var kvp in PowerRatingModules)
             {
-                int moduleCount = this.UpgradeModules.GetCount(kvp.Key);
+                int moduleCount = 0;
+                foreach (Equipment equipment in this.UpgradeModules)
+                {
+                    if (equipment == null)
+                        continue;
+
+                    moduleCount += equipment.GetCount(kvp.Key);
+                }
                 powerModuleCount += moduleCount * kvp.Value;
             }
 
@@ -372,12 +512,28 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     /// <param name="speedBoosterCount"> The number of speed modules installed</param>
     private void UpdateSpeedRating(float speedBoosterCount)
     {
-        QuickLogger.Debug($"UpdateSpeedRating - speedBoosterCount:{speedBoosterCount}", true);
-        this.accelerationMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
-
         if (!Initialized)
+        {
+            QuickLogger.Debug($"UpdateSpeedRating - speedBoosterCount:{speedBoosterCount} - Not Initialized", true);
             return;
+        }
+        QuickLogger.Debug($"UpdateSpeedRating - speedBoosterCount:{speedBoosterCount}", true);
 
+        this.accelerationMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
+#if BELOWZERO
+        if (ParentHoverbike != null)
+        {
+            ParentHoverbike.forwardAccel = 4700f * this.accelerationMultiplier;
+            ParentHoverbike.sidewaysTorque = 10f * this.accelerationMultiplier;
+            ParentHoverbike.forwardBoostForce = 9000f * this.accelerationMultiplier;
+            ParentHoverbike.waterDampening = Mathf.Max(10f - (10 * (this.accelerationMultiplier - 1)), 1f);
+            ParentHoverbike.verticalBoostForce = 100f * this.accelerationMultiplier;
+        }
+        else if (ParentSeaTruck != null)
+        {
+            ParentSeaTruck.acceleration = 15f * this.accelerationMultiplier;
+        }
+#endif
         QuickLogger.Info($"Speed Boost: ({this.accelerationMultiplier * 100f:00}%)", true);
     }
 
@@ -388,13 +544,24 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     /// <param name="speedBoosterCount"> The number of speed modules installed</param>
     private void UpdatePowerRating(int powerModuleCount, int speedBoosterCount)
     {
+        if (!Initialized)
+        {
+            QuickLogger.Debug($"UpdatePowerRating - powerModuleCount:{powerModuleCount} speedBoosterCount:{speedBoosterCount} - Not Initialized", true);
+            return;
+        }
+
         QuickLogger.Debug($"UpdatePowerRating - powerModuleCount:{powerModuleCount} speedBoosterCount:{speedBoosterCount}", true);
+
         this.PowerRating = GetEfficiencyBonus(powerModuleCount) / GetEfficiencyPentalty(speedBoosterCount);
 
-        ParentVehicle.enginePowerRating = this.PowerRating;
-
-        if (!Initialized)
-            return;
+        if (ParentVehicle != null)
+            ParentVehicle.enginePowerRating = this.PowerRating;
+        else if (ParentSubRoot != null)
+            ParentSubRoot.currPowerRating = this.PowerRating;
+#if BELOWZERO
+        else if (ParentSeaTruck != null)
+            ParentSeaTruck.powerEfficiencyFactor = this.PowerRating;
+#endif
 
         QuickLogger.Info(Language.main.GetFormat("PowerRatingNowFormat", this.PowerRating), true);
     }
@@ -405,13 +572,17 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
     /// <param name="armorModuleCount"> The number of armor modules installed</param>
     private void UpdateArmorRating(int armorModuleCount)
     {
+        if (!Initialized)
+        {
+            QuickLogger.Debug($"UpdateArmorRating - armorModuleCount:{armorModuleCount} - Not Initialized", true);
+            return;
+        }
+
         QuickLogger.Debug($"UpdateArmorRating - armorModuleCount:{armorModuleCount}", true);
+
         this.GeneralDamageReduction = GetGeneralArmorFraction(armorModuleCount);
 
         this.DmgOnImpact.mirroredSelfDamageFraction = GetImpactArmorFraction(armorModuleCount);
-
-        if (!Initialized)
-            return;
 
         QuickLogger.Info($"Armor rating is now {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f + (1f - this.GeneralDamageReduction) * 100f:00}", true);
     }
@@ -512,4 +683,11 @@ sealed class VehicleUpgradeHandler : VehicleAccelerationModifier
         CommonUpgradeModules.Add(techType);
     }
 
+    internal void EnsureEquipmentRegistered(Equipment modules)
+    { 
+        if (this.UpgradeModules.Add(modules))
+        {
+            QuickLogger.Debug($"Initialize Vehicle - Added UpgradeConsole {gameObject.name}", true);
+        }
+    }
 }

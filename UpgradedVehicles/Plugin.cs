@@ -1,16 +1,11 @@
 ﻿namespace UpgradedVehicles;
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Logging;
 using Common;
 using HarmonyLib;
-using Nautilus.Assets;
-using Nautilus.Assets.Gadgets;
 using Nautilus.Handlers;
-using UnityEngine;
 using UpgradedVehicles.Handlers;
 using UpgradedVehicles.Modules.Armor;
 using UpgradedVehicles.Modules.Power;
@@ -21,7 +16,8 @@ using UpgradedVehicles.SaveData;
 [BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
 [BepInIncompatibility("com.ahk1221.smlhelper")]
 [BepInDependency("SeaTruckDepthUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency("MoreSeamothDepth", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(MoreSeamothDepth.MyPluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
 {
     internal const string WorkBenchArmorTab = "HullArmor";
@@ -52,7 +48,6 @@ public class Plugin : BaseUnityPlugin
         try
         {
             QuickLogger.Info("Started patching - " + QuickLogger.GetAssemblyVersion());
-            CrossModUpdates();
 
             //Handle SpeedBooster
             SpeedBooster = new SpeedBooster();
@@ -99,7 +94,7 @@ public class Plugin : BaseUnityPlugin
             PowerEfficiencyMK4 = new PowerEfficiencyMK4();
             PowerEfficiencyMK4.CustomPrefab.Register();
 
-            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID).PatchAll(typeof(Plugin));
             QuickLogger.Info("Finished patching");
         }
         catch (Exception ex)
@@ -108,38 +103,70 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
+    [HarmonyPatch(typeof(Player), nameof(Player.Awake)), HarmonyPostfix]
+    public static void Player_Awake_Postfix()
+    {
+        CrossModUpdates();
+    }
+
     public static void CrossModUpdates()
     {
-        QuickLogger.Info("Checking if MoreSeamothDepth mod is present");
+        QuickLogger.Info("Checking for mod upgrade modules.");
 
+        // SeamothHullModule1
         if (TechTypeExtensions.FromString("SeamothHullModule4", out TechType vehicleHullModule4, true))
         {
             QuickLogger.Info("Detected Seamoth Depth Module Mk4");            
             VehicleUpgradeHandler.RegisterDepthModule(vehicleHullModule4, 4);
         }
 
+        // SeamothHullModule5
         if (TechTypeExtensions.FromString("SeamothHullModule5", out TechType vehicleHullModule5, true))
         {
             QuickLogger.Info("Detected Seamoth Depth Module Mk5");
             VehicleUpgradeHandler.RegisterDepthModule(vehicleHullModule5, 5);
         }
 
+        // ModVehicleDepthModule1
         if (TechTypeExtensions.FromString("ModVehicleDepthModule1" , out TechType modVehicleDepthModule1, true))
         {
             QuickLogger.Info("Detected Vehicle Framework Depth Module Mk1");
             VehicleUpgradeHandler.RegisterDepthModule(modVehicleDepthModule1, 1);
         }
 
+        // ModVehicleDepthModule2
         if (TechTypeExtensions.FromString("ModVehicleDepthModule2", out TechType modVehicleDepthModule2, true))
         {
             QuickLogger.Info("Detected Vehicle Framework Depth Module Mk2");
             VehicleUpgradeHandler.RegisterDepthModule(modVehicleDepthModule2, 2);
         }
 
+        // ModVehicleDepthModule3
         if (TechTypeExtensions.FromString("ModVehicleDepthModule3", out TechType modVehicleDepthModule3, true))
         {
             QuickLogger.Info("Detected Vehicle Framework Depth Module Mk3");
             VehicleUpgradeHandler.RegisterDepthModule(modVehicleDepthModule3, 3);
+        }
+
+        // SeaTruckDepthMK4
+        if (TechTypeExtensions.FromString("SeaTruckDepthMK4", out TechType seaTruckDepthMK4, true))
+        {
+            QuickLogger.Info("Detected SeaTruck Depth Module Mk4");
+            VehicleUpgradeHandler.RegisterDepthModule(seaTruckDepthMK4, 4);
+        }
+
+        // SeaTruckDepthMK5
+        if (TechTypeExtensions.FromString("SeaTruckDepthMK5", out TechType seaTruckDepthMK5, true))
+        {
+            QuickLogger.Info("Detected SeaTruck Depth Module Mk5");
+            VehicleUpgradeHandler.RegisterDepthModule(seaTruckDepthMK5, 5);
+        }
+
+        // SeaTruckDepthMK6
+        if (TechTypeExtensions.FromString("SeaTruckDepthMK6", out TechType seaTruckDepthMK6, true))
+        {
+            QuickLogger.Info("Detected SeaTruck Depth Module Mk6");
+            VehicleUpgradeHandler.RegisterDepthModule(seaTruckDepthMK6, 6);
         }
     }
 }

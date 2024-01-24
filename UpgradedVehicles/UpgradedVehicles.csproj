@@ -3,7 +3,7 @@
 		<AssemblyName>UpgradedVehicles</AssemblyName>
 		<BepInExPluginGuid>com.mrpurple6411.$(AssemblyName)</BepInExPluginGuid>
 		<BepInExPluginName>Upgraded Vehicles (Purple Edition)</BepInExPluginName>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
         <OutputPath>$(SolutionDir)bin\$(Configuration)\$(AssemblyName)\</OutputPath>
 	</PropertyGroup>
   <ItemGroup>
@@ -19,6 +19,11 @@
     <Content Include="Assets\SpeedModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MrPurple6411-Subnautica-Mods\SeamothDepthModules\MoreSeamothDepth.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\SpeedModuleMK2.png">
