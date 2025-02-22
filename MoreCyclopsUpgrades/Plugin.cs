@@ -37,7 +37,7 @@ public class Plugin : BaseUnityPlugin
     /// <summary>
     /// Main patching method.
     /// </summary>
-    public void Awake()
+    private void Awake()
     {
         QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 

@@ -13,7 +13,7 @@ public class Plugin : BaseUnityPlugin
 {
     internal CyclopsNuclearModule NuclearModule { get; private set; }
 
-    public void Awake()
+    private void Awake()
     {
         QuickLogger.Info("Started patching v" + QuickLogger.GetAssemblyVersion());
 

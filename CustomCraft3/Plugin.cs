@@ -36,7 +36,7 @@ namespace CustomCraft3
             CustomCraft2Config.CheckLogLevel();
         }
 
-        public void Awake()
+        private void Awake()
         {
             QuickLogger.Info($"Restoring files. Version {version}");
 

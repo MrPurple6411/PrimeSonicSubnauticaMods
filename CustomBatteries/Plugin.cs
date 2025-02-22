@@ -22,7 +22,7 @@ using BepInEx.Bootstrap;
 #endif
 public class Plugin : BaseUnityPlugin
 {
-    public void Awake()
+    private void Awake()
     {
         QuickLogger.Info("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
 

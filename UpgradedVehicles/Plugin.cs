@@ -48,7 +48,7 @@ public class Plugin : BaseUnityPlugin
         OptionsPanelHandler.RegisterModOptions(Options);
     }
 
-    public void Awake()
+    private void Awake()
     {
         try
         {

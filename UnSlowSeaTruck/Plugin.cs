@@ -17,7 +17,7 @@ public class Plugin: BaseUnityPlugin
     internal static new ManualLogSource Logger { get; private set; }
     public Harmony Harmony { get; private set; }
 
-    public void Awake()
+    private void Awake()
     {
         Logger = base.Logger;
         Logger.LogInfo("Patching v" + MyPluginInfo.PLUGIN_VERSION);

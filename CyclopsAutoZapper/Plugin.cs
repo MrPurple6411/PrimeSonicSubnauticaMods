@@ -11,7 +11,7 @@ using HarmonyLib;
 [BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.HardDependency)]
 public class Plugin : BaseUnityPlugin
 {
-    public void Awake()
+    private void Awake()
     {
         QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 

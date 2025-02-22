@@ -15,7 +15,7 @@ using MoreCyclopsUpgrades.API.PDA;
 [BepInProcess("Subnautica.exe")]
 public class Plugin: BaseUnityPlugin
 {
-    public void Awake()
+    private void Awake()
     {
         try
         {

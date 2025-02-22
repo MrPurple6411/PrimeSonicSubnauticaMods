@@ -17,7 +17,7 @@ public class Plugin: BaseUnityPlugin
     private static TechType solarChargerMk2 = TechType.None;
     internal const string CrossModKey = "CySolCross";
 
-    public void Awake()
+    private void Awake()
     {
         if (EnumHandler.TryGetValue("CyclopsSolarCharger", out solarChargerMk1) &&
             EnumHandler.TryGetValue("CyclopsSolarChargerMk2", out solarChargerMk2))
