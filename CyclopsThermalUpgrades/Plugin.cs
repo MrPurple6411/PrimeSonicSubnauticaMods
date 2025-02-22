@@ -12,6 +12,7 @@ using MoreCyclopsUpgrades.API.PDA;
 [BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID, Nautilus.PluginInfo.PLUGIN_VERSION)]
 [BepInIncompatibility("com.ahk1221.smlhelper")]
 [BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.HardDependency)]
+[BepInProcess("Subnautica.exe")]
 public class Plugin: BaseUnityPlugin
 {
     public void Awake()

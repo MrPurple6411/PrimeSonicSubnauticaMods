@@ -18,6 +18,11 @@ using UpgradedVehicles.SaveData;
 [BepInDependency("SeaTruckDepthUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(MoreSeamothDepth.MyPluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.mrpurple6411.MoreCyclopsUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
+#if SUBNAUTICA
+[BepInProcess("Subnautica.exe")]
+#elif BELOWZERO
+[BepInProcess("SubnauticaZero.exe")]
+#endif
 public class Plugin : BaseUnityPlugin
 {
     internal const string WorkBenchArmorTab = "HullArmor";
