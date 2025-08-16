@@ -2,10 +2,6 @@
 
 using UnityEngine;
 
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
-
 /// <summary>
 /// Defines all the behaviors for a cyclops charger that handles a particular type of energy recharging.<para/>
 /// Recharging may be part of an update module or it might be a new buidable.<para/>

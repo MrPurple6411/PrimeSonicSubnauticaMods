@@ -21,16 +21,6 @@
 		<PackageReference Update="BepInEx.Analyzers" />
 		<PackageReference Update="Microsoft.NETFramework.ReferenceAssemblies" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(Configuration)'=='Subnautica'">
-		<PackageReference Include="Subnautica.Nautilus" Version="*-*" />
-		<Publicize Include="Subnautica.Nautilus" />
-		<PackageReference Include="Subnautica.GameLibs" Version="71288.0.0-r.0" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(Configuration)'=='BelowZero'">
-		<PackageReference Include="SubnauticaZero.Nautilus" Version="*-*" />
-		<Publicize Include="SubnauticaZero.Nautilus" />
-		<PackageReference Include="Subnautica.BelowZero.GameLibs" Version="49371.0.0.1-r.0" />
-	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\CustomCraft3\CustomCraft3.csproj">
 			<Private>True</Private>

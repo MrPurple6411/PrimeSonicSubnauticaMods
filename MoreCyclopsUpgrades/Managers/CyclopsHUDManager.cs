@@ -7,9 +7,6 @@ using MoreCyclopsUpgrades.Config;
 using MoreCyclopsUpgrades.Config.ChoiceEnums;
 using UnityEngine;
 using UnityEngine.UI;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
 
 internal class CyclopsHUDManager
 {

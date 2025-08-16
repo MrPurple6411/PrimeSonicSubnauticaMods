@@ -6,9 +6,6 @@ using Common;
 using CustomBatteries.Items;
 using Nautilus.Assets;
 using UnityEngine;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
 
 /// <summary>
 /// A class that holds all the necessary elements of a custom battery or power cell.
