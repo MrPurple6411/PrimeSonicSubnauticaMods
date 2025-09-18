@@ -5,9 +5,6 @@ using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Charging;
 using MoreCyclopsUpgrades.API.Upgrades;
 using UnityEngine;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
 
 internal class VanillaThermalChargeManager : CyclopsCharger
 {

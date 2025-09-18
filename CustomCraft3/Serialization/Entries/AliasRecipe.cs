@@ -10,11 +10,7 @@ namespace CustomCraft3.Serialization.Entries
     using Nautilus.Handlers;
     using Nautilus.Utility;
     using IOPath = System.IO.Path;
-#if SUBNAUTICA
-    using Sprite = Atlas.Sprite;
-#elif BELOWZERO
     using Sprite = UnityEngine.Sprite;
-#endif
 
     internal partial class AliasRecipe: AddedRecipe, IAliasRecipe
     {

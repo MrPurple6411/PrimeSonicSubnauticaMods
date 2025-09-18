@@ -37,7 +37,7 @@ internal class CySolarChargeManager : CyclopsCharger
         cySolarModule = solarModule;
     }
 
-    public override Atlas.Sprite StatusSprite()
+    public override Sprite StatusSprite()
     {
         if(!EnumHandler.TryGetValue("CySimpSolarCharger", out TechType techType))
             techType = TechType.SeamothSolarCharge;

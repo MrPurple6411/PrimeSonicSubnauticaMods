@@ -4,9 +4,6 @@ using Common;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Charging;
 using UnityEngine;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
 
 
 /// <summary>
