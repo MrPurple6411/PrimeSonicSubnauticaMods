@@ -23,7 +23,7 @@ internal class NuclearChargeHandler : CyclopsCharger
     internal const float MaxHeatLoad = 300f;
 
     private readonly TechType nuclearModuleID;
-    private readonly Atlas.Sprite sprite;
+    private readonly Sprite sprite;
     private float chargeRate = MinNuclearChargeRate;
     private NuclearState nuclearState = NuclearState.None;
 
@@ -41,7 +41,7 @@ internal class NuclearChargeHandler : CyclopsCharger
         nuclearModuleID = nuclearModule;
     }
 
-    public override Atlas.Sprite StatusSprite()
+    public override Sprite StatusSprite()
     {
         return sprite;
     }

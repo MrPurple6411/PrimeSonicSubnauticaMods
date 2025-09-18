@@ -10,8 +10,8 @@ namespace CustomBatteries.Packs
     internal class MyPlugin : IModPluginPack
     {
         // ProTip: You can load your own sprites directly from PNG files using Nautilus's ImageUtils class.
-        public Atlas.Sprite BatteryIcon => SpriteManager.Get(TechType.Battery);
-        public Atlas.Sprite PowerCellIcon => SpriteManager.Get(TechType.PowerCell);
+        public UnityEngine.Sprite BatteryIcon => SpriteManager.Get(TechType.Battery);
+        public UnityEngine.Sprite PowerCellIcon => SpriteManager.Get(TechType.PowerCell);
         public string PluginPackName => "Example Plugin";
         public int BatteryCapacity => 120; // Power cells are always twice the capacity of the battery
         public TechType UnlocksWith => TechType.Shocker;
