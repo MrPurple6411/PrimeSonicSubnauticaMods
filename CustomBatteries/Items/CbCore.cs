@@ -12,9 +12,6 @@ using Nautilus.Handlers;
 using Nautilus.Utility;
 using UnityEngine;
 using static CraftData;
-#if SUBNAUTICA
-using Sprite = Atlas.Sprite;
-#endif
 
 internal abstract class CbCore
 {
@@ -97,11 +94,7 @@ internal abstract class CbCore
         battery.name = $"{this.ClassID}BatteryCell";
 
         // If "Enable batteries/powercells placement" feature from Decorations mod is ON.
-#if SUBNAUTICA
-        if (CbDatabase.PlaceBatteriesFeatureEnabled && CraftData.GetEquipmentType(this.Info.TechType) != EquipmentType.Hand)
-#elif BELOWZERO
         if (CbDatabase.PlaceBatteriesFeatureEnabled && TechData.GetEquipmentType(this.Info.TechType) != EquipmentType.Hand)
-#endif
         {
             CraftDataHandler.SetEquipmentType(this.Info.TechType, EquipmentType.Hand); // Set equipment type to Hand.
             CraftDataHandler.SetQuickSlotType(this.Info.TechType, QuickSlotType.Selectable); // We can select the item.

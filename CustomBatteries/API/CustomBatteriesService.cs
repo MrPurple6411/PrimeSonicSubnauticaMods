@@ -102,10 +102,6 @@ public class CustomBatteriesService : ICustomBatteriesService
                 return EquipmentType.PowerCellCharger; // Power cells that do not go into chargers
         }
 
-#if SUBNAUTICA
-        return CraftData.GetEquipmentType(techType);
-#elif BELOWZERO
-        return TechData.GetEquipmentType(techType);
-#endif
+    return TechData.GetEquipmentType(techType);
     }
 }

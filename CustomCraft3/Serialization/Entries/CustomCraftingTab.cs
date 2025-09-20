@@ -10,12 +10,8 @@ namespace CustomCraft3.Serialization.Entries
     using EasyMarkup;
     using Nautilus.Handlers;
     using Nautilus.Utility;
+    using UnityEngine;
     using IOPath = System.IO.Path;
-#if SUBNAUTICA
-    using Sprite = Atlas.Sprite;
-#elif BELOWZERO
-    using Sprite = UnityEngine.Sprite;
-#endif
 
     internal partial class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
     {
